@@ -45,6 +45,48 @@ pub enum IssueStatus {
 
 #[contracttype]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub enum Currency {
+    USD = 0,
+    EUR = 1,
+    GBP = 2,
+    XLM = 3,
+    USDC = 4,
+}
+
+#[contracttype]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub enum PaymentMethod {
+    Stripe = 0,
+    PayPal = 1,
+    Crypto = 2,
+    BankTransfer = 3,
+}
+
+#[contracttype]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub enum TransactionStatus {
+    Pending = 0,
+    Success = 1,
+    Failed = 2,
+    Refunded = 3,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Transaction {
+    pub id: u64,
+    pub user: Address,
+    pub amount: i128,
+    pub currency: Currency,
+    pub method: PaymentMethod,
+    pub status: TransactionStatus,
+    pub gateway_ref: String, // ID from Stripe/PayPal
+    pub timestamp: u64,
+    pub retries: u32,
+}
+
+#[contracttype]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub enum ContributorLevel {
     Junior = 0,
     Intermediate = 1,
@@ -112,6 +154,51 @@ pub struct ContributorStats {
     pub joined: u64,
 }
 
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct UserSecurity {
+    pub address: Address,
+    pub mfa_enabled: bool,
+    pub mfa_method: Symbol, // TOTP, SMS, EMAIL
+    pub backup_codes_count: u32,
+    pub trusted_devices_count: u32,
+    pub last_updated: u64,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MedicalRecord {
+    pub id: u64,
+    pub owner: Address,
+    pub cid: String, // Encrypted IPFS Hash
+    pub description: String,
+    pub created: u64,
+    pub version: u32,
+    pub authorized_users: Vec<Address>,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClaimRule {
+    pub id: u64,
+    pub rule_name: String,
+    pub min_amount: i128,
+    pub max_amount: i128,
+    pub allowed_types: Vec<IssueType>,
+    pub auto_approve: bool,
+    pub active: bool,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClaimProcessingStats {
+    pub total_processed: u64,
+    pub auto_approved: u64,
+    pub flagged_for_review: u64,
+    pub total_amount_processed: i128,
+    pub last_processing_run: u64,
+}
+
 // ========== ERRORS ==========
 #[contracterror]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
@@ -131,6 +218,11 @@ pub enum HealthcareDripsError {
     InvalidToken = 13,
     InsufficientBalance = 14,
     TransferFailed = 15,
+    InvalidRecordId = 16,
+    RecordNotOwned = 17,
+    MfaAlreadyEnabled = 18,
+    MfaNotEnabled = 19,
+    InvalidMfaMethod = 20,
 }
 
 // ========== CONTRACT ==========
@@ -150,6 +242,19 @@ impl HealthcareDrips {
         // Initialize counters
         env.storage().instance().set(&Symbol::short("next_drip_id"), &1u64);
         env.storage().instance().set(&Symbol::short("next_issue_id"), &1u64);
+        env.storage().instance().set(&Symbol::short("next_record_id"), &1u64);
+        env.storage().instance().set(&Symbol::short("next_rule_id"), &1u64);
+        env.storage().instance().set(&Symbol::short("next_tx_id"), &1u64);
+        
+        // Initialize processing stats
+        let stats = ClaimProcessingStats {
+            total_processed: 0,
+            auto_approved: 0,
+            flagged_for_review: 0,
+            total_amount_processed: 0,
+            last_processing_run: env.ledger().timestamp(),
+        };
+        env.storage().instance().set(&Symbol::short("processing_stats"), &stats);
         
         // Initialize verified contributors list
         env.storage().instance().set(&Symbol::short("verified_contributors"), &Vec::new(env));
@@ -526,6 +631,220 @@ impl HealthcareDrips {
         Ok(())
     }
     
+    // ========== MEDICAL RECORDS ==========
+    
+    pub fn upload_medical_record(
+        env: &Env,
+        owner: Address,
+        cid: String,
+        description: String,
+    ) -> Result<u64, HealthcareDripsError> {
+        owner.require_auth();
+        
+        let next_id = Self::get_next_record_id(env);
+        let current_time = env.ledger().timestamp();
+        
+        let record = MedicalRecord {
+            id: next_id,
+            owner: owner.clone(),
+            cid,
+            description,
+            created: current_time,
+            version: 1,
+            authorized_users: Vec::new(env),
+        };
+        
+        let record_key = Symbol::new(&env, &format!("record_{}", next_id));
+        env.storage().instance().set(&record_key, &record);
+        
+        // Add to owner's records
+        let mut owner_records: Vec<u64> = env.storage().instance()
+            .get(&Symbol::new(&env, &format!("owner_records_{}", owner)))
+            .unwrap_or(Vec::new(env));
+        owner_records.push_back(next_id);
+        env.storage().instance().set(&Symbol::new(&env, &format!("owner_records_{}", owner)), &owner_records);
+        
+        Ok(next_id)
+    }
+    
+    pub fn update_medical_record(
+        env: &Env,
+        record_id: u64,
+        cid: String,
+        caller: Address,
+    ) -> Result<(), HealthcareDripsError> {
+        caller.require_auth();
+        
+        let record_key = Symbol::new(&env, &format!("record_{}", record_id));
+        let mut record: MedicalRecord = env.storage().instance()
+            .get(&record_key)
+            .ok_or(HealthcareDripsError::InvalidRecordId)?;
+            
+        if record.owner != caller {
+            return Err(HealthcareDripsError::RecordNotOwned);
+        }
+        
+        record.cid = cid;
+        record.version += 1;
+        record.created = env.ledger().timestamp();
+        
+        env.storage().instance().set(&record_key, &record);
+        
+        Ok(())
+    }
+    
+    pub fn authorize_user(
+        env: &Env,
+        record_id: u64,
+        user_to_authorize: Address,
+        caller: Address,
+    ) -> Result<(), HealthcareDripsError> {
+        caller.require_auth();
+        
+        let record_key = Symbol::new(&env, &format!("record_{}", record_id));
+        let mut record: MedicalRecord = env.storage().instance()
+            .get(&record_key)
+            .ok_or(HealthcareDripsError::InvalidRecordId)?;
+            
+        if record.owner != caller {
+            return Err(HealthcareDripsError::RecordNotOwned);
+        }
+        
+        if !record.authorized_users.contains(user_to_authorize.clone()) {
+            record.authorized_users.push_back(user_to_authorize);
+            env.storage().instance().set(&record_key, &record);
+        }
+        
+        Ok(())
+    }
+    
+    pub fn revoke_user(
+        env: &Env,
+        record_id: u64,
+        user_to_revoke: Address,
+        caller: Address,
+    ) -> Result<(), HealthcareDripsError> {
+        caller.require_auth();
+        
+        let record_key = Symbol::new(&env, &format!("record_{}", record_id));
+        let mut record: MedicalRecord = env.storage().instance()
+            .get(&record_key)
+            .ok_or(HealthcareDripsError::InvalidRecordId)?;
+            
+        if record.owner != caller {
+            return Err(HealthcareDripsError::RecordNotOwned);
+        }
+        
+        let mut new_authorized = Vec::new(env);
+        for user in record.authorized_users.iter() {
+            if user != user_to_revoke {
+                new_authorized.push_back(user);
+            }
+        }
+        record.authorized_users = new_authorized;
+        env.storage().instance().set(&record_key, &record);
+        
+        Ok(())
+    }
+    
+    pub fn get_medical_record(
+        env: &Env,
+        record_id: u64,
+        caller: Address,
+    ) -> Result<MedicalRecord, HealthcareDripsError> {
+        let record_key = Symbol::new(&env, &format!("record_{}", record_id));
+        let record: MedicalRecord = env.storage().instance()
+            .get(&record_key)
+            .ok_or(HealthcareDripsError::InvalidRecordId)?;
+            
+        if record.owner != caller && !record.authorized_users.contains(caller) && !Self::has_role(env, caller, REVIEWER) {
+            return Err(HealthcareDripsError::Unauthorized);
+        }
+        
+        Ok(record)
+    }
+    
+    pub fn get_owner_records(env: &Env, owner: Address) -> Vec<u64> {
+        env.storage().instance()
+            .get(&Symbol::new(&env, &format!("owner_records_{}", owner)))
+            .unwrap_or(Vec::new(env))
+    }
+    
+    // ========== MFA SECURITY ==========
+    
+    pub fn setup_mfa(
+        env: &Env,
+        user: Address,
+        method: Symbol,
+        backup_codes: u32,
+    ) -> Result<(), HealthcareDripsError> {
+        user.require_auth();
+        
+        let security_key = Symbol::new(&env, &format!("security_{}", user));
+        if env.storage().instance().has(&security_key) {
+            let mut security: UserSecurity = env.storage().instance().get(&security_key).unwrap();
+            if security.mfa_enabled {
+                return Err(HealthcareDripsError::MfaAlreadyEnabled);
+            }
+            security.mfa_enabled = true;
+            security.mfa_method = method;
+            security.backup_codes_count = backup_codes;
+            security.last_updated = env.ledger().timestamp();
+            env.storage().instance().set(&security_key, &security);
+        } else {
+            let security = UserSecurity {
+                address: user.clone(),
+                mfa_enabled: true,
+                mfa_method: method,
+                backup_codes_count: backup_codes,
+                trusted_devices_count: 1,
+                last_updated: env.ledger().timestamp(),
+            };
+            env.storage().instance().set(&security_key, &security);
+        }
+        
+        Ok(())
+    }
+    
+    pub fn disable_mfa(env: &Env, user: Address) -> Result<(), HealthcareDripsError> {
+        user.require_auth();
+        
+        let security_key = Symbol::new(&env, &format!("security_{}", user));
+        let mut security: UserSecurity = env.storage().instance()
+            .get(&security_key)
+            .ok_or(HealthcareDripsError::MfaNotEnabled)?;
+            
+        security.mfa_enabled = false;
+        security.last_updated = env.ledger().timestamp();
+        
+        env.storage().instance().set(&security_key, &security);
+        
+        Ok(())
+    }
+    
+    pub fn get_user_security(env: &Env, user: Address) -> Result<UserSecurity, HealthcareDripsError> {
+        let security_key = Symbol::new(&env, &format!("security_{}", user));
+        env.storage().instance()
+            .get(&security_key)
+            .ok_or(HealthcareDripsError::MfaNotEnabled)
+    }
+    
+    pub fn add_trusted_device(env: &Env, user: Address) -> Result<(), HealthcareDripsError> {
+        user.require_auth();
+        
+        let security_key = Symbol::new(&env, &format!("security_{}", user));
+        let mut security: UserSecurity = env.storage().instance()
+            .get(&security_key)
+            .ok_or(HealthcareDripsError::MfaNotEnabled)?;
+            
+        security.trusted_devices_count += 1;
+        security.last_updated = env.ledger().timestamp();
+        
+        env.storage().instance().set(&security_key, &security);
+        
+        Ok(())
+    }
+    
     // ========== VIEW FUNCTIONS ==========
     
     pub fn get_premium_drip(env: &Env, drip_id: u64) -> Result<PremiumDrip, HealthcareDripsError> {
@@ -589,6 +908,218 @@ impl HealthcareDrips {
             .unwrap_or(Vec::new(env))
     }
     
+    // ========== CLAIM PROCESSING ENGINE ==========
+    
+    pub fn add_claim_rule(
+        env: &Env,
+        name: String,
+        min_amount: i128,
+        max_amount: i128,
+        allowed_types: Vec<IssueType>,
+        auto_approve: bool,
+        caller: Address,
+    ) -> Result<u64, HealthcareDripsError> {
+        if !Self::has_role(env, caller, APPROVER) {
+            return Err(HealthcareDripsError::Unauthorized);
+        }
+        
+        let next_id = Self::get_next_rule_id(env);
+        let rule = ClaimRule {
+            id: next_id,
+            rule_name: name,
+            min_amount,
+            max_amount,
+            allowed_types,
+            auto_approve,
+            active: true,
+        };
+        
+        env.storage().instance().set(&Symbol::new(&env, &format!("rule_{}", next_id)), &rule);
+        
+        // Add to active rules list
+        let mut rules: Vec<u64> = env.storage().instance()
+            .get(&Symbol::short("active_rules"))
+            .unwrap_or(Vec::new(env));
+        rules.push_back(next_id);
+        env.storage().instance().set(&Symbol::short("active_rules"), &rules);
+        
+        Ok(next_id)
+    }
+    
+    pub fn process_claim_automated(
+        env: &Env,
+        issue_id: u64,
+        caller: Address,
+    ) -> Result<bool, HealthcareDripsError> {
+        if !Self::has_role(env, caller, REVIEWER) {
+            return Err(HealthcareDripsError::Unauthorized);
+        }
+        
+        let issue_key = Symbol::new(&env, &format!("issue_{}", issue_id));
+        let mut issue: Issue = env.storage().instance()
+            .get(&issue_key)
+            .ok_or(HealthcareDripsError::InvalidIssueId)?;
+            
+        if issue.status != IssueStatus::Submitted {
+            return Err(HealthcareDripsError::IssueNotSubmitted);
+        }
+        
+        let rules_ids: Vec<u64> = env.storage().instance()
+            .get(&Symbol::short("active_rules"))
+            .unwrap_or(Vec::new(env));
+            
+        let mut auto_approved = false;
+        let mut rule_applied = false;
+        
+        for rule_id in rules_ids.iter() {
+            let rule: ClaimRule = env.storage().instance()
+                .get(&Symbol::new(&env, &format!("rule_{}", rule_id))).unwrap();
+                
+            if rule.active && 
+               issue.funding_amount >= rule.min_amount && 
+               issue.funding_amount <= rule.max_amount &&
+               rule.allowed_types.contains(issue.issue_type) {
+                
+                rule_applied = true;
+                if rule.auto_approve {
+                    issue.status = IssueStatus::Approved;
+                    auto_approved = true;
+                } else {
+                    issue.status = IssueStatus::UnderReview;
+                }
+                break;
+            }
+        }
+        
+        if !rule_applied {
+            issue.status = IssueStatus::PendingApproval; // Flag for manual review
+        }
+        
+        issue.last_updated = env.ledger().timestamp();
+        env.storage().instance().set(&issue_key, &issue);
+        
+        // Update stats
+        let mut stats: ClaimProcessingStats = env.storage().instance()
+            .get(&Symbol::short("processing_stats")).unwrap_or(ClaimProcessingStats {
+                total_processed: 0,
+                total_amount_processed: 0,
+                auto_approved: 0,
+                flagged_for_review: 0,
+                last_processing_run: 0,
+            });
+        stats.total_processed += 1;
+        stats.total_amount_processed += issue.funding_amount;
+        if auto_approved {
+            stats.auto_approved += 1;
+        } else {
+            stats.flagged_for_review += 1;
+        }
+        stats.last_processing_run = env.ledger().timestamp();
+        env.storage().instance().set(&Symbol::short("processing_stats"), &stats);
+        
+        Ok(auto_approved)
+    }
+    
+    pub fn get_processing_stats(env: &Env) -> ClaimProcessingStats {
+        env.storage().instance().get(&Symbol::short("processing_stats")).unwrap_or(ClaimProcessingStats {
+            total_processed: 0,
+            total_amount_processed: 0,
+            auto_approved: 0,
+            flagged_for_review: 0,
+            last_processing_run: 0,
+        })
+    }
+    
+    pub fn get_active_rules(env: &Env) -> Vec<ClaimRule> {
+        let rules_ids: Vec<u64> = env.storage().instance()
+            .get(&Symbol::short("active_rules"))
+            .unwrap_or(Vec::new(env));
+            
+        let mut rules = Vec::new(env);
+        for id in rules_ids.iter() {
+            if let Some(rule) = env.storage().instance().get::<_, ClaimRule>(&Symbol::new(&env, &format!("rule_{}", id))) {
+                rules.push_back(rule);
+            }
+        }
+        rules
+    }
+    
+    // ========== PAYMENT GATEWAYS ==========
+    
+    pub fn record_payment(
+        env: &Env,
+        user: Address,
+        amount: i128,
+        currency: Currency,
+        method: PaymentMethod,
+        gateway_ref: String,
+    ) -> Result<u64, HealthcareDripsError> {
+        user.require_auth();
+        
+        let next_id = Self::get_next_tx_id(env);
+        let tx = Transaction {
+            id: next_id,
+            user: user.clone(),
+            amount,
+            currency,
+            method,
+            status: TransactionStatus::Success,
+            gateway_ref,
+            timestamp: env.ledger().timestamp(),
+            retries: 0,
+        };
+        
+        env.storage().instance().set(&Symbol::new(&env, &format!("tx_{}", next_id)), &tx);
+        
+        // Add to user transactions
+        let mut user_txs: Vec<u64> = env.storage().instance()
+            .get(&Symbol::new(&env, &format!("user_txs_{}", user)))
+            .unwrap_or(Vec::new(env));
+        user_txs.push_back(next_id);
+        env.storage().instance().set(&Symbol::new(&env, &format!("user_txs_{}", user)), &user_txs);
+        
+        Ok(next_id)
+    }
+    
+    pub fn reconcile_transaction(
+        env: &Env,
+        tx_id: u64,
+        status: TransactionStatus,
+        caller: Address,
+    ) -> Result<(), HealthcareDripsError> {
+        if !Self::has_role(env, caller, APPROVER) {
+            return Err(HealthcareDripsError::Unauthorized);
+        }
+        
+        let tx_key = Symbol::new(&env, &format!("tx_{}", tx_id));
+        let mut tx: Transaction = env.storage().instance()
+            .get(&tx_key)
+            .ok_or(HealthcareDripsError::InvalidIssueId)?; // Using InvalidIssueId as generic not found
+            
+        tx.status = status;
+        if status == TransactionStatus::Failed {
+            tx.retries += 1;
+        }
+        
+        env.storage().instance().set(&tx_key, &tx);
+        
+        Ok(())
+    }
+    
+    pub fn get_user_transactions(env: &Env, user: Address) -> Vec<Transaction> {
+        let tx_ids: Vec<u64> = env.storage().instance()
+            .get(&Symbol::new(&env, &format!("user_txs_{}", user)))
+            .unwrap_or(Vec::new(env));
+            
+        let mut txs = Vec::new(env);
+        for id in tx_ids.iter() {
+            if let Some(tx) = env.storage().instance().get::<_, Transaction>(&Symbol::new(&env, &format!("tx_{}", id))) {
+                txs.push_back(tx);
+            }
+        }
+        txs
+    }
+    
     // ========== HELPER FUNCTIONS ==========
     
     fn get_next_drip_id(env: &Env) -> u64 {
@@ -600,6 +1131,27 @@ impl HealthcareDrips {
     
     fn get_next_issue_id(env: &Env) -> u64 {
         let key = Symbol::short("next_issue_id");
+        let next_id = env.storage().instance().get(&key).unwrap_or(1u64);
+        env.storage().instance().set(&key, &(next_id + 1));
+        next_id
+    }
+    
+    fn get_next_record_id(env: &Env) -> u64 {
+        let key = Symbol::short("next_record_id");
+        let next_id = env.storage().instance().get(&key).unwrap_or(1u64);
+        env.storage().instance().set(&key, &(next_id + 1));
+        next_id
+    }
+    
+    fn get_next_rule_id(env: &Env) -> u64 {
+        let key = Symbol::short("next_rule_id");
+        let next_id = env.storage().instance().get(&key).unwrap_or(1u64);
+        env.storage().instance().set(&key, &(next_id + 1));
+        next_id
+    }
+    
+    fn get_next_tx_id(env: &Env) -> u64 {
+        let key = Symbol::short("next_tx_id");
         let next_id = env.storage().instance().get(&key).unwrap_or(1u64);
         env.storage().instance().set(&key, &(next_id + 1));
         next_id
