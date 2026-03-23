@@ -96,6 +96,42 @@ pub enum ContributorLevel {
 }
 
 #[contracttype]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub enum KycStatus {
+    NotSubmitted = 0,
+    Pending = 1,
+    InReview = 2,
+    Approved = 3,
+    Rejected = 4,
+    Expired = 5,
+}
+
+#[contracttype]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub enum LicenseType {
+    MedicalDoctor = 0,
+    Nurse = 1,
+    Pharmacist = 2,
+    Therapist = 3,
+    MedicalTechnician = 4,
+    HealthcareAdministrator = 5,
+    MentalHealthCounselor = 6,
+    Nutritionist = 7,
+    Other = 8,
+}
+
+#[contracttype]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub enum LicenseStatus {
+    NotSubmitted = 0,
+    Pending = 1,
+    Verified = 2,
+    Rejected = 3,
+    Expired = 4,
+    Suspended = 5,
+}
+
+#[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PremiumDrip {
     pub id: u64,
@@ -152,6 +188,45 @@ pub struct ContributorStats {
     pub level: ContributorLevel,
     pub reputation: u32,
     pub joined: u64,
+    pub kyc_status: KycStatus,
+    pub kyc_submitted: u64,
+    pub kyc_approved: u64,
+    pub last_activity: u64,
+    pub reputation_decay_month: u32, // Track month for decay calculation
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct KycVerification {
+    pub contributor: Address,
+    pub full_name: String,
+    pub date_of_birth: u64,
+    pub nationality: String,
+    pub document_type: String,
+    pub document_number: String,
+    pub ipfs_hash: String,
+    pub status: KycStatus,
+    pub submitted: u64,
+    pub reviewed: u64,
+    pub reviewer: Address,
+    pub rejection_reason: String,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProfessionalLicense {
+    pub contributor: Address,
+    pub license_type: LicenseType,
+    pub license_number: String,
+    pub issuing_authority: String,
+    pub issue_date: u64,
+    pub expiry_date: u64,
+    pub verification_status: LicenseStatus,
+    pub ipfs_hash: String,
+    pub submitted: u64,
+    pub verified: u64,
+    pub verifier: Address,
+    pub notes: String,
 }
 
 #[contracttype]
@@ -223,6 +298,14 @@ pub enum HealthcareDripsError {
     MfaAlreadyEnabled = 18,
     MfaNotEnabled = 19,
     InvalidMfaMethod = 20,
+    KycAlreadySubmitted = 21,
+    KycNotApproved = 22,
+    LicenseAlreadySubmitted = 23,
+    LicenseNotVerified = 24,
+    InvalidLicenseType = 25,
+    KycExpired = 26,
+    LicenseExpired = 27,
+    ReputationTooLow = 28,
 }
 
 // ========== CONTRACT ==========
@@ -245,6 +328,8 @@ impl HealthcareDrips {
         env.storage().instance().set(&Symbol::short("next_record_id"), &1u64);
         env.storage().instance().set(&Symbol::short("next_rule_id"), &1u64);
         env.storage().instance().set(&Symbol::short("next_tx_id"), &1u64);
+        env.storage().instance().set(&Symbol::short("next_kyc_id"), &1u64);
+        env.storage().instance().set(&Symbol::short("next_license_id"), &1u64);
         
         // Initialize processing stats
         let stats = ClaimProcessingStats {
@@ -631,6 +716,274 @@ impl HealthcareDrips {
         Ok(())
     }
     
+    // ========== ENHANCED CONTRIBUTOR VERIFICATION ==========
+    
+    pub fn submit_kyc_verification(
+        env: &Env,
+        full_name: String,
+        date_of_birth: u64,
+        nationality: String,
+        document_type: String,
+        document_number: String,
+        ipfs_hash: String,
+        caller: Address,
+    ) -> Result<u64, HealthcareDripsError> {
+        caller.require_auth();
+        
+        // Check if KYC already submitted
+        let kyc_key = Symbol::new(&env, &format!("kyc_{}", caller));
+        if env.storage().instance().has(&kyc_key) {
+            return Err(HealthcareDripsError::KycAlreadySubmitted);
+        }
+        
+        let next_id = Self::get_next_kyc_id(env);
+        let current_time = env.ledger().timestamp();
+        
+        let kyc = KycVerification {
+            contributor: caller.clone(),
+            full_name: full_name.clone(),
+            date_of_birth,
+            nationality: nationality.clone(),
+            document_type: document_type.clone(),
+            document_number: document_number.clone(),
+            ipfs_hash: ipfs_hash.clone(),
+            status: KycStatus::Pending,
+            submitted: current_time,
+            reviewed: 0,
+            reviewer: caller.clone(), // Placeholder
+            rejection_reason: String::from_str(&env, ""),
+        };
+        
+        env.storage().instance().set(&kyc_key, &kyc);
+        
+        // Update contributor stats
+        let stats_key = Symbol::new(&env, &format!("stats_{}", caller));
+        let mut stats: ContributorStats = env.storage().instance()
+            .get(&stats_key)
+            .unwrap_or(ContributorStats {
+                contributor: caller.clone(),
+                total_issues_reviewed: 0,
+                total_issues_approved: 0,
+                total_contributed: 0,
+                level: ContributorLevel::Junior,
+                reputation: 0,
+                joined: current_time,
+                kyc_status: KycStatus::Pending,
+                kyc_submitted: current_time,
+                kyc_approved: 0,
+                last_activity: current_time,
+                reputation_decay_month: ((current_time / 2592000) as u32), // Current month
+            });
+        
+        stats.kyc_status = KycStatus::Pending;
+        stats.kyc_submitted = current_time;
+        stats.last_activity = current_time;
+        
+        env.storage().instance().set(&stats_key, &stats);
+        
+        Ok(next_id)
+    }
+    
+    pub fn review_kyc_verification(
+        env: &Env,
+        contributor: Address,
+        approved: bool,
+        rejection_reason: String,
+        caller: Address,
+    ) -> Result<(), HealthcareDripsError> {
+        if !Self::has_role(env, caller, REVIEWER) {
+            return Err(HealthcareDripsError::Unauthorized);
+        }
+        
+        let kyc_key = Symbol::new(&env, &format!("kyc_{}", contributor));
+        let mut kyc: KycVerification = env.storage().instance()
+            .get(&kyc_key)
+            .ok_or(HealthcareDripsError::ContributorNotFound)?;
+        
+        if kyc.status != KycStatus::Pending && kyc.status != KycStatus::InReview {
+            return Err(HealthcareDripsError::KycAlreadySubmitted);
+        }
+        
+        let current_time = env.ledger().timestamp();
+        kyc.status = if approved { KycStatus::Approved } else { KycStatus::Rejected };
+        kyc.reviewed = current_time;
+        kyc.reviewer = caller.clone();
+        kyc.rejection_reason = rejection_reason.clone();
+        
+        env.storage().instance().set(&kyc_key, &kyc);
+        
+        // Update contributor stats
+        let stats_key = Symbol::new(&env, &format!("stats_{}", contributor));
+        let mut stats: ContributorStats = env.storage().instance()
+            .get(&stats_key)
+            .ok_or(HealthcareDripsError::ContributorNotFound)?;
+        
+        stats.kyc_status = kyc.status;
+        if approved {
+            stats.kyc_approved = current_time;
+            stats.reputation += 50; // Bonus for KYC approval
+        }
+        stats.last_activity = current_time;
+        
+        env.storage().instance().set(&stats_key, &stats);
+        
+        Ok(())
+    }
+    
+    pub fn submit_professional_license(
+        env: &Env,
+        license_type: LicenseType,
+        license_number: String,
+        issuing_authority: String,
+        issue_date: u64,
+        expiry_date: u64,
+        ipfs_hash: String,
+        caller: Address,
+    ) -> Result<u64, HealthcareDripsError> {
+        caller.require_auth();
+        
+        // Check if license already submitted for this type
+        let license_key = Symbol::new(&env, &format!("license_{}_{}", caller, license_type as u32));
+        if env.storage().instance().has(&license_key) {
+            return Err(HealthcareDripsError::LicenseAlreadySubmitted);
+        }
+        
+        // Check if KYC is approved
+        let stats_key = Symbol::new(&env, &format!("stats_{}", caller));
+        let stats: ContributorStats = env.storage().instance()
+            .get(&stats_key)
+            .ok_or(HealthcareDripsError::ContributorNotFound)?;
+        
+        if stats.kyc_status != KycStatus::Approved {
+            return Err(HealthcareDripsError::KycNotApproved);
+        }
+        
+        let next_id = Self::get_next_license_id(env);
+        let current_time = env.ledger().timestamp();
+        
+        let license = ProfessionalLicense {
+            contributor: caller.clone(),
+            license_type,
+            license_number: license_number.clone(),
+            issuing_authority: issuing_authority.clone(),
+            issue_date,
+            expiry_date,
+            verification_status: LicenseStatus::Pending,
+            ipfs_hash: ipfs_hash.clone(),
+            submitted: current_time,
+            verified: 0,
+            verifier: caller.clone(), // Placeholder
+            notes: String::from_str(&env, ""),
+        };
+        
+        env.storage().instance().set(&license_key, &license);
+        
+        Ok(next_id)
+    }
+    
+    pub fn verify_professional_license(
+        env: &Env,
+        contributor: Address,
+        license_type: LicenseType,
+        approved: bool,
+        notes: String,
+        caller: Address,
+    ) -> Result<(), HealthcareDripsError> {
+        if !Self::has_role(env, caller, REVIEWER) {
+            return Err(HealthcareDripsError::Unauthorized);
+        }
+        
+        let license_key = Symbol::new(&env, &format!("license_{}_{}", contributor, license_type as u32));
+        let mut license: ProfessionalLicense = env.storage().instance()
+            .get(&license_key)
+            .ok_or(HealthcareDripsError::LicenseNotVerified)?;
+        
+        if license.verification_status != LicenseStatus::Pending {
+            return Err(HealthcareDripsError::LicenseAlreadySubmitted);
+        }
+        
+        let current_time = env.ledger().timestamp();
+        license.verification_status = if approved { LicenseStatus::Verified } else { LicenseStatus::Rejected };
+        license.verified = current_time;
+        license.verifier = caller.clone();
+        license.notes = notes.clone();
+        
+        env.storage().instance().set(&license_key, &license);
+        
+        // Update contributor stats and reputation
+        let stats_key = Symbol::new(&env, &format!("stats_{}", contributor));
+        let mut stats: ContributorStats = env.storage().instance()
+            .get(&stats_key)
+            .ok_or(HealthcareDripsError::ContributorNotFound)?;
+        
+        if approved {
+            // Add reputation based on license type
+            let reputation_bonus = match license_type {
+                LicenseType::MedicalDoctor => 100,
+                LicenseType::Nurse => 75,
+                LicenseType::Pharmacist => 80,
+                LicenseType::Therapist => 70,
+                LicenseType::MedicalTechnician => 60,
+                LicenseType::HealthcareAdministrator => 65,
+                LicenseType::MentalHealthCounselor => 70,
+                LicenseType::Nutritionist => 55,
+                LicenseType::Other => 50,
+            };
+            stats.reputation += reputation_bonus;
+            
+            // Auto-advance tier if reputation threshold met
+            Self::check_and_advance_tier(env, contributor.clone(), &mut stats);
+        }
+        
+        stats.last_activity = current_time;
+        env.storage().instance().set(&stats_key, &stats);
+        
+        Ok(())
+    }
+    
+    pub fn apply_reputation_decay(
+        env: &Env,
+        contributor: Address,
+        caller: Address,
+    ) -> Result<(), HealthcareDripsError> {
+        if !Self::has_role(env, caller, APPROVER) {
+            return Err(HealthcareDripsError::Unauthorized);
+        }
+        
+        let stats_key = Symbol::new(&env, &format!("stats_{}", contributor));
+        let mut stats: ContributorStats = env.storage().instance()
+            .get(&stats_key)
+            .ok_or(HealthcareDripsError::ContributorNotFound)?;
+        
+        let current_time = env.ledger().timestamp();
+        let current_month = (current_time / 2592000) as u32; // Unix timestamp to months
+        
+        // Apply decay if month has changed and contributor has been inactive
+        if current_month > stats.reputation_decay_month {
+            let months_inactive = current_month - stats.reputation_decay_month;
+            
+            // Check if contributor was active (has recent contributions)
+            let activity_threshold = 30 * 86400; // 30 days in seconds
+            let is_inactive = (current_time - stats.last_activity) > activity_threshold;
+            
+            if is_inactive && stats.reputation > 0 {
+                // Apply 5% decay per inactive month
+                let decay_rate = 5; // 5%
+                let decay_amount = (stats.reputation * decay_rate * months_inactive) / 100;
+                stats.reputation = stats.reputation.saturating_sub(decay_amount);
+                
+                // Check for tier downgrade
+                Self::check_and_downgrade_tier(env, contributor.clone(), &mut stats);
+            }
+            
+            stats.reputation_decay_month = current_month;
+            stats.last_activity = current_time;
+            env.storage().instance().set(&stats_key, &stats);
+        }
+        
+        Ok(())
+    }
+    
     // ========== MEDICAL RECORDS ==========
     
     pub fn upload_medical_record(
@@ -908,6 +1261,100 @@ impl HealthcareDrips {
             .unwrap_or(Vec::new(env))
     }
     
+    // ========== ENHANCED VIEW FUNCTIONS ==========
+    
+    pub fn get_kyc_verification(env: &Env, contributor: Address) -> Result<KycVerification, HealthcareDripsError> {
+        env.storage().instance()
+            .get(&Symbol::new(&env, &format!("kyc_{}", contributor)))
+            .ok_or(HealthcareDripsError::ContributorNotFound)
+    }
+    
+    pub fn get_professional_license(
+        env: &Env,
+        contributor: Address,
+        license_type: LicenseType,
+    ) -> Result<ProfessionalLicense, HealthcareDripsError> {
+        env.storage().instance()
+            .get(&Symbol::new(&env, &format!("license_{}_{}", contributor, license_type as u32)))
+            .ok_or(HealthcareDripsError::LicenseNotVerified)
+    }
+    
+    pub fn get_all_contributor_licenses(env: &Env, contributor: Address) -> Vec<ProfessionalLicense> {
+        let mut licenses = Vec::new(env);
+        
+        // Check all license types
+        let license_types = [
+            LicenseType::MedicalDoctor,
+            LicenseType::Nurse,
+            LicenseType::Pharmacist,
+            LicenseType::Therapist,
+            LicenseType::MedicalTechnician,
+            LicenseType::HealthcareAdministrator,
+            LicenseType::MentalHealthCounselor,
+            LicenseType::Nutritionist,
+            LicenseType::Other,
+        ];
+        
+        for license_type in license_types.iter() {
+            if let Some(license) = env.storage().instance().get::<_, ProfessionalLicense>(
+                &Symbol::new(&env, &format!("license_{}_{}", contributor, license_type as u32))
+            ) {
+                licenses.push_back(license);
+            }
+        }
+        
+        licenses
+    }
+    
+    pub fn get_pending_kyc_verifications(env: &Env) -> Vec<KycVerification> {
+        let verified = Self::get_verified_contributors(env);
+        let mut pending_kyc = Vec::new(env);
+        
+        for contributor in verified.iter() {
+            if let Some(kyc) = env.storage().instance().get::<_, KycVerification>(
+                &Symbol::new(&env, &format!("kyc_{}", contributor))
+            ) {
+                if kyc.status == KycStatus::Pending || kyc.status == KycStatus::InReview {
+                    pending_kyc.push_back(kyc);
+                }
+            }
+        }
+        
+        pending_kyc
+    }
+    
+    pub fn get_pending_license_verifications(env: &Env) -> Vec<ProfessionalLicense> {
+        let verified = Self::get_verified_contributors(env);
+        let mut pending_licenses = Vec::new(env);
+        
+        for contributor in verified.iter() {
+            let licenses = Self::get_all_contributor_licenses(env, contributor.clone());
+            for license in licenses.iter() {
+                if license.verification_status == LicenseStatus::Pending {
+                    pending_licenses.push_back(license.clone());
+                }
+            }
+        }
+        
+        pending_licenses
+    }
+    
+    pub fn check_contributor_eligibility(
+        env: &Env,
+        contributor: Address,
+        required_level: ContributorLevel,
+    ) -> Result<bool, HealthcareDripsError> {
+        let stats = Self::get_contributor_stats(env, contributor.clone())?;
+        
+        // Check KYC status
+        if stats.kyc_status != KycStatus::Approved {
+            return Ok(false);
+        }
+        
+        // Check contributor level
+        Ok(stats.level >= required_level)
+    }
+    
     // ========== CLAIM PROCESSING ENGINE ==========
     
     pub fn add_claim_rule(
@@ -1157,12 +1604,31 @@ impl HealthcareDrips {
         next_id
     }
     
+    fn get_next_kyc_id(env: &Env) -> u64 {
+        let key = Symbol::short("next_kyc_id");
+        let next_id = env.storage().instance().get(&key).unwrap_or(1u64);
+        env.storage().instance().set(&key, &(next_id + 1));
+        next_id
+    }
+    
+    fn get_next_license_id(env: &Env) -> u64 {
+        let key = Symbol::short("next_license_id");
+        let next_id = env.storage().instance().get(&key).unwrap_or(1u64);
+        env.storage().instance().set(&key, &(next_id + 1));
+        next_id
+    }
+    
     fn has_role(env: &Env, address: Address, role: Symbol) -> bool {
         env.storage().instance().get(&role) == Some(address)
     }
     
     fn is_verified_contributor(env: &Env, contributor: Address) -> bool {
-        env.storage().instance().has(&Symbol::new(&env, &format!("stats_{}", contributor)))
+        let stats_key = Symbol::new(&env, &format!("stats_{}", contributor));
+        if let Some(stats) = env.storage().instance().get::<_, ContributorStats>(&stats_key) {
+            stats.kyc_status == KycStatus::Approved
+        } else {
+            false
+        }
     }
     
     fn get_contributor_reputation(env: &Env, contributor: Address) -> u32 {
@@ -1176,6 +1642,7 @@ impl HealthcareDrips {
     
     fn update_contributor_stats(env: &Env, contributor: Address) {
         let stats_key = Symbol::new(&env, &format!("stats_{}", contributor));
+        let current_time = env.ledger().timestamp();
         let stats = env.storage().instance()
             .get(&stats_key)
             .unwrap_or(ContributorStats {
@@ -1185,9 +1652,66 @@ impl HealthcareDrips {
                 total_contributed: 0,
                 level: ContributorLevel::Junior,
                 reputation: 0,
-                joined: env.ledger().timestamp(),
+                joined: current_time,
+                kyc_status: KycStatus::NotSubmitted,
+                kyc_submitted: 0,
+                kyc_approved: 0,
+                last_activity: current_time,
+                reputation_decay_month: ((current_time / 2592000) as u32),
             });
         
         env.storage().instance().set(&stats_key, &stats);
+    }
+    
+    fn check_and_advance_tier(env: &Env, contributor: Address, stats: &mut ContributorStats) {
+        let new_level = match stats.reputation {
+            0..=49 => ContributorLevel::Junior,
+            50..=149 => ContributorLevel::Intermediate,
+            150..=299 => ContributorLevel::Senior,
+            300..=599 => ContributorLevel::Expert,
+            _ => ContributorLevel::Master,
+        };
+        
+        if new_level > stats.level {
+            stats.level = new_level;
+            
+            // Add to verified contributors if advancing from Junior
+            if stats.level == ContributorLevel::Intermediate {
+                let mut verified: Vec<Address> = env.storage().instance()
+                    .get(&Symbol::short("verified_contributors"))
+                    .unwrap_or(Vec::new(env));
+                
+                if !verified.contains(&contributor) {
+                    verified.push_back(contributor.clone());
+                    env.storage().instance().set(&Symbol::short("verified_contributors"), &verified);
+                }
+            }
+        }
+    }
+    
+    fn check_and_downgrade_tier(env: &Env, contributor: Address, stats: &mut ContributorStats) {
+        let new_level = match stats.reputation {
+            0..=49 => ContributorLevel::Junior,
+            50..=149 => ContributorLevel::Intermediate,
+            150..=299 => ContributorLevel::Senior,
+            300..=599 => ContributorLevel::Expert,
+            _ => ContributorLevel::Master,
+        };
+        
+        if new_level < stats.level {
+            stats.level = new_level;
+            
+            // Remove from verified contributors if downgrading to Junior
+            if stats.level == ContributorLevel::Junior {
+                let mut verified: Vec<Address> = env.storage().instance()
+                    .get(&Symbol::short("verified_contributors"))
+                    .unwrap_or(Vec::new(env));
+                
+                if let Some(index) = verified.iter().position(|x| x == &contributor) {
+                    verified.remove(index as u32);
+                    env.storage().instance().set(&Symbol::short("verified_contributors"), &verified);
+                }
+            }
+        }
     }
 }
