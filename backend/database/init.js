@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
+const { createClaimProcessingTables, createClaimProcessingViews } = require('./claimProcessingSchema');
 
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'healthcare.db');
 
@@ -150,6 +151,8 @@ function initializeDatabase() {
 
     let completedTables = 0;
     let completedIndexes = 0;
+    let completedProcessingTables = 0;
+    let completedViews = 0;
 
     tables.forEach((sql) => {
       db.run(sql, (err) => {
@@ -160,25 +163,60 @@ function initializeDatabase() {
         }
         completedTables++;
         if (completedTables === tables.length) {
-          indexes.forEach((indexSql) => {
-            db.run(indexSql, (err) => {
-              if (err) {
-                console.error('Error creating index:', err);
-              } else {
-                completedIndexes++;
-              }
-              if (completedIndexes === indexes.length) {
-                db.close((err) => {
-                  if (err) {
-                    console.error('Error closing database:', err);
-                    reject(err);
-                  } else {
-                    console.log('Database initialized successfully');
-                    resolve();
-                  }
-                });
-              }
-            });
+          // Create claim processing tables
+          const processingTableStatements = createClaimProcessingTables.split(';').filter(stmt => stmt.trim());
+          
+          processingTableStatements.forEach((statement) => {
+            if (statement.trim()) {
+              db.run(statement, (err) => {
+                if (err) {
+                  console.error('Error creating claim processing table:', err);
+                } else {
+                  completedProcessingTables++;
+                }
+                
+                if (completedProcessingTables === processingTableStatements.length) {
+                  // Create views
+                  const viewStatements = createClaimProcessingViews.split(';').filter(stmt => stmt.trim());
+                  
+                  viewStatements.forEach((viewStatement) => {
+                    if (viewStatement.trim()) {
+                      db.run(viewStatement, (err) => {
+                        if (err) {
+                          console.error('Error creating view:', err);
+                        } else {
+                          completedViews++;
+                        }
+                        
+                        if (completedViews === viewStatements.length) {
+                          // Create indexes
+                          indexes.forEach((indexSql) => {
+                            db.run(indexSql, (err) => {
+                              if (err) {
+                                console.error('Error creating index:', err);
+                              } else {
+                                completedIndexes++;
+                              }
+                              if (completedIndexes === indexes.length) {
+                                db.close((err) => {
+                                  if (err) {
+                                    console.error('Error closing database:', err);
+                                    reject(err);
+                                  } else {
+                                    console.log('Database initialized successfully');
+                                    resolve();
+                                  }
+                                });
+                              }
+                            });
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }
           });
         }
       });

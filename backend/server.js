@@ -20,6 +20,7 @@ const providerAvailabilityRoutes = require('./routes/providerAvailability');
 const providerVerificationRoutes = require('./routes/providerVerification');
 const reviewModerationRoutes = require('./routes/reviewModeration');
 const directorySyncRoutes = require('./routes/directorySync');
+const automatedClaimProcessingRoutes = require('./routes/automatedClaimProcessing');
 
 const { initializeDatabase } = require('./database/init');
 const { authenticateToken } = require('./middleware/auth');
@@ -73,6 +74,7 @@ app.use('/api/provider-availability', authenticateToken, providerAvailabilityRou
 app.use('/api/provider-verification', providerVerificationRoutes);
 app.use('/api/review-moderation', authenticateToken, reviewModerationRoutes);
 app.use('/api/directory-sync', authenticateToken, directorySyncRoutes);
+app.use('/api/automated-claim-processing', authenticateToken, automatedClaimProcessingRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ 
