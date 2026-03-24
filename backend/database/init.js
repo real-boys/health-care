@@ -120,6 +120,40 @@ const fs = require('fs');
         read BOOLEAN DEFAULT FALSE,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (id)
+      )`,
+
+      `CREATE TABLE IF NOT EXISTS integration_configs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        type TEXT CHECK (type IN ('HL7', 'FHIR', 'CUSTOM')) NOT NULL,
+        description TEXT,
+        connection_config TEXT NOT NULL DEFAULT '{}',
+        mapping_config TEXT NOT NULL DEFAULT '{}',
+        is_active BOOLEAN DEFAULT true,
+        sync_frequency TEXT CHECK (sync_frequency IN ('REAL_TIME', 'HOURLY', 'DAILY', 'WEEKLY')) DEFAULT 'DAILY',
+        last_sync DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+
+      `CREATE TABLE IF NOT EXISTS sync_status (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        integration_id INTEGER NOT NULL,
+        status TEXT CHECK (status IN ('PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED', 'CANCELLED')) DEFAULT 'PENDING',
+        message_type TEXT NOT NULL,
+        source_system TEXT NOT NULL,
+        target_system TEXT NOT NULL,
+        record_count INTEGER DEFAULT 0,
+        processed_count INTEGER DEFAULT 0,
+        error_count INTEGER DEFAULT 0,
+        error_message TEXT,
+        start_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        end_time DATETIME,
+        duration INTEGER,
+        metadata TEXT DEFAULT '{}',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (integration_id) REFERENCES integration_configs(id) ON DELETE CASCADE
       )`
     ];
 
@@ -132,7 +166,12 @@ const fs = require('fs');
       'CREATE INDEX IF NOT EXISTS idx_payments_patient_id ON premium_payments(patient_id)',
       'CREATE INDEX IF NOT EXISTS idx_appointments_patient_id ON appointments(patient_id)',
       'CREATE INDEX IF NOT EXISTS idx_appointments_date ON appointments(appointment_date)',
-      'CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)'
+      'CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)',
+      'CREATE INDEX IF NOT EXISTS idx_integration_configs_type ON integration_configs(type)',
+      'CREATE INDEX IF NOT EXISTS idx_integration_configs_active ON integration_configs(is_active)',
+      'CREATE INDEX IF NOT EXISTS idx_sync_status_integration_id ON sync_status(integration_id)',
+      'CREATE INDEX IF NOT EXISTS idx_sync_status_status ON sync_status(status)',
+      'CREATE INDEX IF NOT EXISTS idx_sync_status_start_time ON sync_status(start_time)'
     ];
 
     let completedTables = 0;

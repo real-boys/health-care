@@ -1,0 +1,8 @@
+C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\deps\crate_git_revision-3eeed3b3b044b6c0.d: C:\Users\dmanl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\crate-git-revision-0.0.6\src\lib.rs C:\Users\dmanl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\crate-git-revision-0.0.6\src\test.rs
+
+C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\deps\libcrate_git_revision-3eeed3b3b044b6c0.rlib: C:\Users\dmanl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\crate-git-revision-0.0.6\src\lib.rs C:\Users\dmanl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\crate-git-revision-0.0.6\src\test.rs
+
+C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\deps\libcrate_git_revision-3eeed3b3b044b6c0.rmeta: C:\Users\dmanl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\crate-git-revision-0.0.6\src\lib.rs C:\Users\dmanl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\crate-git-revision-0.0.6\src\test.rs
+
+C:\Users\dmanl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\crate-git-revision-0.0.6\src\lib.rs:
+C:\Users\dmanl\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\crate-git-revision-0.0.6\src\test.rs:

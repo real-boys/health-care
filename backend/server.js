@@ -45,6 +45,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/telemedicine', telemedicineRoutes);
 
+// Health check
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -60,8 +61,8 @@ telemedicineService.initialize();
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
-  
-  // Handle telemedicine signaling
+
+  // Telemedicine signaling
   telemedicineService.handleSignaling(socket);
 
   socket.on('disconnect', () => {
@@ -75,6 +76,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
+// Database init
 async function initializeDatabase() {
   return new Promise((resolve, reject) => {
     const db = new sqlite3.Database(DB_PATH, (err) => {
@@ -88,12 +90,16 @@ async function initializeDatabase() {
   });
 }
 
+// Start server
 async function startServer() {
   try {
     await initializeDatabase();
+
     httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
+      console.log(`Health check: http://localhost:${PORT}/api/health`);
     });
+
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
