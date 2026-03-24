@@ -11,15 +11,18 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const patientRoutes = require('./routes/patients');
 const medicalRecordsRoutes = require('./routes/medicalRecords');
+const medicalRecordsIPFSRoutes = require('./routes/medicalRecordsIPFS');
 const claimsRoutes = require('./routes/claims');
 const appointmentsRoutes = require('./routes/appointments');
 const paymentsRoutes = require('./routes/payments');
 const analyticsRoutes = require('./routes/analytics');
+const ipfsRoutes = require('./routes/ipfs');
 
 const { initializeDatabase } = require('./database/init');
 const { authenticateToken } = require('./middleware/auth');
 const { cacheMiddleware } = require('./middleware/cache');
 const { errorHandler } = require('./middleware/errorHandler');
+const accessControl = require('./middleware/accessControl');
 
 const app = express();
 const server = createServer(app);
@@ -59,10 +62,12 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', authenticateToken, cacheMiddleware, patientRoutes);
 app.use('/api/medical-records', authenticateToken, cacheMiddleware, medicalRecordsRoutes);
+app.use('/api/medical-records-ipfs', authenticateToken, cacheMiddleware, medicalRecordsIPFSRoutes);
 app.use('/api/claims', authenticateToken, cacheMiddleware, claimsRoutes);
 app.use('/api/appointments', authenticateToken, cacheMiddleware, appointmentsRoutes);
 app.use('/api/payments', authenticateToken, cacheMiddleware, paymentsRoutes);
 app.use('/api/analytics', authenticateToken, cacheMiddleware, analyticsRoutes);
+app.use('/api/ipfs', authenticateToken, ipfsRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ 

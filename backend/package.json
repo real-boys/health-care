@@ -31,7 +31,13 @@
     "exceljs": "^4.4.0",
     "pdfkit": "^0.13.0",
     "moment-timezone": "^0.5.43",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "ipfs-http-client": "^60.0.1",
+    "kubo": "^0.28.0",
+    "crypto-js": "^4.1.1",
+    "aes-js": "^3.1.2",
+    "ipfs-core": "^0.18.0",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
