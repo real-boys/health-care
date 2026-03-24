@@ -20,7 +20,7 @@ import {
   Lock,
   Cpu,
   CreditCard as CreditIcon,
-  AlertTriangle
+
 } from 'lucide-react';
 import './App.css';
 import MedicalRecordManager from './components/MedicalRecordManager';
@@ -342,6 +342,27 @@ function App() {
               <Database className="w-4 h-4" />
               HL7/FHIR
             </button>
+            <button 
+              onClick={() => setActiveTab('audit-logs')}
+              className={activeTab === 'audit-logs' ? 'active' : ''}
+            >
+              <Search className="w-4 h-4" />
+              Audit Logs
+            </button>
+            <button 
+              onClick={() => setActiveTab('compliance')}
+              className={activeTab === 'compliance' ? 'active' : ''}
+            >
+              <Shield className="w-4 h-4" />
+              Compliance
+            </button>
+            <button 
+              onClick={() => setActiveTab('anomalies')}
+              className={activeTab === 'anomalies' ? 'active' : ''}
+            >
+              <Brain className="w-4 h-4" />
+              Anomalies
+            </button>
           </nav>
           
           <div className="wallet-section">
@@ -378,6 +399,9 @@ function App() {
             {activeTab === 'engine' && <ClaimEngine account={account} contract={contract} />}
             {activeTab === 'payments' && <PaymentGateways account={account} contract={contract} />}
             {activeTab === 'integration' && <HL7FHIRIntegration />}
+            {activeTab === 'audit-logs' && <AuditLogViewer />}
+            {activeTab === 'compliance' && <ComplianceDashboard />}
+            {activeTab === 'anomalies' && <AnomalyDashboard />}
           </>
         )}
       </main>
