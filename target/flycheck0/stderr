@@ -2387,3 +2387,153 @@ Stack backtrace:
   22: git_midx_writer_dump
   23: BaseThreadInitThunk
   24: RtlUserThreadStart
+   1.349225100s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("healthcare_drips", ["cdylib"], "C:\\Users\\dmanl\\OneDrive\\Documents\\GitHub\\health-care\\src\\lib.rs", Edition2021) }
+   1.349297600s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\healthcare-drips-9a847f654bebecd3\test-lib-healthcare_drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.354352100s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care)/Check { test: false }/TargetInner { name: "healthcare-drips", doc: true, ..: with_path("C:\\Users\\dmanl\\OneDrive\\Documents\\GitHub\\health-care\\src\\main.rs", Edition2021) }
+   1.354431500s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\healthcare-drips-f12e6593a197c43b\bin-healthcare-drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.357515500s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care)/Check { test: true }/TargetInner { name: "healthcare-drips", doc: true, ..: with_path("C:\\Users\\dmanl\\OneDrive\\Documents\\GitHub\\health-care\\src\\main.rs", Edition2021) }
+   1.357576800s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\healthcare-drips-11ba7e2fc33ca413\test-bin-healthcare-drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+    Checking typenum v1.19.0
+    Checking getrandom v0.2.11
+   Compiling rustc_version v0.4.1
+    Checking der v0.7.10
+    Checking rand_core v0.6.4
+    Checking serde v1.0.192
+    Checking num-traits v0.2.17
+    Checking generic-array v0.14.9
+    Checking spki v0.7.3
+    Checking ff v0.13.1
+    Checking byteorder v1.5.0
+    Checking base16ct v0.2.0
+    Checking cpufeatures v0.2.17
+   Compiling curve25519-dalek v4.1.2
+    Checking zerocopy v0.7.35
+    Checking block-buffer v0.10.4
+    Checking crypto-common v0.1.6
+    Checking digest v0.10.7
+    Checking crypto-bigint v0.5.5
+    Checking sec1 v0.7.3
+    Checking signature v2.2.0
+    Checking hmac v0.12.1
+    Checking group v0.13.0
+    Checking pkcs8 v0.10.2
+    Checking libm v0.2.16
+    Checking thiserror v1.0.55
+    Checking hex v0.4.3
+    Checking downcast-rs v1.2.1
+    Checking indexmap-nostd v0.4.0
+    Checking base32 v0.4.0
+    Checking elliptic-curve v0.13.8
+    Checking wasmparser-nostd v0.100.2
+    Checking stellar-strkey v0.0.8
+    Checking serde_with v3.12.0
+    Checking arbitrary v1.3.2
+    Checking wasmi_core v0.13.0
+    Checking rfc6979 v0.4.0
+    Checking sha2 v0.10.8
+    Checking ppv-lite86 v0.2.20
+    Checking wasmi_arena v0.4.1
+    Checking smallvec v1.15.1
+    Checking base64 v0.13.1
+    Checking spin v0.9.8
+    Checking escape-bytes v0.1.1
+    Checking rand_chacha v0.3.1
+    Checking stellar-xdr v20.1.0
+    Checking ecdsa v0.16.9
+    Checking ed25519 v2.2.3
+    Checking soroban-wasmi v0.31.1-soroban.20.0.1
+    Checking once_cell v1.21.4
+    Checking rustc-demangle v0.1.27
+    Checking keccak v0.1.6
+    Checking ethnum v1.5.0
+    Checking static_assertions v1.1.0
+    Checking sha3 v0.10.8
+    Checking backtrace v0.3.69
+    Checking k256 v0.13.1
+    Checking ed25519-dalek v2.0.0
+    Checking rand v0.8.5
+    Checking num-integer v0.1.45
+   Compiling soroban-sdk-macros v20.5.0
+    Checking hex-literal v0.4.1
+    Checking ryu v1.0.23
+    Checking itoa v1.0.18
+    Checking serde_json v1.0.108
+error: could not compile `stellar-xdr` (lib) due to 1836 previous errors
