@@ -14,6 +14,7 @@ const medicalRecordsRoutes = require('./routes/medicalRecords');
 const claimsRoutes = require('./routes/claims');
 const appointmentsRoutes = require('./routes/appointments');
 const paymentsRoutes = require('./routes/payments');
+const analyticsRoutes = require('./routes/analytics');
 
 const { initializeDatabase } = require('./database/init');
 const { authenticateToken } = require('./middleware/auth');
@@ -61,6 +62,7 @@ app.use('/api/medical-records', authenticateToken, cacheMiddleware, medicalRecor
 app.use('/api/claims', authenticateToken, cacheMiddleware, claimsRoutes);
 app.use('/api/appointments', authenticateToken, cacheMiddleware, appointmentsRoutes);
 app.use('/api/payments', authenticateToken, cacheMiddleware, paymentsRoutes);
+app.use('/api/analytics', authenticateToken, cacheMiddleware, analyticsRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ 
