@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
+
     const tables = [
       `CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -177,7 +178,7 @@ const fs = require('fs');
     let completedIndexes = 0;
     let completedProcessingTables = 0;
     let completedViews = 0;
-    let completedMFATables = 0;
+
 
     tables.forEach((sql) => {
       db.run(sql, (err) => {
@@ -188,36 +189,7 @@ const fs = require('fs');
         }
         completedTables++;
         if (completedTables === tables.length) {
-          // Create MFA tables
-          if (mfaSchema) {
-            const mfaStatements = mfaSchema.split(';').filter(stmt => stmt.trim() && !stmt.trim().startsWith('--'));
-            
-            mfaStatements.forEach((statement) => {
-              if (statement.trim()) {
-                db.run(statement, (err) => {
-                  if (err) {
-                    // Handle ALTER TABLE errors gracefully (columns might already exist)
-                    if (err.message.includes('duplicate column name') || err.message.includes('no such table')) {
-                      console.log('MFA column already exists or table not ready:', err.message);
-                    } else {
-                      console.error('Error creating MFA table:', err);
-                    }
-                  } else {
-                    completedMFATables++;
-                  }
-                  
-                  if (completedMFATables === mfaStatements.length) {
-                    console.log('MFA tables created successfully');
-                    // Continue with claim processing tables
-                    createClaimProcessingTablesFunc();
-                  }
-                });
-              }
-            });
-          } else {
-            // Skip MFA tables and continue with claim processing
-            createClaimProcessingTablesFunc();
-          }
+
         }
       });
     });
