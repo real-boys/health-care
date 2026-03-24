@@ -1,0 +1,3290 @@
+warning: `dev_dependencies` is deprecated in favor of `dev-dependencies` and will not work in the 2024 edition
+(in the `healthcare-drips` package)
+   0.932293300s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: stale: missing "C:\\Users\\dmanl\\Music\\health-care\\target\\debug\\.fingerprint\\getrandom-63b0767d400f3dfd\\dep-lib-getrandom"
+   0.937915300s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: stale: missing "C:\\Users\\dmanl\\Music\\health-care\\target\\debug\\.fingerprint\\find-msvc-tools-f5a9545e3976137a\\dep-lib-find_msvc_tools"
+   0.995687700s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("healthcare_drips", ["cdylib"], "C:\\Users\\dmanl\\Music\\health-care\\src\\lib.rs", Edition2021) }
+   0.995798300s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\healthcare-drips-9c8e65bcc97431c4\lib-healthcare_drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.049499300s  INFO prepare_target{force=false package_id=soroban-sdk v20.5.0 target="soroban_sdk"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-sdk v20.5.0/Check { test: false }/TargetInner { name_inferred: true, doctest: false, ..: lib_target("soroban_sdk", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-sdk-20.5.0\\src\\lib.rs", Edition2021) }
+   1.049675500s  INFO prepare_target{force=false package_id=soroban-sdk v20.5.0 target="soroban_sdk"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-sdk-467d747328070b14\lib-soroban_sdk`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_libgit2_prerelease
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: git_midx_writer_dump
+  18: git_filter_source_repo
+  19: git_midx_writer_dump
+  20: BaseThreadInitThunk
+  21: RtlUserThreadStart
+   1.053004900s  INFO prepare_target{force=false package_id=arbitrary v1.3.2 target="arbitrary"}: cargo::core::compiler::fingerprint: fingerprint error for arbitrary v1.3.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("arbitrary", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\arbitrary-1.3.2\\src\\lib.rs", Edition2021) }
+   1.053075500s  INFO prepare_target{force=false package_id=arbitrary v1.3.2 target="arbitrary"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\arbitrary-35499fd1a093fea7\lib-arbitrary`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_libgit2_prerelease
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: git_midx_writer_dump
+  19: git_filter_source_repo
+  20: git_midx_writer_dump
+  21: BaseThreadInitThunk
+  22: RtlUserThreadStart
+   1.076645800s  INFO prepare_target{force=false package_id=ed25519-dalek v2.0.0 target="ed25519_dalek"}: cargo::core::compiler::fingerprint: fingerprint error for ed25519-dalek v2.0.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("ed25519_dalek", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ed25519-dalek-2.0.0\\src\\lib.rs", Edition2021) }
+   1.076717200s  INFO prepare_target{force=false package_id=ed25519-dalek v2.0.0 target="ed25519_dalek"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\ed25519-dalek-f94f80b7b1596228\lib-ed25519_dalek`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_libgit2_prerelease
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: git_midx_writer_dump
+  19: git_filter_source_repo
+  20: git_midx_writer_dump
+  21: BaseThreadInitThunk
+  22: RtlUserThreadStart
+   1.078364500s  INFO prepare_target{force=false package_id=curve25519-dalek v4.1.2 target="curve25519_dalek"}: cargo::core::compiler::fingerprint: fingerprint error for curve25519-dalek v4.1.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("curve25519_dalek", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\curve25519-dalek-4.1.2\\src\\lib.rs", Edition2021) }
+   1.078420700s  INFO prepare_target{force=false package_id=curve25519-dalek v4.1.2 target="curve25519_dalek"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\curve25519-dalek-2ac57939f4d81382\lib-curve25519_dalek`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.083630800s  INFO prepare_target{force=false package_id=cpufeatures v0.2.17 target="cpufeatures"}: cargo::core::compiler::fingerprint: fingerprint error for cpufeatures v0.2.17/Check { test: false }/TargetInner { ..: lib_target("cpufeatures", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\cpufeatures-0.2.17\\src\\lib.rs", Edition2018) }
+   1.083766000s  INFO prepare_target{force=false package_id=cpufeatures v0.2.17 target="cpufeatures"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\cpufeatures-e17531c39eceb0d8\lib-cpufeatures`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.091114700s  INFO prepare_target{force=false package_id=digest v0.10.7 target="digest"}: cargo::core::compiler::fingerprint: fingerprint error for digest v0.10.7/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("digest", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\digest-0.10.7\\src\\lib.rs", Edition2018) }
+   1.091182900s  INFO prepare_target{force=false package_id=digest v0.10.7 target="digest"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\digest-e962a38cd576e3e3\lib-digest`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.092601400s  INFO prepare_target{force=false package_id=block-buffer v0.10.4 target="block_buffer"}: cargo::core::compiler::fingerprint: fingerprint error for block-buffer v0.10.4/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("block_buffer", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\block-buffer-0.10.4\\src\\lib.rs", Edition2018) }
+   1.092656200s  INFO prepare_target{force=false package_id=block-buffer v0.10.4 target="block_buffer"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\block-buffer-b6df6e72ba88f7f2\lib-block_buffer`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.093860000s  INFO prepare_target{force=false package_id=generic-array v0.14.9 target="generic_array"}: cargo::core::compiler::fingerprint: fingerprint error for generic-array v0.14.9/Check { test: false }/TargetInner { ..: lib_target("generic_array", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\generic-array-0.14.9\\src\\lib.rs", Edition2015) }
+   1.093918700s  INFO prepare_target{force=false package_id=generic-array v0.14.9 target="generic_array"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\generic-array-7b060a96ec193112\lib-generic_array`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.101012500s  INFO prepare_target{force=false package_id=typenum v1.19.0 target="typenum"}: cargo::core::compiler::fingerprint: fingerprint error for typenum v1.19.0/Check { test: false }/TargetInner { ..: lib_target("typenum", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\typenum-1.19.0\\src\\lib.rs", Edition2018) }
+   1.101126800s  INFO prepare_target{force=false package_id=typenum v1.19.0 target="typenum"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\typenum-13e2c33599e9c267\lib-typenum`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_filter_source_repo
+  18: git_libgit2_prerelease
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: <unknown>
+  23: git_midx_writer_dump
+  24: git_filter_source_repo
+  25: git_midx_writer_dump
+  26: BaseThreadInitThunk
+  27: RtlUserThreadStart
+   1.105172100s  INFO prepare_target{force=false package_id=const-oid v0.9.6 target="const_oid"}: cargo::core::compiler::fingerprint: fingerprint error for const-oid v0.9.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("const_oid", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\const-oid-0.9.6\\src\\lib.rs", Edition2021) }
+   1.105236400s  INFO prepare_target{force=false package_id=const-oid v0.9.6 target="const_oid"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\const-oid-8b405b383114b1c9\lib-const_oid`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.106562900s  INFO prepare_target{force=false package_id=crypto-common v0.1.6 target="crypto_common"}: cargo::core::compiler::fingerprint: fingerprint error for crypto-common v0.1.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("crypto_common", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\crypto-common-0.1.6\\src\\lib.rs", Edition2018) }
+   1.106615700s  INFO prepare_target{force=false package_id=crypto-common v0.1.6 target="crypto_common"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\crypto-common-bcefbf4e9c16d884\lib-crypto_common`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.125001300s  INFO prepare_target{force=false package_id=ed25519 v2.2.3 target="ed25519"}: cargo::core::compiler::fingerprint: fingerprint error for ed25519 v2.2.3/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("ed25519", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ed25519-2.2.3\\src\\lib.rs", Edition2021) }
+   1.125070800s  INFO prepare_target{force=false package_id=ed25519 v2.2.3 target="ed25519"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\ed25519-68756736adeae212\lib-ed25519`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.126513600s  INFO prepare_target{force=false package_id=signature v2.2.0 target="signature"}: cargo::core::compiler::fingerprint: fingerprint error for signature v2.2.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("signature", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\signature-2.2.0\\src\\lib.rs", Edition2021) }
+   1.126568400s  INFO prepare_target{force=false package_id=signature v2.2.0 target="signature"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\signature-cc9f1512081cde94\lib-signature`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.127728400s  INFO prepare_target{force=false package_id=rand_core v0.6.4 target="rand_core"}: cargo::core::compiler::fingerprint: fingerprint error for rand_core v0.6.4/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("rand_core", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rand_core-0.6.4\\src\\lib.rs", Edition2018) }
+   1.127777400s  INFO prepare_target{force=false package_id=rand_core v0.6.4 target="rand_core"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\rand_core-f2fd969e0000911d\lib-rand_core`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.128887600s  INFO prepare_target{force=false package_id=getrandom v0.2.11 target="getrandom"}: cargo::core::compiler::fingerprint: fingerprint error for getrandom v0.2.11/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("getrandom", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\getrandom-0.2.11\\src\\lib.rs", Edition2018) }
+   1.128935600s  INFO prepare_target{force=false package_id=getrandom v0.2.11 target="getrandom"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\getrandom-63b0767d400f3dfd\lib-getrandom`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.134856900s  INFO prepare_target{force=false package_id=sha2 v0.10.8 target="sha2"}: cargo::core::compiler::fingerprint: fingerprint error for sha2 v0.10.8/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sha2", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\sha2-0.10.8\\src\\lib.rs", Edition2018) }
+   1.134997400s  INFO prepare_target{force=false package_id=sha2 v0.10.8 target="sha2"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\sha2-066d4483db27322a\lib-sha2`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.136917800s  INFO prepare_target{force=false package_id=rand v0.8.5 target="rand"}: cargo::core::compiler::fingerprint: fingerprint error for rand v0.8.5/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("rand", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rand-0.8.5\\src\\lib.rs", Edition2018) }
+   1.136977700s  INFO prepare_target{force=false package_id=rand v0.8.5 target="rand"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\rand-9dd9d46f368b143d\lib-rand`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_libgit2_prerelease
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: git_midx_writer_dump
+  19: git_filter_source_repo
+  20: git_midx_writer_dump
+  21: BaseThreadInitThunk
+  22: RtlUserThreadStart
+   1.138479300s  INFO prepare_target{force=false package_id=rand_chacha v0.3.1 target="rand_chacha"}: cargo::core::compiler::fingerprint: fingerprint error for rand_chacha v0.3.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("rand_chacha", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rand_chacha-0.3.1\\src\\lib.rs", Edition2018) }
+   1.138535500s  INFO prepare_target{force=false package_id=rand_chacha v0.3.1 target="rand_chacha"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\rand_chacha-8b6c91f7328dec4d\lib-rand_chacha`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.139861200s  INFO prepare_target{force=false package_id=ppv-lite86 v0.2.20 target="ppv_lite86"}: cargo::core::compiler::fingerprint: fingerprint error for ppv-lite86 v0.2.20/Check { test: false }/TargetInner { ..: lib_target("ppv_lite86", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ppv-lite86-0.2.20\\src\\lib.rs", Edition2021) }
+   1.139913700s  INFO prepare_target{force=false package_id=ppv-lite86 v0.2.20 target="ppv_lite86"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\ppv-lite86-8f8e61ff978e69bf\lib-ppv_lite86`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.141290800s  INFO prepare_target{force=false package_id=zerocopy v0.7.35 target="zerocopy"}: cargo::core::compiler::fingerprint: fingerprint error for zerocopy v0.7.35/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("zerocopy", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\zerocopy-0.7.35\\src\\lib.rs", Edition2018) }
+   1.141348800s  INFO prepare_target{force=false package_id=zerocopy v0.7.35 target="zerocopy"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\zerocopy-9d076b8a6555b8a4\lib-zerocopy`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.142602700s  INFO prepare_target{force=false package_id=byteorder v1.5.0 target="byteorder"}: cargo::core::compiler::fingerprint: fingerprint error for byteorder v1.5.0/Check { test: false }/TargetInner { benched: false, ..: lib_target("byteorder", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\byteorder-1.5.0\\src\\lib.rs", Edition2021) }
+   1.142656100s  INFO prepare_target{force=false package_id=byteorder v1.5.0 target="byteorder"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\byteorder-5031b7c7bf5ed217\lib-byteorder`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.145002700s  INFO prepare_target{force=false package_id=serde v1.0.192 target="serde"}: cargo::core::compiler::fingerprint: fingerprint error for serde v1.0.192/Check { test: false }/TargetInner { name_inferred: true, doc_scrape_examples: Disabled, ..: lib_target("serde", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde-1.0.192\\src\\lib.rs", Edition2018) }
+   1.145057400s  INFO prepare_target{force=false package_id=serde v1.0.192 target="serde"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\serde-c88d9f1ab7c63bb6\lib-serde`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_libgit2_prerelease
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: git_midx_writer_dump
+  19: git_filter_source_repo
+  20: git_midx_writer_dump
+  21: BaseThreadInitThunk
+  22: RtlUserThreadStart
+   1.153806100s  INFO prepare_target{force=false package_id=serde_json v1.0.108 target="serde_json"}: cargo::core::compiler::fingerprint: fingerprint error for serde_json v1.0.108/Check { test: false }/TargetInner { name_inferred: true, doc_scrape_examples: Disabled, ..: lib_target("serde_json", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde_json-1.0.108\\src\\lib.rs", Edition2021) }
+   1.153876200s  INFO prepare_target{force=false package_id=serde_json v1.0.108 target="serde_json"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\serde_json-ca2dca90c0232049\lib-serde_json`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_libgit2_prerelease
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: git_midx_writer_dump
+  19: git_filter_source_repo
+  20: git_midx_writer_dump
+  21: BaseThreadInitThunk
+  22: RtlUserThreadStart
+   1.155391400s  INFO prepare_target{force=false package_id=itoa v1.0.18 target="itoa"}: cargo::core::compiler::fingerprint: fingerprint error for itoa v1.0.18/Check { test: false }/TargetInner { ..: lib_target("itoa", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\itoa-1.0.18\\src\\lib.rs", Edition2021) }
+   1.155463400s  INFO prepare_target{force=false package_id=itoa v1.0.18 target="itoa"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\itoa-120546458fa616c5\lib-itoa`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.156670500s  INFO prepare_target{force=false package_id=ryu v1.0.23 target="ryu"}: cargo::core::compiler::fingerprint: fingerprint error for ryu v1.0.23/Check { test: false }/TargetInner { ..: lib_target("ryu", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ryu-1.0.23\\src\\lib.rs", Edition2021) }
+   1.156721200s  INFO prepare_target{force=false package_id=ryu v1.0.23 target="ryu"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\ryu-e3e01b2a58d0ed8c\lib-ryu`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.160469000s  INFO prepare_target{force=false package_id=soroban-env-host v20.3.0 target="soroban_env_host"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-env-host v20.3.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("soroban_env_host", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-env-host-20.3.0\\src\\lib.rs", Edition2021) }
+   1.160537300s  INFO prepare_target{force=false package_id=soroban-env-host v20.3.0 target="soroban_env_host"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-env-host-1bc4ae6d2e867b03\lib-soroban_env_host`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_libgit2_prerelease
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: git_midx_writer_dump
+  19: git_filter_source_repo
+  20: git_midx_writer_dump
+  21: BaseThreadInitThunk
+  22: RtlUserThreadStart
+   1.166648100s  INFO prepare_target{force=false package_id=backtrace v0.3.69 target="backtrace"}: cargo::core::compiler::fingerprint: fingerprint error for backtrace v0.3.69/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("backtrace", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\backtrace-0.3.69\\src\\lib.rs", Edition2018) }
+   1.166725800s  INFO prepare_target{force=false package_id=backtrace v0.3.69 target="backtrace"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\backtrace-7d88916edc694847\lib-backtrace`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.202267700s  INFO prepare_target{force=false package_id=backtrace v0.3.69 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for backtrace v0.3.69/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\backtrace-0.3.69\\build.rs", Edition2018) }
+   1.202341100s  INFO prepare_target{force=false package_id=backtrace v0.3.69 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\backtrace-716d57614f3ca69b\run-build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.203081100s  INFO prepare_target{force=false package_id=backtrace v0.3.69 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for backtrace v0.3.69/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\backtrace-0.3.69\\build.rs", Edition2018) }
+   1.203123900s  INFO prepare_target{force=false package_id=backtrace v0.3.69 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\backtrace-e4b369374323835f\build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.204705900s  INFO prepare_target{force=false package_id=cc v1.2.57 target="cc"}: cargo::core::compiler::fingerprint: fingerprint dirty for cc v1.2.57/Build/TargetInner { ..: lib_target("cc", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\cc-1.2.57\\src\\lib.rs", Edition2018) }
+   1.204755300s  INFO prepare_target{force=false package_id=cc v1.2.57 target="cc"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "find_msvc_tools" })
+   1.206090000s  INFO prepare_target{force=false package_id=find-msvc-tools v0.1.9 target="find_msvc_tools"}: cargo::core::compiler::fingerprint: fingerprint error for find-msvc-tools v0.1.9/Build/TargetInner { ..: lib_target("find_msvc_tools", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\find-msvc-tools-0.1.9\\src\\lib.rs", Edition2018) }
+   1.206139600s  INFO prepare_target{force=false package_id=find-msvc-tools v0.1.9 target="find_msvc_tools"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\find-msvc-tools-f5a9545e3976137a\lib-find_msvc_tools`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_filter_source_repo
+  18: git_libgit2_prerelease
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: <unknown>
+  23: git_midx_writer_dump
+  24: git_filter_source_repo
+  25: git_midx_writer_dump
+  26: BaseThreadInitThunk
+  27: RtlUserThreadStart
+   1.207685500s  INFO prepare_target{force=false package_id=rustc-demangle v0.1.27 target="rustc_demangle"}: cargo::core::compiler::fingerprint: fingerprint error for rustc-demangle v0.1.27/Check { test: false }/TargetInner { ..: lib_target("rustc_demangle", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rustc-demangle-0.1.27\\src\\lib.rs", Edition2015) }
+   1.207745700s  INFO prepare_target{force=false package_id=rustc-demangle v0.1.27 target="rustc_demangle"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\rustc-demangle-faaa6ac5ac9b10c9\lib-rustc_demangle`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.209059900s  INFO prepare_target{force=false package_id=hex-literal v0.4.1 target="hex_literal"}: cargo::core::compiler::fingerprint: fingerprint error for hex-literal v0.4.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("hex_literal", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\hex-literal-0.4.1\\src\\lib.rs", Edition2021) }
+   1.209147300s  INFO prepare_target{force=false package_id=hex-literal v0.4.1 target="hex_literal"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\hex-literal-2abbd07abd3baa27\lib-hex_literal`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.211398300s  INFO prepare_target{force=false package_id=hmac v0.12.1 target="hmac"}: cargo::core::compiler::fingerprint: fingerprint error for hmac v0.12.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("hmac", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\hmac-0.12.1\\src\\lib.rs", Edition2018) }
+   1.211454800s  INFO prepare_target{force=false package_id=hmac v0.12.1 target="hmac"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\hmac-368df511ad5cccb2\lib-hmac`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.212626100s  INFO prepare_target{force=false package_id=k256 v0.13.1 target="k256"}: cargo::core::compiler::fingerprint: fingerprint error for k256 v0.13.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("k256", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\k256-0.13.1\\src\\lib.rs", Edition2021) }
+   1.212673800s  INFO prepare_target{force=false package_id=k256 v0.13.1 target="k256"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\k256-6ea7aee719635e6a\lib-k256`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.220980200s  INFO prepare_target{force=false package_id=ecdsa v0.16.9 target="ecdsa"}: cargo::core::compiler::fingerprint: fingerprint error for ecdsa v0.16.9/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("ecdsa", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ecdsa-0.16.9\\src\\lib.rs", Edition2021) }
+   1.221111900s  INFO prepare_target{force=false package_id=ecdsa v0.16.9 target="ecdsa"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\ecdsa-6c491636a4a5a996\lib-ecdsa`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.224116400s  INFO prepare_target{force=false package_id=der v0.7.10 target="der"}: cargo::core::compiler::fingerprint: fingerprint error for der v0.7.10/Check { test: false }/TargetInner { ..: lib_target("der", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\der-0.7.10\\src\\lib.rs", Edition2021) }
+   1.224417000s  INFO prepare_target{force=false package_id=der v0.7.10 target="der"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\der-06ada9995e62e0f0\lib-der`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.226567200s  INFO prepare_target{force=false package_id=elliptic-curve v0.13.8 target="elliptic_curve"}: cargo::core::compiler::fingerprint: fingerprint error for elliptic-curve v0.13.8/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("elliptic_curve", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\elliptic-curve-0.13.8\\src\\lib.rs", Edition2021) }
+   1.226689100s  INFO prepare_target{force=false package_id=elliptic-curve v0.13.8 target="elliptic_curve"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\elliptic-curve-dfbb9f132eb546fa\lib-elliptic_curve`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.228689100s  INFO prepare_target{force=false package_id=base16ct v0.2.0 target="base16ct"}: cargo::core::compiler::fingerprint: fingerprint error for base16ct v0.2.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("base16ct", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\base16ct-0.2.0\\src\\lib.rs", Edition2021) }
+   1.228741000s  INFO prepare_target{force=false package_id=base16ct v0.2.0 target="base16ct"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\base16ct-728fe083f63688bf\lib-base16ct`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.237109900s  INFO prepare_target{force=false package_id=crypto-bigint v0.5.5 target="crypto_bigint"}: cargo::core::compiler::fingerprint: fingerprint error for crypto-bigint v0.5.5/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("crypto_bigint", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\crypto-bigint-0.5.5\\src\\lib.rs", Edition2021) }
+   1.237228200s  INFO prepare_target{force=false package_id=crypto-bigint v0.5.5 target="crypto_bigint"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\crypto-bigint-2d960f7290b0483a\lib-crypto_bigint`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.239519200s  INFO prepare_target{force=false package_id=ff v0.13.1 target="ff"}: cargo::core::compiler::fingerprint: fingerprint error for ff v0.13.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("ff", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ff-0.13.1\\src\\lib.rs", Edition2021) }
+   1.239585800s  INFO prepare_target{force=false package_id=ff v0.13.1 target="ff"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\ff-1c1929aaaded78d4\lib-ff`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.242056100s  INFO prepare_target{force=false package_id=group v0.13.0 target="group"}: cargo::core::compiler::fingerprint: fingerprint error for group v0.13.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("group", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\group-0.13.0\\src\\lib.rs", Edition2021) }
+   1.242119900s  INFO prepare_target{force=false package_id=group v0.13.0 target="group"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\group-f79f78bf4de9fc91\lib-group`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.244898500s  INFO prepare_target{force=false package_id=pkcs8 v0.10.2 target="pkcs8"}: cargo::core::compiler::fingerprint: fingerprint error for pkcs8 v0.10.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("pkcs8", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\pkcs8-0.10.2\\src\\lib.rs", Edition2021) }
+   1.245090500s  INFO prepare_target{force=false package_id=pkcs8 v0.10.2 target="pkcs8"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\pkcs8-509cd0f049a1ec89\lib-pkcs8`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.251580200s  INFO prepare_target{force=false package_id=spki v0.7.3 target="spki"}: cargo::core::compiler::fingerprint: fingerprint error for spki v0.7.3/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("spki", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\spki-0.7.3\\src\\lib.rs", Edition2021) }
+   1.252084800s  INFO prepare_target{force=false package_id=spki v0.7.3 target="spki"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\spki-5c0bf4af7c0e9ce7\lib-spki`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_filter_source_repo
+  18: git_libgit2_prerelease
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: <unknown>
+  23: git_midx_writer_dump
+  24: git_filter_source_repo
+  25: git_midx_writer_dump
+  26: BaseThreadInitThunk
+  27: RtlUserThreadStart
+   1.253507100s  INFO prepare_target{force=false package_id=sec1 v0.7.3 target="sec1"}: cargo::core::compiler::fingerprint: fingerprint error for sec1 v0.7.3/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sec1", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\sec1-0.7.3\\src\\lib.rs", Edition2021) }
+   1.253566900s  INFO prepare_target{force=false package_id=sec1 v0.7.3 target="sec1"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\sec1-c2e0e7245b27743a\lib-sec1`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.254958200s  INFO prepare_target{force=false package_id=rfc6979 v0.4.0 target="rfc6979"}: cargo::core::compiler::fingerprint: fingerprint error for rfc6979 v0.4.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("rfc6979", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rfc6979-0.4.0\\src\\lib.rs", Edition2021) }
+   1.255010100s  INFO prepare_target{force=false package_id=rfc6979 v0.4.0 target="rfc6979"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\rfc6979-5c022de9a6d0b7ea\lib-rfc6979`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.260395400s  INFO prepare_target{force=false package_id=once_cell v1.21.4 target="once_cell"}: cargo::core::compiler::fingerprint: fingerprint error for once_cell v1.21.4/Check { test: false }/TargetInner { ..: lib_target("once_cell", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\once_cell-1.21.4\\src\\lib.rs", Edition2021) }
+   1.260461900s  INFO prepare_target{force=false package_id=once_cell v1.21.4 target="once_cell"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\once_cell-df4b1eadcbe49b88\lib-once_cell`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.262460100s  INFO prepare_target{force=false package_id=num-integer v0.1.45 target="num_integer"}: cargo::core::compiler::fingerprint: fingerprint error for num-integer v0.1.45/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("num_integer", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\num-integer-0.1.45\\src\\lib.rs", Edition2015) }
+   1.262578500s  INFO prepare_target{force=false package_id=num-integer v0.1.45 target="num_integer"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\num-integer-60d91758ce4022ab\lib-num_integer`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.273281800s  INFO prepare_target{force=false package_id=num-traits v0.2.17 target="num_traits"}: cargo::core::compiler::fingerprint: fingerprint error for num-traits v0.2.17/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("num_traits", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\num-traits-0.2.17\\src\\lib.rs", Edition2018) }
+   1.273345700s  INFO prepare_target{force=false package_id=num-traits v0.2.17 target="num_traits"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\num-traits-134228ea57d6b6d5\lib-num_traits`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.277088100s  INFO prepare_target{force=false package_id=sha3 v0.10.8 target="sha3"}: cargo::core::compiler::fingerprint: fingerprint error for sha3 v0.10.8/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sha3", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\sha3-0.10.8\\src\\lib.rs", Edition2018) }
+   1.277201500s  INFO prepare_target{force=false package_id=sha3 v0.10.8 target="sha3"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\sha3-bf666e53c263c6ed\lib-sha3`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.278794400s  INFO prepare_target{force=false package_id=keccak v0.1.6 target="keccak"}: cargo::core::compiler::fingerprint: fingerprint error for keccak v0.1.6/Check { test: false }/TargetInner { ..: lib_target("keccak", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\keccak-0.1.6\\src\\lib.rs", Edition2018) }
+   1.278849400s  INFO prepare_target{force=false package_id=keccak v0.1.6 target="keccak"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\keccak-4468e366b149cb13\lib-keccak`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.287298400s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="soroban_env_common"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-env-common v20.3.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("soroban_env_common", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-env-common-20.3.0\\src\\lib.rs", Edition2021) }
+   1.287368500s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="soroban_env_common"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-env-common-3aa9f274ca8cd7a5\lib-soroban_env_common`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.289406600s  INFO prepare_target{force=false package_id=ethnum v1.5.0 target="ethnum"}: cargo::core::compiler::fingerprint: fingerprint error for ethnum v1.5.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("ethnum", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ethnum-1.5.0\\src\\lib.rs", Edition2021) }
+   1.289463900s  INFO prepare_target{force=false package_id=ethnum v1.5.0 target="ethnum"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\ethnum-162f726738a3cad9\lib-ethnum`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.291922600s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-env-common v20.3.0/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-env-common-20.3.0\\build.rs", Edition2021) }
+   1.291975700s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-env-common-a89934b39bca5db0\run-build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.292671900s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-env-common v20.3.0/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-env-common-20.3.0\\build.rs", Edition2021) }
+   1.292722500s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-env-common-bf5588fe2710e439\build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.294318300s  INFO prepare_target{force=false package_id=crate-git-revision v0.0.6 target="crate_git_revision"}: cargo::core::compiler::fingerprint: fingerprint error for crate-git-revision v0.0.6/Build/TargetInner { name_inferred: true, ..: lib_target("crate_git_revision", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\crate-git-revision-0.0.6\\src\\lib.rs", Edition2021) }
+   1.294377200s  INFO prepare_target{force=false package_id=crate-git-revision v0.0.6 target="crate_git_revision"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\crate-git-revision-3eeed3b3b044b6c0\lib-crate_git_revision`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.300572500s  INFO prepare_target{force=false package_id=serde v1.0.192 target="serde"}: cargo::core::compiler::fingerprint: fingerprint error for serde v1.0.192/Build/TargetInner { name_inferred: true, doc_scrape_examples: Disabled, ..: lib_target("serde", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde-1.0.192\\src\\lib.rs", Edition2018) }
+   1.300656600s  INFO prepare_target{force=false package_id=serde v1.0.192 target="serde"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\serde-4810b770959e2564\lib-serde`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_filter_source_repo
+  18: git_libgit2_prerelease
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: <unknown>
+  23: git_midx_writer_dump
+  24: git_filter_source_repo
+  25: git_midx_writer_dump
+  26: BaseThreadInitThunk
+  27: RtlUserThreadStart
+   1.302631500s  INFO prepare_target{force=false package_id=serde_json v1.0.108 target="serde_json"}: cargo::core::compiler::fingerprint: fingerprint error for serde_json v1.0.108/Build/TargetInner { name_inferred: true, doc_scrape_examples: Disabled, ..: lib_target("serde_json", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde_json-1.0.108\\src\\lib.rs", Edition2021) }
+   1.302720200s  INFO prepare_target{force=false package_id=serde_json v1.0.108 target="serde_json"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\serde_json-cd04e3543b46ad59\lib-serde_json`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_filter_source_repo
+  18: git_libgit2_prerelease
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: <unknown>
+  23: git_midx_writer_dump
+  24: git_filter_source_repo
+  25: git_midx_writer_dump
+  26: BaseThreadInitThunk
+  27: RtlUserThreadStart
+   1.305764300s  INFO prepare_target{force=false package_id=soroban-env-macros v20.3.0 target="soroban_env_macros"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-env-macros v20.3.0/Build/TargetInner { name_inferred: true, for_host: true, proc_macro: true, ..: lib_target("soroban_env_macros", ["proc-macro"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-env-macros-20.3.0\\src\\lib.rs", Edition2021) }
+   1.305863000s  INFO prepare_target{force=false package_id=soroban-env-macros v20.3.0 target="soroban_env_macros"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-env-macros-f5475e479b91522b\lib-soroban_env_macros`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.307654700s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="stellar_xdr"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-xdr v20.1.0/Build/TargetInner { name_inferred: true, ..: lib_target("stellar_xdr", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-xdr-20.1.0\\src\\lib.rs", Edition2021) }
+   1.307710800s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="stellar_xdr"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\stellar-xdr-2469064f7fed1ab0\lib-stellar_xdr`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.310393800s  INFO prepare_target{force=false package_id=hex v0.4.3 target="hex"}: cargo::core::compiler::fingerprint: fingerprint error for hex v0.4.3/Build/TargetInner { name_inferred: true, ..: lib_target("hex", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\hex-0.4.3\\src\\lib.rs", Edition2018) }
+   1.310451800s  INFO prepare_target{force=false package_id=hex v0.4.3 target="hex"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\hex-d657a3537b5defd5\lib-hex`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.312033000s  INFO prepare_target{force=false package_id=serde_with v3.12.0 target="serde_with"}: cargo::core::compiler::fingerprint: fingerprint error for serde_with v3.12.0/Build/TargetInner { ..: lib_target("serde_with", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde_with-3.12.0\\src\\lib.rs", Edition2021) }
+   1.312094700s  INFO prepare_target{force=false package_id=serde_with v3.12.0 target="serde_with"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\serde_with-a7e1d32dbe31b5fd\lib-serde_with`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.323326600s  INFO prepare_target{force=false package_id=stellar-strkey v0.0.8 target="stellar_strkey"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-strkey v0.0.8/Build/TargetInner { name_inferred: true, ..: lib_target("stellar_strkey", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-strkey-0.0.8\\src\\lib.rs", Edition2021) }
+   1.323427900s  INFO prepare_target{force=false package_id=stellar-strkey v0.0.8 target="stellar_strkey"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\stellar-strkey-5bbaca8462e80219\lib-stellar_strkey`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.327071600s  INFO prepare_target{force=false package_id=stellar-strkey v0.0.8 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-strkey v0.0.8/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-strkey-0.0.8\\build.rs", Edition2021) }
+   1.327131900s  INFO prepare_target{force=false package_id=stellar-strkey v0.0.8 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\stellar-strkey-ff441868991cdb15\run-build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_filter_source_repo
+  18: git_filter_source_repo
+  19: git_libgit2_prerelease
+  20: <unknown>
+  21: <unknown>
+  22: <unknown>
+  23: <unknown>
+  24: git_midx_writer_dump
+  25: git_filter_source_repo
+  26: git_midx_writer_dump
+  27: BaseThreadInitThunk
+  28: RtlUserThreadStart
+   1.327848900s  INFO prepare_target{force=false package_id=stellar-strkey v0.0.8 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-strkey v0.0.8/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-strkey-0.0.8\\build.rs", Edition2021) }
+   1.327895900s  INFO prepare_target{force=false package_id=stellar-strkey v0.0.8 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\stellar-strkey-a276882972b7345a\build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_filter_source_repo
+  18: git_filter_source_repo
+  19: git_libgit2_prerelease
+  20: <unknown>
+  21: <unknown>
+  22: <unknown>
+  23: <unknown>
+  24: git_midx_writer_dump
+  25: git_filter_source_repo
+  26: git_midx_writer_dump
+  27: BaseThreadInitThunk
+  28: RtlUserThreadStart
+   1.338715400s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-xdr v20.1.0/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-xdr-20.1.0\\build.rs", Edition2021) }
+   1.338778600s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\stellar-xdr-6370d0c6c9c80784\run-build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_filter_source_repo
+  18: git_libgit2_prerelease
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: <unknown>
+  23: git_midx_writer_dump
+  24: git_filter_source_repo
+  25: git_midx_writer_dump
+  26: BaseThreadInitThunk
+  27: RtlUserThreadStart
+   1.339459100s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-xdr v20.1.0/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-xdr-20.1.0\\build.rs", Edition2021) }
+   1.339502300s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\stellar-xdr-014eb857d9b01316\build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_filter_source_repo
+  18: git_libgit2_prerelease
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: <unknown>
+  23: git_midx_writer_dump
+  24: git_filter_source_repo
+  25: git_midx_writer_dump
+  26: BaseThreadInitThunk
+  27: RtlUserThreadStart
+   1.341007400s  INFO prepare_target{force=false package_id=soroban-wasmi v0.31.1-soroban.20.0.1 target="soroban_wasmi"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-wasmi v0.31.1-soroban.20.0.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("soroban_wasmi", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-wasmi-0.31.1-soroban.20.0.1\\src\\lib.rs", Edition2021) }
+   1.341063300s  INFO prepare_target{force=false package_id=soroban-wasmi v0.31.1-soroban.20.0.1 target="soroban_wasmi"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-wasmi-582ab04054b445d9\lib-soroban_wasmi`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.342560700s  INFO prepare_target{force=false package_id=smallvec v1.15.1 target="smallvec"}: cargo::core::compiler::fingerprint: fingerprint error for smallvec v1.15.1/Check { test: false }/TargetInner { ..: lib_target("smallvec", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\smallvec-1.15.1\\src\\lib.rs", Edition2018) }
+   1.342628600s  INFO prepare_target{force=false package_id=smallvec v1.15.1 target="smallvec"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\smallvec-0ee5608500117a26\lib-smallvec`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.343718400s  INFO prepare_target{force=false package_id=spin v0.9.8 target="spin"}: cargo::core::compiler::fingerprint: fingerprint error for spin v0.9.8/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("spin", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\spin-0.9.8\\src\\lib.rs", Edition2015) }
+   1.343766800s  INFO prepare_target{force=false package_id=spin v0.9.8 target="spin"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\spin-f4b63a665a6f71f1\lib-spin`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.344870300s  INFO prepare_target{force=false package_id=wasmi_arena v0.4.1 target="wasmi_arena"}: cargo::core::compiler::fingerprint: fingerprint error for wasmi_arena v0.4.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("wasmi_arena", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\wasmi_arena-0.4.1\\src\\lib.rs", Edition2021) }
+   1.344919300s  INFO prepare_target{force=false package_id=wasmi_arena v0.4.1 target="wasmi_arena"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\wasmi_arena-93f16c20d77819a3\lib-wasmi_arena`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.345997900s  INFO prepare_target{force=false package_id=wasmi_core v0.13.0 target="wasmi_core"}: cargo::core::compiler::fingerprint: fingerprint error for wasmi_core v0.13.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("wasmi_core", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\wasmi_core-0.13.0\\src\\lib.rs", Edition2021) }
+   1.348881400s  INFO prepare_target{force=false package_id=wasmi_core v0.13.0 target="wasmi_core"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\wasmi_core-5aadea5e3886c47e\lib-wasmi_core`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.352047100s  INFO prepare_target{force=false package_id=downcast-rs v1.2.1 target="downcast_rs"}: cargo::core::compiler::fingerprint: fingerprint error for downcast-rs v1.2.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("downcast_rs", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\downcast-rs-1.2.1\\src\\lib.rs", Edition2015) }
+   1.352120600s  INFO prepare_target{force=false package_id=downcast-rs v1.2.1 target="downcast_rs"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\downcast-rs-bdc4f7b051b9c2ee\lib-downcast_rs`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.353552500s  INFO prepare_target{force=false package_id=libm v0.2.16 target="libm"}: cargo::core::compiler::fingerprint: fingerprint error for libm v0.2.16/Check { test: false }/TargetInner { ..: lib_target("libm", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\libm-0.2.16\\src\\lib.rs", Edition2021) }
+   1.353607700s  INFO prepare_target{force=false package_id=libm v0.2.16 target="libm"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\libm-02e13daec431dc48\lib-libm`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.360431500s  INFO prepare_target{force=false package_id=wasmparser-nostd v0.100.2 target="wasmparser_nostd"}: cargo::core::compiler::fingerprint: fingerprint error for wasmparser-nostd v0.100.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("wasmparser_nostd", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\wasmparser-nostd-0.100.2\\src\\lib.rs", Edition2021) }
+   1.360496200s  INFO prepare_target{force=false package_id=wasmparser-nostd v0.100.2 target="wasmparser_nostd"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\wasmparser-nostd-c8a3c6d2845578c8\lib-wasmparser_nostd`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.361617400s  INFO prepare_target{force=false package_id=indexmap-nostd v0.4.0 target="indexmap_nostd"}: cargo::core::compiler::fingerprint: fingerprint error for indexmap-nostd v0.4.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("indexmap_nostd", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\indexmap-nostd-0.4.0\\src\\lib.rs", Edition2021) }
+   1.361667200s  INFO prepare_target{force=false package_id=indexmap-nostd v0.4.0 target="indexmap_nostd"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\indexmap-nostd-6fc2127e0e0efc28\lib-indexmap_nostd`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.362685500s  INFO prepare_target{force=false package_id=static_assertions v1.1.0 target="static_assertions"}: cargo::core::compiler::fingerprint: fingerprint error for static_assertions v1.1.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("static_assertions", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\static_assertions-1.1.0\\src\\lib.rs", Edition2015) }
+   1.362735400s  INFO prepare_target{force=false package_id=static_assertions v1.1.0 target="static_assertions"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\static_assertions-2b821694ebd9e518\lib-static_assertions`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.368851100s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="stellar_xdr"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-xdr v20.1.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("stellar_xdr", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-xdr-20.1.0\\src\\lib.rs", Edition2021) }
+   1.368936100s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="stellar_xdr"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\stellar-xdr-72ba35e39b361d14\lib-stellar_xdr`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.370667600s  INFO prepare_target{force=false package_id=base64 v0.13.1 target="base64"}: cargo::core::compiler::fingerprint: fingerprint error for base64 v0.13.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("base64", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\base64-0.13.1\\src\\lib.rs", Edition2018) }
+   1.370722900s  INFO prepare_target{force=false package_id=base64 v0.13.1 target="base64"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\base64-7eda16fca0dd4dca\lib-base64`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.371916900s  INFO prepare_target{force=false package_id=escape-bytes v0.1.1 target="escape_bytes"}: cargo::core::compiler::fingerprint: fingerprint error for escape-bytes v0.1.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("escape_bytes", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\escape-bytes-0.1.1\\src\\lib.rs", Edition2021) }
+   1.371970800s  INFO prepare_target{force=false package_id=escape-bytes v0.1.1 target="escape_bytes"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\escape-bytes-785a9eeb4b10efe6\lib-escape_bytes`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.373102100s  INFO prepare_target{force=false package_id=hex v0.4.3 target="hex"}: cargo::core::compiler::fingerprint: fingerprint error for hex v0.4.3/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("hex", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\hex-0.4.3\\src\\lib.rs", Edition2018) }
+   1.373152700s  INFO prepare_target{force=false package_id=hex v0.4.3 target="hex"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\hex-d6d9497f253e2298\lib-hex`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.374370000s  INFO prepare_target{force=false package_id=serde_with v3.12.0 target="serde_with"}: cargo::core::compiler::fingerprint: fingerprint error for serde_with v3.12.0/Check { test: false }/TargetInner { ..: lib_target("serde_with", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde_with-3.12.0\\src\\lib.rs", Edition2021) }
+   1.374457100s  INFO prepare_target{force=false package_id=serde_with v3.12.0 target="serde_with"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\serde_with-db12644c1e4ece75\lib-serde_with`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.376294600s  INFO prepare_target{force=false package_id=stellar-strkey v0.0.8 target="stellar_strkey"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-strkey v0.0.8/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("stellar_strkey", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-strkey-0.0.8\\src\\lib.rs", Edition2021) }
+   1.376436500s  INFO prepare_target{force=false package_id=stellar-strkey v0.0.8 target="stellar_strkey"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\stellar-strkey-5834953c3f4e5988\lib-stellar_strkey`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.377944300s  INFO prepare_target{force=false package_id=base32 v0.4.0 target="base32"}: cargo::core::compiler::fingerprint: fingerprint error for base32 v0.4.0/Check { test: false }/TargetInner { ..: lib_target("base32", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\base32-0.4.0\\src\\lib.rs", Edition2015) }
+   1.378029600s  INFO prepare_target{force=false package_id=base32 v0.4.0 target="base32"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\base32-60e965495f75d7a8\lib-base32`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.381367200s  INFO prepare_target{force=false package_id=thiserror v1.0.55 target="thiserror"}: cargo::core::compiler::fingerprint: fingerprint error for thiserror v1.0.55/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("thiserror", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\thiserror-1.0.55\\src\\lib.rs", Edition2021) }
+   1.381513800s  INFO prepare_target{force=false package_id=thiserror v1.0.55 target="thiserror"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\thiserror-7df83630591f07ff\lib-thiserror`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.385760300s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-xdr v20.1.0/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-xdr-20.1.0\\build.rs", Edition2021) }
+   1.385823500s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\stellar-xdr-64f7c7e3a8536188\run-build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.386508400s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-xdr v20.1.0/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-xdr-20.1.0\\build.rs", Edition2021) }
+   1.386552700s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\stellar-xdr-22e7c1ace89762fe\build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_filter_source_repo
+  17: git_libgit2_prerelease
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: <unknown>
+  22: git_midx_writer_dump
+  23: git_filter_source_repo
+  24: git_midx_writer_dump
+  25: BaseThreadInitThunk
+  26: RtlUserThreadStart
+   1.390570600s  INFO prepare_target{force=false package_id=soroban-ledger-snapshot v20.5.0 target="soroban_ledger_snapshot"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-ledger-snapshot v20.5.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("soroban_ledger_snapshot", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-ledger-snapshot-20.5.0\\src\\lib.rs", Edition2021) }
+   1.390637500s  INFO prepare_target{force=false package_id=soroban-ledger-snapshot v20.5.0 target="soroban_ledger_snapshot"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-ledger-snapshot-6323dd1c7e514183\lib-soroban_ledger_snapshot`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_libgit2_prerelease
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: git_midx_writer_dump
+  19: git_filter_source_repo
+  20: git_midx_writer_dump
+  21: BaseThreadInitThunk
+  22: RtlUserThreadStart
+   1.393255800s  INFO prepare_target{force=false package_id=soroban-sdk-macros v20.5.0 target="soroban_sdk_macros"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-sdk-macros v20.5.0/Build/TargetInner { name_inferred: true, doctest: false, for_host: true, proc_macro: true, ..: lib_target("soroban_sdk_macros", ["proc-macro"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-sdk-macros-20.5.0\\src\\lib.rs", Edition2021) }
+   1.393324600s  INFO prepare_target{force=false package_id=soroban-sdk-macros v20.5.0 target="soroban_sdk_macros"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-sdk-macros-89d5ec9e2e0d2f83\lib-soroban_sdk_macros`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_libgit2_prerelease
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: git_midx_writer_dump
+  19: git_filter_source_repo
+  20: git_midx_writer_dump
+  21: BaseThreadInitThunk
+  22: RtlUserThreadStart
+   1.439724000s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="soroban_env_common"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-env-common v20.3.0/Build/TargetInner { name_inferred: true, ..: lib_target("soroban_env_common", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-env-common-20.3.0\\src\\lib.rs", Edition2021) }
+   1.439857700s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="soroban_env_common"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-env-common-b2dae53b662680d5\lib-soroban_env_common`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.444456600s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-env-common v20.3.0/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-env-common-20.3.0\\build.rs", Edition2021) }
+   1.444526400s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-env-common-a6eaac463082baa5\run-build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.445306100s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-env-common v20.3.0/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-env-common-20.3.0\\build.rs", Edition2021) }
+   1.445358000s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-env-common-07f88c424cc45dfa\build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_filter_source_repo
+  16: git_libgit2_prerelease
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: <unknown>
+  21: git_midx_writer_dump
+  22: git_filter_source_repo
+  23: git_midx_writer_dump
+  24: BaseThreadInitThunk
+  25: RtlUserThreadStart
+   1.451109100s  INFO prepare_target{force=false package_id=soroban-sdk-macros v20.5.0 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-sdk-macros v20.5.0/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-sdk-macros-20.5.0\\build.rs", Edition2021) }
+   1.451179000s  INFO prepare_target{force=false package_id=soroban-sdk-macros v20.5.0 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-sdk-macros-0de5536fb5ba14b7\run-build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.451895700s  INFO prepare_target{force=false package_id=soroban-sdk-macros v20.5.0 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-sdk-macros v20.5.0/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-sdk-macros-20.5.0\\build.rs", Edition2021) }
+   1.451948400s  INFO prepare_target{force=false package_id=soroban-sdk-macros v20.5.0 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-sdk-macros-963e98f4ce916e4d\build-script-build-script-build`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   1.453488400s  INFO prepare_target{force=false package_id=soroban-spec v20.5.0 target="soroban_spec"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-spec v20.5.0/Build/TargetInner { name_inferred: true, ..: lib_target("soroban_spec", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-spec-20.5.0\\src\\lib.rs", Edition2021) }
+   1.453548300s  INFO prepare_target{force=false package_id=soroban-spec v20.5.0 target="soroban_spec"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-spec-7e1dc12f7d0ffa9f\lib-soroban_spec`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.459926500s  INFO prepare_target{force=false package_id=soroban-spec-rust v20.5.0 target="soroban_spec_rust"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-spec-rust v20.5.0/Build/TargetInner { name_inferred: true, ..: lib_target("soroban_spec_rust", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-spec-rust-20.5.0\\src\\lib.rs", Edition2021) }
+   1.460000200s  INFO prepare_target{force=false package_id=soroban-spec-rust v20.5.0 target="soroban_spec_rust"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\soroban-spec-rust-80d1274ceb9e1c3a\lib-soroban_spec_rust`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   1.471320100s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("healthcare_drips", ["cdylib"], "C:\\Users\\dmanl\\Music\\health-care\\src\\lib.rs", Edition2021) }
+   1.471387200s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\healthcare-drips-9a847f654bebecd3\test-lib-healthcare_drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.474931400s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care)/Check { test: false }/TargetInner { name: "healthcare-drips", doc: true, ..: with_path("C:\\Users\\dmanl\\Music\\health-care\\src\\main.rs", Edition2021) }
+   1.474994600s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\healthcare-drips-f12e6593a197c43b\bin-healthcare-drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.481963000s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care)/Check { test: true }/TargetInner { name: "healthcare-drips", doc: true, ..: with_path("C:\\Users\\dmanl\\Music\\health-care\\src\\main.rs", Edition2021) }
+   1.482216900s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\Music\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\Music\health-care\target\debug\.fingerprint\healthcare-drips-11ba7e2fc33ca413\test-bin-healthcare-drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   Compiling serde v1.0.192
+    Checking typenum v1.19.0
+    Checking const-oid v0.9.6
+    Checking getrandom v0.2.11
+    Checking rand_core v0.6.4
+    Checking der v0.7.10
+    Checking generic-array v0.14.9
+    Checking spki v0.7.3
+    Checking crypto-common v0.1.6
+    Checking block-buffer v0.10.4
+    Checking num-traits v0.2.17
+    Checking digest v0.10.7
+    Checking signature v2.2.0
+    Checking ff v0.13.1
+    Checking base16ct v0.2.0
+   Compiling find-msvc-tools v0.1.9
+   Compiling serde_json v1.0.108
+   Compiling serde_with v3.12.0
+   Compiling hex v0.4.3
+    Checking cpufeatures v0.2.17
+    Checking byteorder v1.5.0
+   Compiling crate-git-revision v0.0.6
+    Checking zerocopy v0.7.35
+   Compiling cc v1.2.57
+   Compiling stellar-strkey v0.0.8
+   Compiling stellar-xdr v20.1.0
+    Checking sec1 v0.7.3
+    Checking group v0.13.0
+    Checking hmac v0.12.1
+    Checking pkcs8 v0.10.2
+    Checking crypto-bigint v0.5.5
+    Checking libm v0.2.16
+    Checking thiserror v1.0.55
+    Checking downcast-rs v1.2.1
+    Checking base32 v0.4.0
+    Checking indexmap-nostd v0.4.0
+    Checking wasmparser-nostd v0.100.2
+    Checking wasmi_core v0.13.0
+    Checking elliptic-curve v0.13.8
+    Checking arbitrary v1.3.2
+   Compiling backtrace v0.3.69
+    Checking rfc6979 v0.4.0
+    Checking ppv-lite86 v0.2.20
+   Compiling soroban-env-common v20.3.0
+    Checking sha2 v0.10.8
+    Checking escape-bytes v0.1.1
+    Checking smallvec v1.15.1
+    Checking wasmi_arena v0.4.1
+    Checking spin v0.9.8
+    Checking base64 v0.13.1
+    Checking soroban-wasmi v0.31.1-soroban.20.0.1
+    Checking curve25519-dalek v4.1.2
+    Checking rand_chacha v0.3.1
+    Checking ecdsa v0.16.9
+    Checking ed25519 v2.2.3
+    Checking keccak v0.1.6
+    Checking rustc-demangle v0.1.27
+    Checking static_assertions v1.1.0
+    Checking ethnum v1.5.0
+    Checking once_cell v1.21.4
+    Checking k256 v0.13.1
+    Checking sha3 v0.10.8
+    Checking ed25519-dalek v2.0.0
+    Checking rand v0.8.5
+    Checking num-integer v0.1.45
+   Compiling soroban-sdk-macros v20.5.0
+    Checking itoa v1.0.18
+    Checking ryu v1.0.23
+    Checking hex-literal v0.4.1
+   Compiling soroban-spec v20.5.0
+   Compiling soroban-spec-rust v20.5.0
+   Compiling soroban-env-macros v20.3.0
+error: could not compile `stellar-xdr` (lib) due to 1836 previous errors

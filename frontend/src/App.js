@@ -28,20 +28,25 @@ import MFASystem from './components/MFASystem';
 import ClaimEngine from './components/ClaimEngine';
 import PaymentGateways from './components/PaymentGateways';
 import PatientDashboard from './components/PatientDashboard';
+import ProviderDirectory from './components/ProviderDirectory';
+import AppointmentScheduler from './components/AppointmentScheduler';
+import ReviewSystem from './components/ReviewSystem';
+import MapView from './components/MapView';
+import ProviderComparison from './components/ProviderComparison';
 
 
 // Contract ABIs (simplified for demo)
 const HEALTHCARE_DRIPS_ABI = [
   {
     "inputs": [
-      {"internalType": "address", "name": "_patient", "type": "address"},
-      {"internalType": "address", "name": "_insurer", "type": "address"},
-      {"internalType": "address", "name": "_token", "type": "address"},
-      {"internalType": "uint256", "name": "_premiumAmount", "type": "uint256"},
-      {"internalType": "uint256", "name": "_interval", "type": "uint256"}
+      { "internalType": "address", "name": "_patient", "type": "address" },
+      { "internalType": "address", "name": "_insurer", "type": "address" },
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "uint256", "name": "_premiumAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_interval", "type": "uint256" }
     ],
     "name": "createPremiumDrip",
-    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "nonpayable",
     "type": "function"
   }
@@ -74,11 +79,11 @@ function App() {
         const provider = new ethers.providers.Web3Provider(ethereumProvider);
         const signer = provider.getSigner();
         const contract = new ethers.Contract(CONTRACT_ADDRESS, HEALTHCARE_DRIPS_ABI, signer);
-        
+
         setAccount(accounts[0]);
         setProvider(provider);
         setContract(contract);
-        
+
         // Load initial data
         await loadUserData(contract, accounts[0]);
       }
@@ -92,7 +97,7 @@ function App() {
       // Load user's premium drips
       const drips = await contract.getPatientPremiumDrips(userAddress);
       setPremiumDrips(drips);
-      
+
       // Load active funding requests
       const requests = await contract.getActiveFundingRequests();
       setFundingRequests(requests);
@@ -103,7 +108,7 @@ function App() {
 
   const createPremiumDrip = async () => {
     if (!contract) return;
-    
+
     try {
       setLoading(true);
       const tx = await contract.createPremiumDrip(
@@ -113,7 +118,7 @@ function App() {
         ethers.utils.parseEther("0.5"), // $500 monthly premium
         30 * 24 * 60 * 60 // 30 days
       );
-      
+
       await tx.wait();
       await loadUserData(contract, account);
       setLoading(false);
@@ -125,14 +130,14 @@ function App() {
 
   const contributeToFunding = async (requestId, amount) => {
     if (!contract) return;
-    
+
     try {
       setLoading(true);
       const tx = await contract.contributeToFunding(
         requestId,
         ethers.utils.parseEther(amount)
       );
-      
+
       await tx.wait();
       await loadUserData(contract, account);
       setLoading(false);
@@ -146,7 +151,7 @@ function App() {
     if (isAuthenticated && user) {
       return <PatientDashboard user={user} token={token} />;
     }
-    
+
     return (
       <div className="dashboard">
         <div className="stats-grid">
@@ -159,7 +164,7 @@ function App() {
               <p className="stat-number">{premiumDrips.length}</p>
             </div>
           </div>
-          
+
           <div className="stat-card">
             <div className="stat-icon">
               <DollarSign className="w-6 h-6" />
@@ -169,7 +174,7 @@ function App() {
               <p className="stat-number">$500</p>
             </div>
           </div>
-          
+
           <div className="stat-card">
             <div className="stat-icon">
               <Calendar className="w-6 h-6" />
@@ -179,7 +184,7 @@ function App() {
               <p className="stat-number">Dec 15, 2024</p>
             </div>
           </div>
-          
+
           <div className="stat-card">
             <div className="stat-icon">
               <Shield className="w-6 h-6" />
@@ -219,7 +224,7 @@ function App() {
               </div>
             </div>
             <div className="request-actions">
-              <button 
+              <button
                 onClick={() => contributeToFunding(requestId, '0.1')}
                 disabled={loading}
                 className="btn-secondary"
@@ -251,7 +256,7 @@ function App() {
             </div>
           </div>
         </div>
-        
+
         <div className="contributor-card">
           <div className="contributor-avatar">
             <UserPlus className="w-8 h-8" />
@@ -277,65 +282,72 @@ function App() {
             <Heart className="w-8 h-8" />
             <h1>Healthcare Drips</h1>
           </div>
-          
+
           <nav className="header-nav">
-            <button 
+            <button
               onClick={() => setActiveTab('dashboard')}
               className={activeTab === 'dashboard' ? 'active' : ''}
             >
               <Activity className="w-4 h-4" />
               Dashboard
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('funding')}
               className={activeTab === 'funding' ? 'active' : ''}
             >
               <Users className="w-4 h-4" />
               Funding
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('contributors')}
               className={activeTab === 'contributors' ? 'active' : ''}
             >
               <Award className="w-4 h-4" />
               Contributors
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('records')}
               className={activeTab === 'records' ? 'active' : ''}
             >
               <Database className="w-4 h-4" />
               Records
             </button>
-            <button 
+            <button
+              onClick={() => setActiveTab('providers')}
+              className={activeTab === 'providers' ? 'active' : ''}
+            >
+              <Users className="w-4 h-4" />
+              Providers
+            </button>
+            <button
               onClick={() => setActiveTab('security')}
               className={activeTab === 'security' ? 'active' : ''}
             >
               <Lock className="w-4 h-4" />
               Security
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('emergency')}
               className={activeTab === 'emergency' ? 'active' : ''}
             >
               <AlertTriangle className="w-4 h-4" />
               Emergency
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('engine')}
               className={activeTab === 'engine' ? 'active' : ''}
             >
               <Cpu className="w-4 h-4" />
               Engine
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('payments')}
               className={activeTab === 'payments' ? 'active' : ''}
             >
               <CreditIcon className="w-4 h-4" />
               Payments
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('integration')}
               className={activeTab === 'integration' ? 'active' : ''}
             >
@@ -343,7 +355,7 @@ function App() {
               HL7/FHIR
             </button>
           </nav>
-          
+
           <div className="wallet-section">
             {account ? (
               <div className="wallet-connected">
@@ -377,6 +389,7 @@ function App() {
             {activeTab === 'emergency' && <EmergencyAccess account={account} />}
             {activeTab === 'engine' && <ClaimEngine account={account} contract={contract} />}
             {activeTab === 'payments' && <PaymentGateways account={account} contract={contract} />}
+            {activeTab === 'providers' && <ProviderDirectory />}
             {activeTab === 'integration' && <HL7FHIRIntegration />}
           </>
         )}
