@@ -21,11 +21,13 @@ const providerVerificationRoutes = require('./routes/providerVerification');
 const reviewModerationRoutes = require('./routes/reviewModeration');
 const directorySyncRoutes = require('./routes/directorySync');
 const automatedClaimProcessingRoutes = require('./routes/automatedClaimProcessing');
+const securityRoutes = require('./routes/security');
 
 const { initializeDatabase } = require('./database/init');
 const { authenticateToken } = require('./middleware/auth');
 const { cacheMiddleware } = require('./middleware/cache');
 const { errorHandler } = require('./middleware/errorHandler');
+const securityMonitoringService = require('./services/securityMonitoringService');
 
 const app = express();
 const server = createServer(app);
@@ -75,6 +77,7 @@ app.use('/api/provider-verification', providerVerificationRoutes);
 app.use('/api/review-moderation', authenticateToken, reviewModerationRoutes);
 app.use('/api/directory-sync', authenticateToken, directorySyncRoutes);
 app.use('/api/automated-claim-processing', authenticateToken, automatedClaimProcessingRoutes);
+app.use('/api/security', securityRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -102,9 +105,14 @@ app.use(errorHandler);
 async function startServer() {
   try {
     await initializeDatabase();
+    
+    // Start security monitoring service
+    securityMonitoringService.start();
+    
     server.listen(PORT, () => {
       console.log(`🚀 Healthcare API Server running on port ${PORT}`);
       console.log(`📊 Dashboard available at: http://localhost:${PORT}/api/health`);
+      console.log(`🔒 Security monitoring service active`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

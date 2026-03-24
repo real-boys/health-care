@@ -5,6 +5,13 @@ const { createClaimProcessingTables, createClaimProcessingViews } = require('./c
 
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'healthcare.db');
 
+// Read MFA schema
+const mfaSchemaPath = path.join(__dirname, 'mfa_schema.sql');
+let mfaSchema = '';
+if (fs.existsSync(mfaSchemaPath)) {
+  mfaSchema = fs.readFileSync(mfaSchemaPath, 'utf8');
+}
+
 function initializeDatabase() {
   return new Promise((resolve, reject) => {
     const db = new sqlite3.Database(DB_PATH, (err) => {
@@ -153,6 +160,7 @@ function initializeDatabase() {
     let completedIndexes = 0;
     let completedProcessingTables = 0;
     let completedViews = 0;
+    let completedMFATables = 0;
 
     tables.forEach((sql) => {
       db.run(sql, (err) => {
@@ -163,54 +171,87 @@ function initializeDatabase() {
         }
         completedTables++;
         if (completedTables === tables.length) {
-          // Create claim processing tables
-          const processingTableStatements = createClaimProcessingTables.split(';').filter(stmt => stmt.trim());
-          
-          processingTableStatements.forEach((statement) => {
-            if (statement.trim()) {
-              db.run(statement, (err) => {
-                if (err) {
-                  console.error('Error creating claim processing table:', err);
-                } else {
-                  completedProcessingTables++;
-                }
-                
-                if (completedProcessingTables === processingTableStatements.length) {
-                  // Create views
-                  const viewStatements = createClaimProcessingViews.split(';').filter(stmt => stmt.trim());
+          // Create MFA tables
+          if (mfaSchema) {
+            const mfaStatements = mfaSchema.split(';').filter(stmt => stmt.trim() && !stmt.trim().startsWith('--'));
+            
+            mfaStatements.forEach((statement) => {
+              if (statement.trim()) {
+                db.run(statement, (err) => {
+                  if (err) {
+                    // Handle ALTER TABLE errors gracefully (columns might already exist)
+                    if (err.message.includes('duplicate column name') || err.message.includes('no such table')) {
+                      console.log('MFA column already exists or table not ready:', err.message);
+                    } else {
+                      console.error('Error creating MFA table:', err);
+                    }
+                  } else {
+                    completedMFATables++;
+                  }
                   
-                  viewStatements.forEach((viewStatement) => {
-                    if (viewStatement.trim()) {
-                      db.run(viewStatement, (err) => {
-                        if (err) {
-                          console.error('Error creating view:', err);
-                        } else {
-                          completedViews++;
-                        }
-                        
-                        if (completedViews === viewStatements.length) {
-                          // Create indexes
-                          indexes.forEach((indexSql) => {
-                            db.run(indexSql, (err) => {
+                  if (completedMFATables === mfaStatements.length) {
+                    console.log('MFA tables created successfully');
+                    // Continue with claim processing tables
+                    createClaimProcessingTablesFunc();
+                  }
+                });
+              }
+            });
+          } else {
+            // Skip MFA tables and continue with claim processing
+            createClaimProcessingTablesFunc();
+          }
+        }
+      });
+    });
+
+    function createClaimProcessingTablesFunc() {
+      // Create claim processing tables
+      const processingTableStatements = createClaimProcessingTables.split(';').filter(stmt => stmt.trim());
+      
+      processingTableStatements.forEach((statement) => {
+        if (statement.trim()) {
+          db.run(statement, (err) => {
+            if (err) {
+              console.error('Error creating claim processing table:', err);
+            } else {
+              completedProcessingTables++;
+            }
+            
+            if (completedProcessingTables === processingTableStatements.length) {
+              // Create views
+              const viewStatements = createClaimProcessingViews.split(';').filter(stmt => stmt.trim());
+              
+              viewStatements.forEach((viewStatement) => {
+                if (viewStatement.trim()) {
+                  db.run(viewStatement, (err) => {
+                    if (err) {
+                      console.error('Error creating view:', err);
+                    } else {
+                      completedViews++;
+                    }
+                    
+                    if (completedViews === viewStatements.length) {
+                      // Create indexes
+                      indexes.forEach((indexSql) => {
+                        db.run(indexSql, (err) => {
+                          if (err) {
+                            console.error('Error creating index:', err);
+                          } else {
+                            completedIndexes++;
+                          }
+                          if (completedIndexes === indexes.length) {
+                            db.close((err) => {
                               if (err) {
-                                console.error('Error creating index:', err);
+                                console.error('Error closing database:', err);
+                                reject(err);
                               } else {
-                                completedIndexes++;
-                              }
-                              if (completedIndexes === indexes.length) {
-                                db.close((err) => {
-                                  if (err) {
-                                    console.error('Error closing database:', err);
-                                    reject(err);
-                                  } else {
-                                    console.log('Database initialized successfully');
-                                    resolve();
-                                  }
-                                });
+                                console.log('Database initialized successfully');
+                                resolve();
                               }
                             });
-                          });
-                        }
+                          }
+                        });
                       });
                     }
                   });
@@ -220,7 +261,7 @@ function initializeDatabase() {
           });
         }
       });
-    });
+    }
   });
 }
 
