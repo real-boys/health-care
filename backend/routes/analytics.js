@@ -628,4 +628,849 @@ router.get('/warehouse/query/:queryType', requireAnalyticsPermission, async (req
   }
 });
 
+// Advanced Interactive Charts Endpoint
+router.get('/charts/:chartType', requireAnalyticsPermission, async (req, res, next) => {
+  try {
+    const { chartType } = req.params;
+    const { startDate, endDate, filters = '{}' } = req.query;
+    const parsedFilters = JSON.parse(filters);
+    
+    const db = getDatabase();
+    let chartData = {};
+    
+    switch (chartType) {
+      case 'claims-timeline':
+        chartData = await getClaimsTimelineData(db, startDate, endDate, parsedFilters);
+        break;
+      case 'payment-methods':
+        chartData = await getPaymentMethodsData(db, startDate, endDate, parsedFilters);
+        break;
+      case 'provider-performance':
+        chartData = await getProviderPerformanceChartData(db, startDate, endDate, parsedFilters);
+        break;
+      case 'patient-outcomes':
+        chartData = await getPatientOutcomesChartData(db, startDate, endDate, parsedFilters);
+        break;
+      case 'revenue-trends':
+        chartData = await getRevenueTrendsData(db, startDate, endDate, parsedFilters);
+        break;
+      case 'claims-status-distribution':
+        chartData = await getClaimsStatusDistribution(db, startDate, endDate, parsedFilters);
+        break;
+      default:
+        return res.status(400).json({ error: 'Invalid chart type' });
+    }
+    
+    res.json({
+      chartType,
+      data: chartData,
+      filters: parsedFilters,
+      period: { startDate, endDate },
+      generatedAt: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Custom Report Builder Endpoint
+router.post('/reports/custom', requireAnalyticsPermission, async (req, res, next) => {
+  try {
+    const { 
+      reportName,
+      dataSource,
+      metrics,
+      dimensions,
+      filters,
+      aggregations,
+      sortBy,
+      limit = 100
+    } = req.body;
+    
+    if (!dataSource || !metrics || !Array.isArray(metrics)) {
+      return res.status(400).json({ error: 'Data source and metrics are required' });
+    }
+    
+    const db = getDatabase();
+    const customReport = await generateCustomReport(db, {
+      dataSource,
+      metrics,
+      dimensions,
+      filters,
+      aggregations,
+      sortBy,
+      limit
+    });
+    
+    res.json({
+      reportName,
+      data: customReport,
+      metadata: {
+        totalRecords: customReport.length,
+        dataSource,
+        metrics,
+        dimensions,
+        generatedAt: new Date().toISOString()
+      }
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Enhanced Data Export Endpoint
+router.post('/export/:format', requireAnalyticsPermission, async (req, res, next) => {
+  try {
+    const { format } = req.params;
+    const { reportType, data, filename, options = '{}' } = req.body;
+    const parsedOptions = JSON.parse(options);
+    
+    if (!['csv', 'pdf', 'excel', 'json'].includes(format)) {
+      return res.status(400).json({ error: 'Unsupported export format' });
+    }
+    
+    let exportBuffer;
+    let contentType;
+    let fileExtension = format;
+    
+    switch (format) {
+      case 'csv':
+        exportBuffer = await generateCSVExport(data, parsedOptions);
+        contentType = 'text/csv';
+        break;
+      case 'pdf':
+        exportBuffer = await generatePDFExport(reportType, data, parsedOptions);
+        contentType = 'application/pdf';
+        break;
+      case 'excel':
+        exportBuffer = await generateExcelExport(data, parsedOptions);
+        contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        break;
+      case 'json':
+        exportBuffer = JSON.stringify(data, null, 2);
+        contentType = 'application/json';
+        break;
+    }
+    
+    const exportFilename = filename || `${reportType}_export_${new Date().toISOString().split('T')[0]}.${fileExtension}`;
+    
+    res.setHeader('Content-Disposition', `attachment; filename="${exportFilename}"`);
+    res.setHeader('Content-Type', contentType);
+    res.send(exportBuffer);
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Real-time Metrics Dashboard
+router.get('/dashboard/realtime', requireAnalyticsPermission, async (req, res, next) => {
+  try {
+    const { timeWindow = '1h' } = req.query;
+    
+    const db = getDatabase();
+    const realtimeMetrics = await getRealtimeMetrics(db, timeWindow);
+    
+    res.json({
+      metrics: realtimeMetrics,
+      timeWindow,
+      timestamp: new Date().toISOString(),
+      refreshInterval: 30000 // 30 seconds
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Scheduled Report Management
+router.post('/reports/schedule', requireAnalyticsPermission, async (req, res, next) => {
+  try {
+    const {
+      reportName,
+      reportType,
+      schedule,
+      recipients,
+      parameters,
+      format = 'pdf'
+    } = req.body;
+    
+    if (!reportName || !reportType || !schedule || !recipients) {
+      return res.status(400).json({ error: 'Report name, type, schedule, and recipients are required' });
+    }
+    
+    const scheduledReport = {
+      id: `report_${Date.now()}`,
+      reportName,
+      reportType,
+      schedule,
+      recipients,
+      parameters,
+      format,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      lastRun: null,
+      nextRun: calculateNextRun(schedule)
+    };
+    
+    // Save scheduled report to database
+    const db = getDatabase();
+    await saveScheduledReport(db, scheduledReport);
+    
+    res.json({
+      success: true,
+      message: 'Report scheduled successfully',
+      scheduledReport
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Drill-down Analysis Endpoint
+router.get('/drilldown/:entityType/:entityId', requireAnalyticsPermission, async (req, res, next) => {
+  try {
+    const { entityType, entityId } = req.params;
+    const { drillLevel = 1, startDate, endDate } = req.query;
+    
+    const db = getDatabase();
+    const drilldownData = await getDrilldownAnalysis(db, {
+      entityType,
+      entityId,
+      drillLevel: parseInt(drillLevel),
+      startDate,
+      endDate
+    });
+    
+    res.json({
+      entityType,
+      entityId,
+      drillLevel,
+      data: drilldownData,
+      availableDrillLevels: getAvailableDrillLevels(entityType)
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Helper functions for chart data generation
+async function getClaimsTimelineData(db, startDate, endDate, filters) {
+  let query = `
+    SELECT 
+      DATE(ic.submission_date) as date,
+      COUNT(*) as claims_count,
+      SUM(ic.total_amount) as total_amount,
+      SUM(CASE WHEN ic.status = 'approved' THEN 1 ELSE 0 END) as approved,
+      SUM(CASE WHEN ic.status = 'denied' THEN 1 ELSE 0 END) as denied,
+      SUM(CASE WHEN ic.status = 'pending' THEN 1 ELSE 0 END) as pending
+    FROM insurance_claims ic
+    WHERE 1=1
+  `;
+  
+  const params = [];
+  
+  if (startDate) {
+    query += ' AND ic.submission_date >= ?';
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ' AND ic.submission_date <= ?';
+    params.push(endDate);
+  }
+  
+  if (filters.providerId) {
+    query += ' AND ic.provider_id = ?';
+    params.push(filters.providerId);
+  }
+  
+  query += ' GROUP BY DATE(ic.submission_date) ORDER BY date';
+  
+  return new Promise((resolve, reject) => {
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+async function getPaymentMethodsData(db, startDate, endDate, filters) {
+  let query = `
+    SELECT 
+      payment_method,
+      COUNT(*) as transaction_count,
+      SUM(payment_amount) as total_amount,
+      AVG(payment_amount) as avg_amount,
+      SUM(CASE WHEN payment_status = 'completed' THEN 1 ELSE 0 END) as successful,
+      SUM(CASE WHEN payment_status = 'failed' THEN 1 ELSE 0 END) as failed
+    FROM premium_payments
+    WHERE 1=1
+  `;
+  
+  const params = [];
+  
+  if (startDate) {
+    query += ' AND payment_date >= ?';
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ' AND payment_date <= ?';
+    params.push(endDate);
+  }
+  
+  query += ' GROUP BY payment_method';
+  
+  return new Promise((resolve, reject) => {
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+async function getProviderPerformanceChartData(db, startDate, endDate, filters) {
+  let query = `
+    SELECT 
+      u.first_name || ' ' || u.last_name as provider_name,
+      COUNT(DISTINCT a.patient_id) as unique_patients,
+      COUNT(a.id) as total_appointments,
+      SUM(CASE WHEN a.status = 'completed' THEN 1 ELSE 0 END) as completed,
+      AVG(a.duration_minutes) as avg_duration
+    FROM users u
+    LEFT JOIN appointments a ON u.id = a.provider_id
+    WHERE u.role = 'provider'
+  `;
+  
+  const params = [];
+  
+  if (startDate) {
+    query += ' AND a.appointment_date >= ?';
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ' AND a.appointment_date <= ?';
+    params.push(endDate);
+  }
+  
+  query += ' GROUP BY u.id, u.first_name, u.last_name ORDER BY completed DESC LIMIT 20';
+  
+  return new Promise((resolve, reject) => {
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+async function getPatientOutcomesChartData(db, startDate, endDate, filters) {
+  let query = `
+    SELECT 
+      p.id as patient_id,
+      p.first_name || ' ' || p.last_name as patient_name,
+      COUNT(DISTINCT mr.id) as treatments,
+      COUNT(DISTINCT a.id) as appointments,
+      SUM(ic.total_amount) as total_claims_cost
+    FROM patients p
+    LEFT JOIN medical_records mr ON p.id = mr.patient_id
+    LEFT JOIN appointments a ON p.id = a.patient_id
+    LEFT JOIN insurance_claims ic ON p.id = ic.patient_id
+    WHERE 1=1
+  `;
+  
+  const params = [];
+  
+  if (startDate) {
+    query += ' AND (mr.date_of_service >= ? OR a.appointment_date >= ? OR ic.service_date >= ?)';
+    params.push(startDate, startDate, startDate);
+  }
+  
+  if (endDate) {
+    query += ' AND (mr.date_of_service <= ? OR a.appointment_date <= ? OR ic.service_date <= ?)';
+    params.push(endDate, endDate, endDate);
+  }
+  
+  query += ' GROUP BY p.id, p.first_name, p.last_name ORDER BY treatments DESC LIMIT 50';
+  
+  return new Promise((resolve, reject) => {
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+async function getRevenueTrendsData(db, startDate, endDate, filters) {
+  let query = `
+    SELECT 
+      DATE(payment_date) as date,
+      SUM(payment_amount) as daily_revenue,
+      COUNT(*) as transaction_count,
+      payment_method
+    FROM premium_payments
+    WHERE payment_status = 'completed'
+  `;
+  
+  const params = [];
+  
+  if (startDate) {
+    query += ' AND payment_date >= ?';
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ' AND payment_date <= ?';
+    params.push(endDate);
+  }
+  
+  query += ' GROUP BY DATE(payment_date), payment_method ORDER BY date';
+  
+  return new Promise((resolve, reject) => {
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+async function getClaimsStatusDistribution(db, startDate, endDate, filters) {
+  let query = `
+    SELECT 
+      status,
+      COUNT(*) as count,
+      SUM(total_amount) as total_amount,
+      AVG(total_amount) as avg_amount
+    FROM insurance_claims
+    WHERE 1=1
+  `;
+  
+  const params = [];
+  
+  if (startDate) {
+    query += ' AND submission_date >= ?';
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ' AND submission_date <= ?';
+    params.push(endDate);
+  }
+  
+  query += ' GROUP BY status';
+  
+  return new Promise((resolve, reject) => {
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+// Helper functions for custom report generation
+async function generateCustomReport(db, config) {
+  const { dataSource, metrics, dimensions, filters, aggregations, sortBy, limit } = config;
+  
+  let query = 'SELECT ';
+  
+  // Add dimensions
+  if (dimensions && dimensions.length > 0) {
+    query += dimensions.map(dim => `${dim}`).join(', ') + ', ';
+  }
+  
+  // Add metrics with aggregations
+  if (metrics && metrics.length > 0) {
+    query += metrics.map(metric => {
+      const aggregation = aggregations && aggregations[metric] ? aggregations[metric] : 'SUM';
+      return `${aggregation}(${metric}) as ${metric}`;
+    }).join(', ');
+  }
+  
+  query += ` FROM ${dataSource} WHERE 1=1`;
+  
+  const params = [];
+  
+  // Add filters
+  if (filters) {
+    Object.keys(filters).forEach(key => {
+      if (filters[key]) {
+        query += ` AND ${key} = ?`;
+        params.push(filters[key]);
+      }
+    });
+  }
+  
+  // Add group by for dimensions
+  if (dimensions && dimensions.length > 0) {
+    query += ` GROUP BY ${dimensions.join(', ')}`;
+  }
+  
+  // Add sorting
+  if (sortBy) {
+    query += ` ORDER BY ${sortBy.field} ${sortBy.direction || 'ASC'}`;
+  }
+  
+  // Add limit
+  if (limit) {
+    query += ` LIMIT ${limit}`;
+  }
+  
+  return new Promise((resolve, reject) => {
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+// Helper functions for data export
+async function generateCSVExport(data, options) {
+  const { includeHeaders = true, delimiter = ',' } = options;
+  
+  if (!data || data.length === 0) {
+    return '';
+  }
+  
+  let csv = '';
+  
+  if (includeHeaders) {
+    csv += Object.keys(data[0]).join(delimiter) + '\n';
+  }
+  
+  data.forEach(row => {
+    csv += Object.values(row).map(value => {
+      if (typeof value === 'string' && (value.includes(delimiter) || value.includes('"') || value.includes('\n'))) {
+        return `"${value.replace(/"/g, '""')}"`;
+      }
+      return value;
+    }).join(delimiter) + '\n';
+  });
+  
+  return csv;
+}
+
+async function generatePDFExport(reportType, data, options) {
+  const PDFDocument = require('pdfkit');
+  
+  return new Promise((resolve) => {
+    const doc = new PDFDocument();
+    const buffers = [];
+    
+    doc.on('data', buffers.push.bind(buffers));
+    doc.on('end', () => resolve(Buffer.concat(buffers)));
+    
+    // Add title
+    doc.fontSize(20).text(`${reportType} Report`, { align: 'center' });
+    doc.moveDown();
+    
+    // Add timestamp
+    doc.fontSize(12).text(`Generated: ${new Date().toLocaleString()}`, { align: 'center' });
+    doc.moveDown();
+    
+    // Add data table
+    if (data && data.length > 0) {
+      const headers = Object.keys(data[0]);
+      
+      // Table headers
+      doc.fontSize(10).font('Helvetica-Bold');
+      headers.forEach((header, i) => {
+        doc.text(header, 50 + (i * 100), 150, { width: 90 });
+      });
+      
+      // Table data
+      doc.font('Helvetica');
+      data.forEach((row, rowIndex) => {
+        const y = 170 + (rowIndex * 20);
+        headers.forEach((header, colIndex) => {
+          doc.text(String(row[header] || ''), 50 + (colIndex * 100), y, { width: 90 });
+        });
+      });
+    }
+    
+    doc.end();
+  });
+}
+
+async function generateExcelExport(data, options) {
+  const excel = require('excel4node');
+  
+  return new Promise((resolve) => {
+    const workbook = new excel.Workbook();
+    const worksheet = workbook.addWorksheet('Report');
+    
+    if (data && data.length > 0) {
+      const headers = Object.keys(data[0]);
+      
+      // Add headers
+      headers.forEach((header, index) => {
+        worksheet.cell(1, index + 1).string(header);
+      });
+      
+      // Add data
+      data.forEach((row, rowIndex) => {
+        headers.forEach((header, colIndex) => {
+          const value = row[header];
+          if (typeof value === 'number') {
+            worksheet.cell(rowIndex + 2, colIndex + 1).number(value);
+          } else {
+            worksheet.cell(rowIndex + 2, colIndex + 1).string(String(value || ''));
+          }
+        });
+      });
+    }
+    
+    workbook.writeToBuffer().then(resolve);
+  });
+}
+
+// Helper functions for real-time metrics
+async function getRealtimeMetrics(db, timeWindow) {
+  const timeAgo = getTimeAgo(timeWindow);
+  
+  const [activeClaims, recentPayments, activeAppointments, systemLoad] = await Promise.all([
+    // Active claims in time window
+    new Promise((resolve, reject) => {
+      db.get(
+        'SELECT COUNT(*) as count FROM insurance_claims WHERE submission_date >= ?',
+        [timeAgo],
+        (err, row) => err ? reject(err) : resolve(row.count)
+      );
+    }),
+    
+    // Recent payments
+    new Promise((resolve, reject) => {
+      db.get(
+        'SELECT COUNT(*) as count, SUM(payment_amount) as total FROM premium_payments WHERE payment_date >= ? AND payment_status = "completed"',
+        [timeAgo],
+        (err, row) => err ? reject(err) : resolve({ count: row.count, total: row.total })
+      );
+    }),
+    
+    // Active appointments
+    new Promise((resolve, reject) => {
+      db.get(
+        'SELECT COUNT(*) as count FROM appointments WHERE appointment_date >= ? AND status IN ("scheduled", "in_progress")',
+        [timeAgo],
+        (err, row) => err ? reject(err) : resolve(row.count)
+      );
+    }),
+    
+    // System load (simulated)
+    Promise.resolve({ cpu: Math.random() * 100, memory: Math.random() * 100 })
+  ]);
+  
+  return {
+    activeClaims,
+    recentPayments,
+    activeAppointments,
+    systemLoad,
+    timestamp: new Date().toISOString()
+  };
+}
+
+function getTimeAgo(timeWindow) {
+  const now = new Date();
+  const value = parseInt(timeWindow);
+  const unit = timeWindow.slice(-1);
+  
+  switch (unit) {
+    case 'h': now.setHours(now.getHours() - value); break;
+    case 'd': now.setDate(now.getDate() - value); break;
+    case 'w': now.setDate(now.getDate() - (value * 7)); break;
+    case 'm': now.setMonth(now.getMonth() - value); break;
+    default: now.setHours(now.getHours() - 1);
+  }
+  
+  return now.toISOString();
+}
+
+// Helper functions for scheduled reports
+function calculateNextRun(schedule) {
+  const now = new Date();
+  const [frequency, time] = schedule.split(' at ');
+  
+  switch (frequency) {
+    case 'daily':
+      const [hours, minutes] = time.split(':').map(Number);
+      now.setHours(hours, minutes, 0, 0);
+      if (now <= new Date()) {
+        now.setDate(now.getDate() + 1);
+      }
+      break;
+    case 'weekly':
+      // Add 7 days for weekly
+      now.setDate(now.getDate() + 7);
+      break;
+    case 'monthly':
+      now.setMonth(now.getMonth() + 1);
+      break;
+    default:
+      now.setDate(now.getDate() + 1);
+  }
+  
+  return now.toISOString();
+}
+
+async function saveScheduledReport(db, scheduledReport) {
+  return new Promise((resolve, reject) => {
+    const query = `
+      INSERT INTO scheduled_reports (id, report_name, report_type, schedule, recipients, parameters, format, is_active, created_at, next_run)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    
+    db.run(query, [
+      scheduledReport.id,
+      scheduledReport.reportName,
+      scheduledReport.reportType,
+      scheduledReport.schedule,
+      JSON.stringify(scheduledReport.recipients),
+      JSON.stringify(scheduledReport.parameters),
+      scheduledReport.format,
+      scheduledReport.isActive ? 1 : 0,
+      scheduledReport.createdAt,
+      scheduledReport.nextRun
+    ], function(err) {
+      if (err) reject(err);
+      else resolve(this.lastID);
+    });
+  });
+}
+
+// Helper functions for drill-down analysis
+async function getDrilldownAnalysis(db, config) {
+  const { entityType, entityId, drillLevel, startDate, endDate } = config;
+  
+  let drilldownData = {};
+  
+  switch (entityType) {
+    case 'claim':
+      drilldownData = await getClaimDrilldown(db, entityId, drillLevel, startDate, endDate);
+      break;
+    case 'provider':
+      drilldownData = await getProviderDrilldown(db, entityId, drillLevel, startDate, endDate);
+      break;
+    case 'patient':
+      drilldownData = await getPatientDrilldown(db, entityId, drillLevel, startDate, endDate);
+      break;
+    default:
+      throw new Error('Invalid entity type for drill-down analysis');
+  }
+  
+  return drilldownData;
+}
+
+async function getClaimDrilldown(db, claimId, drillLevel, startDate, endDate) {
+  const baseQuery = `
+    SELECT 
+      ic.*,
+      p.first_name || ' ' || p.last_name as patient_name,
+      u.first_name || ' ' || u.last_name as provider_name,
+      mr.record_type,
+      mr.description as treatment_description
+    FROM insurance_claims ic
+    LEFT JOIN patients p ON ic.patient_id = p.id
+    LEFT JOIN users u ON ic.provider_id = u.id
+    LEFT JOIN medical_records mr ON ic.patient_id = mr.patient_id
+    WHERE ic.id = ?
+  `;
+  
+  return new Promise((resolve, reject) => {
+    db.all(baseQuery, [claimId], (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+async function getProviderDrilldown(db, providerId, drillLevel, startDate, endDate) {
+  let query = `
+    SELECT 
+      u.first_name || ' ' || u.last_name as provider_name,
+      COUNT(DISTINCT a.patient_id) as unique_patients,
+      COUNT(a.id) as total_appointments,
+      SUM(CASE WHEN a.status = 'completed' THEN 1 ELSE 0 END) as completed,
+      AVG(a.duration_minutes) as avg_duration,
+      COUNT(DISTINCT ic.id) as total_claims,
+      SUM(ic.total_amount) as total_claim_amount
+    FROM users u
+    LEFT JOIN appointments a ON u.id = a.provider_id
+    LEFT JOIN insurance_claims ic ON u.id = ic.provider_id
+    WHERE u.id = ?
+  `;
+  
+  const params = [providerId];
+  
+  if (startDate) {
+    query += ' AND (a.appointment_date >= ? OR ic.submission_date >= ?)';
+    params.push(startDate, startDate);
+  }
+  
+  if (endDate) {
+    query += ' AND (a.appointment_date <= ? OR ic.submission_date <= ?)';
+    params.push(endDate, endDate);
+  }
+  
+  query += ' GROUP BY u.id, u.first_name, u.last_name';
+  
+  return new Promise((resolve, reject) => {
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+async function getPatientDrilldown(db, patientId, drillLevel, startDate, endDate) {
+  let query = `
+    SELECT 
+      p.first_name || ' ' || p.last_name as patient_name,
+      COUNT(DISTINCT mr.id) as total_treatments,
+      COUNT(DISTINCT a.id) as total_appointments,
+      COUNT(DISTINCT ic.id) as total_claims,
+      SUM(ic.total_amount) as total_claim_amount,
+      MAX(mr.date_of_service) as last_treatment_date
+    FROM patients p
+    LEFT JOIN medical_records mr ON p.id = mr.patient_id
+    LEFT JOIN appointments a ON p.id = a.patient_id
+    LEFT JOIN insurance_claims ic ON p.id = ic.patient_id
+    WHERE p.id = ?
+  `;
+  
+  const params = [patientId];
+  
+  if (startDate) {
+    query += ' AND (mr.date_of_service >= ? OR a.appointment_date >= ? OR ic.service_date >= ?)';
+    params.push(startDate, startDate, startDate);
+  }
+  
+  if (endDate) {
+    query += ' AND (mr.date_of_service <= ? OR a.appointment_date <= ? OR ic.service_date <= ?)';
+    params.push(endDate, endDate, endDate);
+  }
+  
+  query += ' GROUP BY p.id, p.first_name, p.last_name';
+  
+  return new Promise((resolve, reject) => {
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+function getAvailableDrillLevels(entityType) {
+  const drillLevels = {
+    claim: [1, 2, 3],
+    provider: [1, 2],
+    patient: [1, 2]
+  };
+  
+  return drillLevels[entityType] || [1];
+}
+
 module.exports = router;

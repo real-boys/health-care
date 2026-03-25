@@ -1,0 +1,71 @@
+{
+  "name": "healthcare-mobile",
+  "displayName": "Healthcare Mobile",
+  "expo": {
+    "name": "Healthcare Mobile",
+    "slug": "healthcare-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4CAF50"
+    },
+    "platforms": ["ios", "android"],
+    "ios": {
+      "bundleIdentifier": "com.healthcare.mobile",
+      "buildNumber": "1.0.0",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera for scanning medical documents and QR codes",
+        "NSPhotoLibraryUsageDescription": "This app uses photo library for uploading medical documents",
+        "NSFaceIDUsageDescription": "This app uses Face ID for secure authentication",
+        "NSBiometricUsageDescription": "This app uses biometric authentication for secure access"
+      }
+    },
+    "android": {
+      "package": "com.healthcare.mobile",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4CAF50"
+      },
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "USE_FINGERPRINT",
+        "USE_BIOMETRIC"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Healthcare Mobile to access your camera for scanning medical documents and QR codes."
+        }
+      ],
+      [
+        "expo-face-detector",
+        {
+          "faceDetectionPermission": "Allow Healthcare Mobile to use face detection for biometric authentication."
+        }
+      ],
+      [
+        "expo-firebase-analytics"
+      ],
+      [
+        "expo-firebase-messaging"
+      ],
+      [
+        "expo-local-authentication"
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
+  }
+}
