@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Core Palette - Deep Stealth & Neon */
+  --bg-main: #0a0c10;
+  --bg-card: rgba(17, 21, 28, 0.7);
+  --bg-sidebar: #050608;
+  
+  --accent-primary: #6366f1; /* Indigo */
+  --accent-secondary: #06b6d4; /* Cyan */
+  --accent-safe: #10b981; /* Emerald */
+  --accent-warning: #f59e0b; /* Amber */
+  --accent-danger: #ef4444; /* Rose */
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  
+  --glow-indigo: 0 0 20px rgba(99, 102, 241, 0.3);
+  --glow-emerald: 0 0 20px rgba(16, 185, 129, 0.3);
+  --glow-rose: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism Utilities */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* Gradients & Glows */
+.premium-gradient {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+}
+
+.glow-text-indigo {
+  text-shadow: var(--glow-indigo);
+}
+
+.glow-text-emerald {
+  text-shadow: var(--glow-emerald);
+}
+
+.glow-text-rose {
+  text-shadow: var(--glow-rose);
+}
+
+/* Custom Scrollbar for the dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Animating Gradients */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* Tailwind-like utility overlaps (since I don't know if tailwind is active, I define my essentials) */
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.absolute-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+/* Dashboard Specific Layout */
+.dashboard-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}

@@ -6,6 +6,8 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
+const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
 require('dotenv').config();
 
 const JobProcessor = require('./services/jobProcessor');
@@ -16,43 +18,43 @@ const jobProcessor = new JobProcessor();
 // Import routes
 const authRoutes = require('./routes/auth');
 const patientRoutes = require('./routes/patients');
-const medicalRecordsRoutes = require('./routes/medicalRecords');
-const transformedPatientsRoutes = require('./routes/transformedPatients');
+const telemedicineRoutes = require('./routes/telemedicine');
+const fraudDetectionRoutes = require('./routes/fraudDetection');
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
-    methods: ["GET", "POST"]
+    origin: '*', // In production, restrict to actual frontend URL
+    methods: ['GET', 'POST']
   }
 });
-
-const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(helmet());
 app.use(cors());
 app.use(compression());
-app.use(morgan('combined'));
-app.use(express.json({ limit: '10mb' }));
+app.use(morgan('dev'));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Database setup
+const DB_PATH = path.join(__dirname, 'database', 'healthcare.sqlite');
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  max: 100 // limit each IP to 100 requests per windowMs
 });
 app.use('/api/', limiter);
 
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
-app.use('/api/medical-records', medicalRecordsRoutes);
-app.use('/api/transformed-patients', transformedPatientsRoutes);
+app.use('/api/telemedicine', telemedicineRoutes);
+app.use('/api/fraud', fraudDetectionRoutes);
 
-// Health check endpoint
+// Health check
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -65,70 +67,47 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Socket.io connection handling
-io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
-  
-  // Handle audit alert subscriptions
-  socket.on('subscribe_audit_alerts', (data) => {
-    const { alertTypes = [], severities = [] } = data;
-    if (auditMonitoringService) {
-      auditMonitoringService.subscribeToAlerts(socket, alertTypes, severities);
-    }
-  });
+// Socket.io initialization for Telemedicine signaling
+const TelemedicineService = require('./services/telemedicineService');
+const telemedicineService = new TelemedicineService(io);
+telemedicineService.initialize();
 
-  socket.on('unsubscribe_audit_alerts', () => {
-    if (auditMonitoringService) {
-      auditMonitoringService.unsubscribeFromAlerts(socket.id);
-    }
-  });
-  
+io.on('connection', (socket) => {
+
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+    console.log('User disconnected:', socket.id);
   });
 });
 
-// Error handling middleware
-const errorHandler = (err, req, res, next) => {
+// Error handling
+app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({
-    error: 'Something went wrong!',
-    details: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-};
+  res.status(500).json({ error: 'Something went wrong!' });
+});
 
-app.use(errorHandler);
-
-// Database initialization
+// Database init
 async function initializeDatabase() {
-  // This would typically initialize your database connection
-  console.log('Database initialized');
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database(DB_PATH, (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      console.log('Database initialized');
+      resolve();
+    });
+  });
 }
 
+// Start server
 async function startServer() {
   try {
     await initializeDatabase();
-
-    // Initialize job processor
-    await jobProcessor.initialize();
-
-    // Initialize audit monitoring service (if available)
-    let auditMonitoringService = null;
-    try {
-      const AuditMonitoringService = require('./services/auditMonitoringService');
-      auditMonitoringService = new AuditMonitoringService(io);
-    } catch (error) {
-      console.warn('Audit monitoring service not available:', error.message);
-    }
-
-    server.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log(`Health check available at http://localhost:${PORT}/api/health`);
-      console.log(`HL7/FHIR API available at http://localhost:${PORT}/api/hl7-fhir`);
-      console.log(`Audit API available at http://localhost:${PORT}/api/audit`);
-      console.log('Real-time audit monitoring enabled');
-      console.log('Background job processing enabled');
+    
+    server.listen(3000, () => {
+      console.log('Server running on port 3000');
     });
+
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
@@ -150,4 +129,4 @@ process.on('SIGINT', async () => {
 
 startServer();
 
-module.exports = { app, io, jobProcessor };
+module.exports = { app, io };
