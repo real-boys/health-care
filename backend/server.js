@@ -192,8 +192,38 @@ const TelemedicineService = require('./services/telemedicineService');
 const telemedicineService = new TelemedicineService(io);
 telemedicineService.initialize();
 
-io.on('connection', (socket) => {
+// Real-time data broadcaster initialization
+const RealtimeDataBroadcaster = require('./services/realtimeDataBroadcaster');
+const realtimeDataBroadcaster = new RealtimeDataBroadcaster(io);
 
+// Make broadcaster accessible globally
+global.realtimeBroadcaster = realtimeDataBroadcaster;
+
+// System monitoring service initialization
+const { SystemMonitoringService, getMonitoringService } = require('./services/systemMonitoringService');
+const monitoringService = getMonitoringService(io);
+global.monitoringService = monitoringService;
+
+// Dashboard routes
+const dashboardRoutes = require('./routes/dashboard');
+app.use('/api/dashboard', dashboardRoutes);
+
+// Search routes
+const searchRoutes = require('./routes/search');
+app.use('/api/search', searchRoutes);
+
+// Document management routes
+const documentRoutes = require('./routes/documents');
+app.use('/api/documents', documentRoutes);
+
+// User profile management routes
+const profileRoutes = require('./routes/profile');
+app.use('/api/profile', profileRoutes);
+
+// Static file serving for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
@@ -224,8 +254,13 @@ async function startServer() {
   try {
     await initializeDatabase();
     
+    // Initialize monitoring service
+    monitoringService.initialize();
+    console.log('[Server] System monitoring service initialized');
+    
     server.listen(3000, () => {
       console.log('Server running on port 3000');
+      console.log('[Server] Real-time dashboard available at /dashboard');
     });
 
   } catch (error) {
@@ -237,14 +272,14 @@ async function startServer() {
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received, shutting down gracefully');
-  serviceRegistry.stop();
+
   await jobProcessor.shutdown();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   console.log('SIGINT received, shutting down gracefully');
-  serviceRegistry.stop();
+
   await jobProcessor.shutdown();
   process.exit(0);
 });
