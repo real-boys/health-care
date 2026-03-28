@@ -1,8 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { ShieldAlert, Users, Database, LayoutDashboard, Search, Command } from 'lucide-react';
+import { ShieldAlert, Users, Database, LayoutDashboard, Search, Command, DollarSign, Bell } from 'lucide-react';
 import { motion } from 'framer-motion';
 import FraudDetectionPage from './pages/FraudDetectionPage';
+import PaymentHistoryAnalytics from './components/PaymentHistoryAnalytics';
+import NotificationManagementDashboard from './components/NotificationManagementDashboard';
 
 const SidebarItem = ({ to, icon, label, badge }) => {
   const location = useLocation();
@@ -71,10 +73,12 @@ const Layout = ({ children }) => {
                 <SidebarItem to="/" icon={<LayoutDashboard size={20} />} label="Operational Overview" />
                 <SidebarItem to="/patients" icon={<Users size={20} />} label="Patient Forensics" />
                 <SidebarItem to="/providers" icon={<Database size={20} />} label="Provider Entities" />
+                <SidebarItem to="/payments" icon={<DollarSign size={20} />} label="Payment Analytics" />
+                <SidebarItem to="/notifications" icon={<Bell size={20} />} label="Notifications" badge="NEW" />
                 
                 <div className="pt-8 mb-4">
                    <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">Anti-Fraud Engine</p>
-                   <SidebarItem to="/fraud" icon={<ShieldAlert size={20} />} label="Fraud Intelligence" badge="NEW" />
+                   <SidebarItem to="/fraud" icon={<ShieldAlert size={20} />} label="Fraud Intelligence" />
                 </div>
              </nav>
           </div>
@@ -125,6 +129,8 @@ function App() {
           <Route path="/" element={<Placeholder name="Main Dashboard" />} />
           <Route path="/patients" element={<Placeholder name="Patient Records" />} />
           <Route path="/providers" element={<Placeholder name="Provider Registry" />} />
+          <Route path="/payments" element={<PaymentHistoryAnalytics />} />
+          <Route path="/notifications" element={<NotificationManagementDashboard />} />
           <Route path="/fraud" element={<FraudDetectionPage />} />
         </Routes>
       </Layout>
