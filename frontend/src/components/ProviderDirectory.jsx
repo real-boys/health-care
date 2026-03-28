@@ -1,7 +1,118 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, MapPin, Star, Calendar, Clock, Phone, Mail, Globe, CheckCircle, AlertCircle, Heart, Share2, Bookmark, ChevronDown, X, Users, Award, PhoneCall, Video, MessageSquare, Camera, FileText, Shield, DollarSign, TrendingUp, Activity } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Search, Filter, MapPin, Star, Calendar, Clock, Phone, Mail, Globe, CheckCircle, AlertCircle, Heart, Share2, Bookmark, ChevronDown, X, Users, Award, PhoneCall, Video, MessageSquare, Camera, FileText, Shield, DollarSign, TrendingUp, Activity, Map, Navigation, Loader } from 'lucide-react';
 
-const ProviderDirectory = () => {
+// API base URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
+// API service functions
+const providerAPI = {
+  search: async (params) => {
+    const query = new URLSearchParams(params).toString();
+    const response = await fetch(`${API_BASE_URL}/providers/search?${query}`);
+    if (!response.ok) throw new Error('Failed to search providers');
+    return response.json();
+  },
+  
+  getProvider: async (id, params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    const url = `${API_BASE_URL}/providers/${id}${query ? '?' + query : ''}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to get provider');
+    return response.json();
+  },
+  
+  getAvailability: async (providerId, startDate, endDate) => {
+    const query = new URLSearchParams({ start_date: startDate, end_date: endDate }).toString();
+    const response = await fetch(`${API_BASE_URL}/providers/${providerId}/availability?${query}`);
+    if (!response.ok) throw new Error('Failed to get availability');
+    return response.json();
+  },
+  
+  getSlots: async (providerId, date) => {
+    const response = await fetch(`${API_BASE_URL}/providers/${providerId}/slots?date=${date}`);
+    if (!response.ok) throw new Error('Failed to get slots');
+    return response.json();
+  },
+  
+  getReviews: async (providerId, page = 1, sortBy = 'date') => {
+    const response = await fetch(`${API_BASE_URL}/providers/${providerId}/reviews?page=${page}&sort_by=${sortBy}`);
+    if (!response.ok) throw new Error('Failed to get reviews');
+    return response.json();
+  },
+  
+  getSpecialties: async () => {
+    const response = await fetch(`${API_BASE_URL}/providers/specialties/all`);
+    if (!response.ok) throw new Error('Failed to get specialties');
+    return response.json();
+  },
+  
+  getLocations: async (state) => {
+    const query = state ? `?state=${state}` : '';
+    const response = await fetch(`${API_BASE_URL}/providers/locations/all${query}`);
+    if (!response.ok) throw new Error('Failed to get locations');
+    return response.json();
+  },
+  
+  getInsurance: async () => {
+    const response = await fetch(`${API_BASE_URL}/providers/insurance/all`);
+    if (!response.ok) throw new Error('Failed to get insurance');
+    return response.json();
+  },
+  
+  addFavorite: async (providerId, patientId, notes) => {
+    const response = await fetch(`${API_BASE_URL}/providers/${providerId}/favorite`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patient_id: patientId, notes })
+    });
+    if (!response.ok) throw new Error('Failed to add favorite');
+    return response.json();
+  },
+  
+  removeFavorite: async (providerId, patientId) => {
+    const response = await fetch(`${API_BASE_URL}/providers/${providerId}/favorite`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patient_id: patientId })
+    });
+    if (!response.ok) throw new Error('Failed to remove favorite');
+    return response.json();
+  },
+  
+  shareProvider: async (providerId, sharedBy, method, email) => {
+    const response = await fetch(`${API_BASE_URL}/providers/${providerId}/share`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ shared_by: sharedBy, share_method: method, recipient_email: email })
+    });
+    if (!response.ok) throw new Error('Failed to share');
+    return response.json();
+  }
+};
+
+const appointmentAPI = {
+  book: async (appointmentData) => {
+    const response = await fetch(`${API_BASE_URL}/appointments/book`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(appointmentData)
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to book appointment');
+    }
+    return response.json();
+  },
+  
+  getByPatient: async (patientId, params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    const response = await fetch(`${API_BASE_URL}/appointments/patient/${patientId}${query ? '?' + query : ''}`);
+    if (!response.ok) throw new Error('Failed to get appointments');
+    return response.json();
+  }
+};
+
+const ProviderDirectory = ({ patientId, userLocation }) => {
   const [providers, setProviders] = useState([]);
   const [filteredProviders, setFilteredProviders] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,145 +132,292 @@ const ProviderDirectory = () => {
   const [comparisonList, setComparisonList] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 0 });
+  
+  // Filter options from API
+  const [filterOptions, setFilterOptions] = useState({
+    specialties: [],
+    locations: [],
+    insuranceProviders: [],
+    languages: []
+  });
+  const [favorites, setFavorites] = useState([]);
 
-  // Mock data for providers
+  // Fetch providers from API
   useEffect(() => {
-    const mockProviders = [
-      {
-        id: 1,
-        name: "Dr. Sarah Chen",
-        specialty: "Cardiology",
-        subspecialty: "Interventional Cardiology",
-        rating: 4.8,
-        reviews: 156,
-        experience: 12,
-        location: "New York, NY",
-        distance: 2.3,
-        address: "123 Medical Center Blvd, New York, NY 10016",
-        phone: "+1 (555) 123-4567",
-        email: "sarah.chen@medcenter.com",
-        website: "www.drsarahchen.com",
-        education: ["Harvard Medical School", "Massachusetts General Hospital"],
-        boardCertifications: ["American Board of Internal Medicine", "American Board of Cardiology"],
-        languages: ["English", "Mandarin", "Spanish"],
-        gender: "Female",
-        consultationTypes: ["In-Person", "Video", "Phone"],
-        insurance: ["Aetna", "Blue Cross Blue Shield", "Medicare", "UnitedHealth"],
-        availability: {
-          monday: ["9:00 AM - 5:00 PM"],
-          tuesday: ["9:00 AM - 5:00 PM"],
-          wednesday: ["9:00 AM - 3:00 PM"],
-          thursday: ["9:00 AM - 5:00 PM"],
-          friday: ["9:00 AM - 2:00 PM"],
-          saturday: [],
-          sunday: []
-        },
-        nextAvailable: "2024-12-15",
-        price: {
-          consultation: 250,
-          insurance: true
-        },
-        images: [
-          "https://via.placeholder.com/400x300?text=Dr+Sarah+Chen",
-          "https://via.placeholder.com/400x300?text=Clinic+Exterior",
-          "https://via.placeholder.com/400x300?text=Waiting+Room"
-        ],
-        specialties: ["Heart Disease", "Chest Pain", "Hypertension", "Arrhythmia"],
-        achievements: ["Top Doctor Award 2023", "Patient's Choice Award", "Research Excellence"],
-        hospitalAffiliations: ["Mount Sinai Hospital", "NYU Langone Health"],
-        bio: "Dr. Sarah Chen is a board-certified cardiologist with over 12 years of experience in interventional cardiology. She specializes in minimally invasive cardiac procedures and has performed over 3,000 cardiac catheterizations."
-      },
-      {
-        id: 2,
-        name: "Dr. Michael Rodriguez",
-        specialty: "Orthopedic Surgery",
-        subspecialty: "Sports Medicine",
-        rating: 4.9,
-        reviews: 203,
-        experience: 15,
-        location: "Los Angeles, CA",
-        distance: 5.7,
-        address: "456 Sports Medicine Center, Los Angeles, CA 90024",
-        phone: "+1 (555) 987-6543",
-        email: "m.rodriguez@sportsmed.com",
-        website: "www.drmichaelrodriguez.com",
-        education: ["Johns Hopkins University", "Mayo Clinic"],
-        boardCertifications: ["American Board of Orthopaedic Surgery"],
-        languages: ["English", "Spanish"],
-        gender: "Male",
-        consultationTypes: ["In-Person", "Video"],
-        insurance: ["Blue Cross Blue Shield", "Aetna", "Cigna"],
-        availability: {
-          monday: ["8:00 AM - 6:00 PM"],
-          tuesday: ["8:00 AM - 6:00 PM"],
-          wednesday: ["8:00 AM - 6:00 PM"],
-          thursday: ["8:00 AM - 6:00 PM"],
-          friday: ["8:00 AM - 4:00 PM"],
-          saturday: ["9:00 AM - 12:00 PM"],
-          sunday: []
-        },
-        nextAvailable: "2024-12-13",
-        price: {
-          consultation: 300,
-          insurance: true
-        },
-        images: [
-          "https://via.placeholder.com/400x300?text=Dr+Michael+Rodriguez",
-          "https://via.placeholder.com/400x300?text=Sports+Facility"
-        ],
-        specialties: ["Knee Injuries", "Shoulder Surgery", "ACL Reconstruction", "Joint Replacement"],
-        achievements: ["Best Sports Medicine Doctor 2023", "Olympic Team Physician"],
-        hospitalAffiliations: ["Cedars-Sinai Medical Center", "UCLA Medical Center"],
-        bio: "Dr. Michael Rodriguez is a renowned orthopedic surgeon specializing in sports medicine. He has worked with professional athletes and is known for his innovative approaches to joint preservation and minimally invasive surgery."
-      },
-      {
-        id: 3,
-        name: "Dr. Emily Johnson",
-        specialty: "Pediatrics",
-        subspecialty: "Neonatology",
-        rating: 4.7,
-        reviews: 189,
-        experience: 10,
-        location: "Chicago, IL",
-        distance: 3.1,
-        address: "789 Children's Hospital, Chicago, IL 60611",
-        phone: "+1 (555) 456-7890",
-        email: "e.johnson@childrenshospital.org",
-        website: "www.dremilyjohnson.com",
-        education: ["Stanford University", "Children's Hospital of Philadelphia"],
-        boardCertifications: ["American Board of Pediatrics", "American Board of Neonatology"],
-        languages: ["English", "French", "German"],
-        gender: "Female",
-        consultationTypes: ["In-Person", "Video", "Phone"],
-        insurance: ["Blue Cross Blue Shield", "Medicaid", "UnitedHealth"],
-        availability: {
-          monday: ["7:00 AM - 7:00 PM"],
-          tuesday: ["7:00 AM - 7:00 PM"],
-          wednesday: ["7:00 AM - 7:00 PM"],
-          thursday: ["7:00 AM - 7:00 PM"],
-          friday: ["7:00 AM - 5:00 PM"],
-          saturday: ["8:00 AM - 2:00 PM"],
-          sunday: []
-        },
-        nextAvailable: "2024-12-14",
-        price: {
-          consultation: 200,
-          insurance: true
-        },
-        images: [
-          "https://via.placeholder.com/400x300?text=Dr+Emily+Johnson",
-          "https://via.placeholder.com/400x300?text=PEDIATRIC+Ward"
-        ],
-        specialties: ["Newborn Care", "Child Development", "Vaccinations", "Pediatric Emergency"],
-        achievements: ["Top Pediatrician Award", "Humanitarian Award"],
-        hospitalAffiliations: ["Lurie Children's Hospital", "Northwestern Memorial Hospital"],
-        bio: "Dr. Emily Johnson is a compassionate pediatrician dedicated to providing comprehensive care for children from birth through adolescence. She has special expertise in neonatal care and developmental pediatrics."
+    const fetchProviders = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const params = {
+          page: pagination.page,
+          limit: pagination.limit,
+          sort_by: sortBy
+        };
+        
+        // Add search query
+        if (searchQuery) {
+          params.q = searchQuery;
+        }
+        
+        // Add filters
+        if (selectedFilters.specialty.length > 0) {
+          params.specialty = selectedFilters.specialty.join(',');
+        }
+        if (selectedFilters.location.length > 0) {
+          params.city = selectedFilters.location.join(',');
+        }
+        if (selectedFilters.insurance.length > 0) {
+          params.insurance = selectedFilters.insurance.join(',');
+        }
+        if (selectedFilters.language.length > 0) {
+          params.language = selectedFilters.language.join(',');
+        }
+        if (selectedFilters.gender.length > 0) {
+          params.gender = selectedFilters.gender.join(',');
+        }
+        if (selectedFilters.rating > 0) {
+          params.min_rating = selectedFilters.rating;
+        }
+        if (selectedFilters.consultationType.includes('Video')) {
+          params.telehealth_available = true;
+        }
+        if (userLocation) {
+          params.latitude = userLocation.lat;
+          params.longitude = userLocation.lng;
+        }
+        
+        const data = await providerAPI.search(params);
+        
+        setProviders(data.providers || []);
+        setFilteredProviders(data.providers || []);
+        setPagination(prev => ({
+          ...prev,
+          total: data.pagination?.total || 0,
+          pages: data.pagination?.pages || 0
+        }));
+      } catch (err) {
+        console.error('Error fetching providers:', err);
+        setError(err.message);
+        // Fall back to mock data for development
+        const mockProviders = [
+          {
+            id: 1,
+            name: "Dr. Sarah Chen",
+            first_name: "Sarah",
+            last_name: "Chen",
+            specialty: "Cardiology",
+            primary_specialty: "Cardiology",
+            specialties: ["Cardiology", "Interventional Cardiology"],
+            subspecialty: "Interventional Cardiology",
+            rating: 4.8,
+            average_rating: 4.8,
+            reviews: 156,
+            total_reviews: 156,
+            experience: 12,
+            years_of_experience: 12,
+            location: "New York, NY",
+            distance: 2.3,
+            address: "123 Medical Center Blvd, New York, NY 10016",
+            address_line1: "123 Medical Center Blvd",
+            city: "New York",
+            state: "NY",
+            zip_code: "10016",
+            phone: "+1 (555) 123-4567",
+            email: "sarah.chen@medcenter.com",
+            website: "www.drsarahchen.com",
+            education: ["Harvard Medical School", "Massachusetts General Hospital"],
+            boardCertifications: ["American Board of Internal Medicine", "American Board of Cardiology"],
+            languages: ["English", "Mandarin", "Spanish"],
+            languages_spoken: ["English", "Mandarin", "Spanish"],
+            gender: "Female",
+            consultationTypes: ["In-Person", "Video", "Phone"],
+            telehealth_available: true,
+            insurance: ["Aetna", "Blue Cross Blue Shield", "Medicare", "UnitedHealth"],
+            insurance_accepted: ["Aetna", "Blue Cross Blue Shield", "Medicare", "UnitedHealth"],
+            availability: {
+              monday: ["9:00 AM - 5:00 PM"],
+              tuesday: ["9:00 AM - 5:00 PM"],
+              wednesday: ["9:00 AM - 3:00 PM"],
+              thursday: ["9:00 AM - 5:00 PM"],
+              friday: ["9:00 AM - 2:00 PM"],
+              saturday: [],
+              sunday: []
+            },
+            nextAvailable: "2024-12-15",
+            next_available: "2024-12-15",
+            price: {
+              consultation: 250,
+              insurance: true
+            },
+            consultation_fee: 250,
+            images: [
+              "https://via.placeholder.com/400x300?text=Dr+Sarah+Chen",
+              "https://via.placeholder.com/400x300?text=Clinic+Exterior",
+              "https://via.placeholder.com/400x300?text=Waiting+Room"
+            ],
+            profile_image_url: "https://via.placeholder.com/400x300?text=Dr+Sarah+Chen",
+            hospitalAffiliations: ["Mount Sinai Hospital", "NYU Langone Health"],
+            hospital_affiliations: ["Mount Sinai Hospital", "NYU Langone Health"],
+            bio: "Dr. Sarah Chen is a board-certified cardiologist with over 12 years of experience in interventional cardiology. She specializes in minimally invasive cardiac procedures and has performed over 3,000 cardiac catheterizations.",
+            accepts_new_patients: true
+          },
+          {
+            id: 2,
+            name: "Dr. Michael Rodriguez",
+            first_name: "Michael",
+            last_name: "Rodriguez",
+            specialty: "Orthopedic Surgery",
+            primary_specialty: "Orthopedics",
+            specialties: ["Orthopedics", "Sports Medicine"],
+            subspecialty: "Sports Medicine",
+            rating: 4.9,
+            average_rating: 4.9,
+            reviews: 203,
+            total_reviews: 203,
+            experience: 15,
+            years_of_experience: 15,
+            location: "Los Angeles, CA",
+            distance: 5.7,
+            address: "456 Sports Medicine Center, Los Angeles, CA 90024",
+            address_line1: "456 Sports Medicine Center",
+            city: "Los Angeles",
+            state: "CA",
+            zip_code: "90024",
+            phone: "+1 (555) 987-6543",
+            email: "m.rodriguez@sportsmed.com",
+            website: "www.drmichaelrodriguez.com",
+            education: ["Johns Hopkins University", "Mayo Clinic"],
+            boardCertifications: ["American Board of Orthopaedic Surgery"],
+            languages: ["English", "Spanish"],
+            languages_spoken: ["English", "Spanish"],
+            gender: "Male",
+            consultationTypes: ["In-Person", "Video"],
+            telehealth_available: true,
+            insurance: ["Blue Cross Blue Shield", "Aetna", "Cigna"],
+            insurance_accepted: ["Blue Cross Blue Shield", "Aetna", "Cigna"],
+            availability: {
+              monday: ["8:00 AM - 6:00 PM"],
+              tuesday: ["8:00 AM - 6:00 PM"],
+              wednesday: ["8:00 AM - 6:00 PM"],
+              thursday: ["8:00 AM - 6:00 PM"],
+              friday: ["8:00 AM - 4:00 PM"],
+              saturday: ["9:00 AM - 12:00 PM"],
+              sunday: []
+            },
+            nextAvailable: "2024-12-13",
+            next_available: "2024-12-13",
+            price: {
+              consultation: 300,
+              insurance: true
+            },
+            consultation_fee: 300,
+            images: [
+              "https://via.placeholder.com/400x300?text=Dr+Michael+Rodriguez",
+              "https://via.placeholder.com/400x300?text=Sports+Facility"
+            ],
+            profile_image_url: "https://via.placeholder.com/400x300?text=Dr+Michael+Rodriguez",
+            hospitalAffiliations: ["Cedars-Sinai Medical Center", "UCLA Medical Center"],
+            hospital_affiliations: ["Cedars-Sinai Medical Center", "UCLA Medical Center"],
+            bio: "Dr. Michael Rodriguez is a renowned orthopedic surgeon specializing in sports medicine. He has worked with professional athletes and is known for his innovative approaches to joint preservation and minimally invasive surgery.",
+            accepts_new_patients: true
+          },
+          {
+            id: 3,
+            name: "Dr. Emily Johnson",
+            first_name: "Emily",
+            last_name: "Johnson",
+            specialty: "Pediatrics",
+            primary_specialty: "Pediatrics",
+            specialties: ["Pediatrics", "Neonatology"],
+            subspecialty: "Neonatology",
+            rating: 4.7,
+            average_rating: 4.7,
+            reviews: 189,
+            total_reviews: 189,
+            experience: 10,
+            years_of_experience: 10,
+            location: "Chicago, IL",
+            distance: 3.1,
+            address: "789 Children's Hospital, Chicago, IL 60611",
+            address_line1: "789 Children's Hospital",
+            city: "Chicago",
+            state: "IL",
+            zip_code: "60611",
+            phone: "+1 (555) 456-7890",
+            email: "e.johnson@childrenshospital.org",
+            website: "www.dremilyjohnson.com",
+            education: ["Stanford University", "Children's Hospital of Philadelphia"],
+            boardCertifications: ["American Board of Pediatrics", "American Board of Neonatology"],
+            languages: ["English", "French", "German"],
+            languages_spoken: ["English", "French", "German"],
+            gender: "Female",
+            consultationTypes: ["In-Person", "Video", "Phone"],
+            telehealth_available: true,
+            insurance: ["Blue Cross Blue Shield", "Medicaid", "UnitedHealth"],
+            insurance_accepted: ["Blue Cross Blue Shield", "Medicaid", "UnitedHealth"],
+            availability: {
+              monday: ["7:00 AM - 7:00 PM"],
+              tuesday: ["7:00 AM - 7:00 PM"],
+              wednesday: ["7:00 AM - 7:00 PM"],
+              thursday: ["7:00 AM - 7:00 PM"],
+              friday: ["7:00 AM - 5:00 PM"],
+              saturday: ["8:00 AM - 2:00 PM"],
+              sunday: []
+            },
+            nextAvailable: "2024-12-14",
+            next_available: "2024-12-14",
+            price: {
+              consultation: 200,
+              insurance: true
+            },
+            consultation_fee: 200,
+            images: [
+              "https://via.placeholder.com/400x300?text=Dr+Emily+Johnson",
+              "https://via.placeholder.com/400x300?text=PEDIATRIC+Ward"
+            ],
+            profile_image_url: "https://via.placeholder.com/400x300?text=Dr+Emily+Johnson",
+            hospitalAffiliations: ["Lurie Children's Hospital", "Northwestern Memorial Hospital"],
+            hospital_affiliations: ["Lurie Children's Hospital", "Northwestern Memorial Hospital"],
+            bio: "Dr. Emily Johnson is a compassionate pediatrician dedicated to providing comprehensive care for children from birth through adolescence. She has special expertise in neonatal care and developmental pediatrics.",
+            accepts_new_patients: true
+          }
+        ];
+        
+        setProviders(mockProviders);
+        setFilteredProviders(mockProviders);
+      } finally {
+        setLoading(false);
       }
-    ];
-    
-    setProviders(mockProviders);
-    setFilteredProviders(mockProviders);
-    setLoading(false);
+    };
+
+    fetchProviders();
+  }, [searchQuery, selectedFilters, sortBy, pagination.page, userLocation]);
+
+  // Fetch filter options on mount
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        const [specialtiesData, locationsData, insuranceData] = await Promise.all([
+          providerAPI.getSpecialties(),
+          providerAPI.getLocations(),
+          providerAPI.getInsurance()
+        ]);
+        
+        setFilterOptions({
+          specialties: specialtiesData.specialties || [],
+          locations: locationsData.locations || [],
+          insuranceProviders: insuranceData.insurance_providers || [],
+          languages: ['English', 'Spanish', 'Mandarin', 'French', 'German']
+        });
+      } catch (err) {
+        console.error('Error fetching filter options:', err);
+      }
+    };
+
+    fetchFilterOptions();
   }, []);
 
   // Filter and search logic
@@ -257,10 +515,22 @@ const ProviderDirectory = () => {
     setComparisonList(comparisonList.filter(p => p.id !== providerId));
   };
 
-  const specialties = [...new Set(providers.map(p => p.specialty))];
-  const locations = [...new Set(providers.map(p => p.location.split(',')[1]))];
-  const languages = [...new Set(providers.flatMap(p => p.languages))];
-  const insuranceProviders = [...new Set(providers.flatMap(p => p.insurance))];
+  // Derived filter options - use filterOptions from API, or fallback to provider data
+  const specialtyOptions = filterOptions.specialties.length > 0 
+    ? filterOptions.specialties.map(s => s.name)
+    : [...new Set(providers.map(p => p.specialty || p.primary_specialty))];
+  
+  const locationOptions = filterOptions.locations.length > 0
+    ? filterOptions.locations.map(l => `${l.city}, ${l.state}`)
+    : [...new Set(providers.map(p => p.location || `${p.city}, ${p.state}`))];
+  
+  const languageOptions = filterOptions.languages.length > 0
+    ? filterOptions.languages
+    : [...new Set(providers.flatMap(p => p.languages || p.languages_spoken || []))];
+  
+  const insuranceOptions = filterOptions.insuranceProviders.length > 0
+    ? filterOptions.insuranceProviders
+    : [...new Set(providers.flatMap(p => p.insurance || p.insurance_accepted || []))];
 
   if (loading) {
     return (
@@ -307,7 +577,7 @@ const ProviderDirectory = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Specialty</label>
                 <div className="space-y-2 max-h-32 overflow-y-auto">
-                  {specialties.map(specialty => (
+                  {specialtyOptions.map(specialty => (
                     <label key={specialty} className="flex items-center">
                       <input
                         type="checkbox"
@@ -325,7 +595,7 @@ const ProviderDirectory = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
                 <div className="space-y-2 max-h-32 overflow-y-auto">
-                  {locations.map(location => (
+                  {locationOptions.map(location => (
                     <label key={location} className="flex items-center">
                       <input
                         type="checkbox"

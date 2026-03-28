@@ -20,6 +20,10 @@ const authRoutes = require('./routes/auth');
 const patientRoutes = require('./routes/patients');
 const telemedicineRoutes = require('./routes/telemedicine');
 const fraudDetectionRoutes = require('./routes/fraudDetection');
+const providerDirectoryRoutes = require('./routes/providerDirectory');
+const appointmentsRoutes = require('./routes/appointments');
+const providerAvailabilityRoutes = require('./routes/providerAvailability');
+const reviewModerationRoutes = require('./routes/reviewModeration');
 
 const app = express();
 const server = createServer(app);
@@ -53,6 +57,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/telemedicine', telemedicineRoutes);
 app.use('/api/fraud', fraudDetectionRoutes);
+app.use('/api/providers', providerDirectoryRoutes);
+app.use('/api/appointments', appointmentsRoutes);
+app.use('/api/provider-availability', providerAvailabilityRoutes);
+app.use('/api/review-moderation', reviewModerationRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
