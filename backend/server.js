@@ -88,6 +88,10 @@ global.monitoringService = monitoringService;
 const dashboardRoutes = require('./routes/dashboard');
 app.use('/api/dashboard', dashboardRoutes);
 
+// Search routes
+const searchRoutes = require('./routes/search');
+app.use('/api/search', searchRoutes);
+
 io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
