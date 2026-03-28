@@ -92,6 +92,13 @@ app.use('/api/dashboard', dashboardRoutes);
 const searchRoutes = require('./routes/search');
 app.use('/api/search', searchRoutes);
 
+// Document management routes
+const documentRoutes = require('./routes/documents');
+app.use('/api/documents', documentRoutes);
+
+// Static file serving for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
