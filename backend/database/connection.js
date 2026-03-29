@@ -95,4 +95,6 @@ class DatabaseConnection {
 // Create singleton instance
 const connection = new DatabaseConnection();
 
+// Export both the connection instance and a getDatabase function for compatibility
 module.exports = connection;
+module.exports.getDatabase = () => connection.getConnection();

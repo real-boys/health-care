@@ -21,11 +21,13 @@ const providerVerificationRoutes = require('./routes/providerVerification');
 const reviewModerationRoutes = require('./routes/reviewModeration');
 const directorySyncRoutes = require('./routes/directorySync');
 const automatedClaimProcessingRoutes = require('./routes/automatedClaimProcessing');
+const rateLimitingRoutes = require('./routes/rateLimiting');
 
 const { initializeDatabase } = require('./database/init');
 const { authenticateToken } = require('./middleware/auth');
 const { cacheMiddleware } = require('./middleware/cache');
 const { errorHandler } = require('./middleware/errorHandler');
+const { userRateLimit, premiumRateLimit, adminRateLimit } = require('./middleware/rateLimit');
 
 const app = express();
 const server = createServer(app);
@@ -62,19 +64,20 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/patients', authenticateToken, cacheMiddleware, patientRoutes);
-app.use('/api/medical-records', authenticateToken, cacheMiddleware, medicalRecordsRoutes);
-app.use('/api/claims', authenticateToken, cacheMiddleware, claimsRoutes);
-app.use('/api/appointments', authenticateToken, cacheMiddleware, appointmentsRoutes);
-app.use('/api/payments', authenticateToken, cacheMiddleware, paymentsRoutes);
-app.use('/api/contributor', authenticateToken, contributorVerificationRoutes);
-app.use('/api/providers', providersRoutes);
-app.use('/api/provider-availability', authenticateToken, providerAvailabilityRoutes);
-app.use('/api/provider-verification', providerVerificationRoutes);
-app.use('/api/review-moderation', authenticateToken, reviewModerationRoutes);
-app.use('/api/directory-sync', authenticateToken, directorySyncRoutes);
-app.use('/api/automated-claim-processing', authenticateToken, automatedClaimProcessingRoutes);
+app.use('/api/auth', userRateLimit(), authRoutes);
+app.use('/api/patients', authenticateToken, userRateLimit(), cacheMiddleware, patientRoutes);
+app.use('/api/medical-records', authenticateToken, userRateLimit(), cacheMiddleware, medicalRecordsRoutes);
+app.use('/api/claims', authenticateToken, userRateLimit(), cacheMiddleware, claimsRoutes);
+app.use('/api/appointments', authenticateToken, userRateLimit(), cacheMiddleware, appointmentsRoutes);
+app.use('/api/payments', authenticateToken, userRateLimit(), cacheMiddleware, paymentsRoutes);
+app.use('/api/contributor', authenticateToken, userRateLimit(), contributorVerificationRoutes);
+app.use('/api/providers', userRateLimit(), providersRoutes);
+app.use('/api/provider-availability', authenticateToken, userRateLimit(), providerAvailabilityRoutes);
+app.use('/api/provider-verification', userRateLimit(), providerVerificationRoutes);
+app.use('/api/review-moderation', authenticateToken, userRateLimit(), reviewModerationRoutes);
+app.use('/api/directory-sync', authenticateToken, premiumRateLimit(), directorySyncRoutes);
+app.use('/api/automated-claim-processing', authenticateToken, premiumRateLimit(), automatedClaimProcessingRoutes);
+app.use('/api/rate-limiting', authenticateToken, userRateLimit(), rateLimitingRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ 

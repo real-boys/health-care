@@ -3,6 +3,9 @@ const path = require('path');
 const fs = require('fs');
 const { createClaimProcessingTables, createClaimProcessingViews } = require('./claimProcessingSchema');
 
+// Load rate limiting schema
+const rateLimitingSchema = fs.readFileSync(path.join(__dirname, 'rate_limiting_schema.sql'), 'utf8');
+
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'healthcare.db');
 
 function initializeDatabase() {
@@ -176,8 +179,22 @@ function initializeDatabase() {
                 }
                 
                 if (completedProcessingTables === processingTableStatements.length) {
-                  // Create views
-                  const viewStatements = createClaimProcessingViews.split(';').filter(stmt => stmt.trim());
+                  // Create rate limiting tables
+                  const rateLimitStatements = rateLimitingSchema.split(';').filter(stmt => stmt.trim());
+                  let completedRateLimitTables = 0;
+                  
+                  rateLimitStatements.forEach((rateLimitStatement) => {
+                    if (rateLimitStatement.trim()) {
+                      db.run(rateLimitStatement, (err) => {
+                        if (err) {
+                          console.error('Error creating rate limiting table:', err);
+                        } else {
+                          completedRateLimitTables++;
+                        }
+                        
+                        if (completedRateLimitTables === rateLimitStatements.length) {
+                          // Create views
+                          const viewStatements = createClaimProcessingViews.split(';').filter(stmt => stmt.trim());
                   
                   viewStatements.forEach((viewStatement) => {
                     if (viewStatement.trim()) {
