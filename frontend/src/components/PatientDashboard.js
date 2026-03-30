@@ -25,8 +25,13 @@ import {
   Download,
   Eye,
   Edit,
-  Plus
+  Plus,
+  Star,
+  Award
 } from 'lucide-react';
+import ReputationDashboard from './ReputationDashboard';
+import StarRating from './StarRating';
+import ReviewForm from './ReviewForm';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -41,6 +46,9 @@ const PatientDashboard = ({ user, token }) => {
   const [socket, setSocket] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [notifications, setNotifications] = useState([]);
+  const [reputationData, setReputationData] = useState(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState(null);
 
   useEffect(() => {
     const newSocket = io(API_BASE_URL.replace('/api', ''));
@@ -135,12 +143,13 @@ const PatientDashboard = ({ user, token }) => {
         headers: { Authorization: `Bearer ${token}` }
       };
 
-      const [dashboardRes, recordsRes, claimsRes, appointmentsRes, paymentsRes] = await Promise.all([
+      const [dashboardRes, recordsRes, claimsRes, appointmentsRes, paymentsRes, reputationRes] = await Promise.all([
         axios.get(`${API_BASE_URL}/patients/dashboard/${user.id}`, config),
         axios.get(`${API_BASE_URL}/medical-records/patient/${user.id}`, config),
         axios.get(`${API_BASE_URL}/claims/patient/${user.id}`, config),
         axios.get(`${API_BASE_URL}/appointments/upcoming/${user.id}`, config),
-        axios.get(`${API_BASE_URL}/payments/patient/${user.id}`, config)
+        axios.get(`${API_BASE_URL}/payments/patient/${user.id}`, config),
+        axios.get(`${API_BASE_URL}/reputation/profile/${user.id}?profileType=patient`, config)
       ]);
 
       setDashboardData(dashboardRes.data);
@@ -148,6 +157,7 @@ const PatientDashboard = ({ user, token }) => {
       setClaims(claimsRes.data.claims || []);
       setAppointments(appointmentsRes.data || []);
       setPayments(paymentsRes.data.payments || []);
+      setReputationData(reputationRes.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load dashboard data');
     } finally {
@@ -185,6 +195,17 @@ const PatientDashboard = ({ user, token }) => {
       setAppointments(response.data || []);
     } catch (err) {
       console.error('Error fetching appointments:', err);
+    }
+  };
+
+  const fetchReputationData = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/reputation/profile/${user.id}?profileType=patient`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReputationData(response.data);
+    } catch (err) {
+      console.error('Error fetching reputation data:', err);
     }
   };
 
@@ -339,7 +360,7 @@ const PatientDashboard = ({ user, token }) => {
         <div className="bg-white rounded-lg shadow">
           <div className="border-b border-gray-200">
             <nav className="flex space-x-8 px-6" aria-label="Tabs">
-              {['overview', 'records', 'claims', 'appointments', 'payments'].map((tab) => (
+              {['overview', 'records', 'claims', 'appointments', 'payments', 'reputation'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -401,6 +422,47 @@ const PatientDashboard = ({ user, token }) => {
                         <ChevronRight className="h-5 w-5 text-gray-400" />
                       </div>
                     ))}
+                  </div>
+                </div>
+
+                {/* Reputation Summary */}
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Your Reputation</h3>
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Award className="h-8 w-8 text-blue-600" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Reputation Score</p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <StarRating value={reputationData?.overall_score || 0} readonly showValue={false} size="sm" />
+                            <span className="text-sm text-gray-600">
+                              {reputationData?.overall_score?.toFixed(1) || '0.0'} ({reputationData?.total_ratings || 0} ratings)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setActiveTab('reputation')}
+                        className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span>View Details</span>
+                      </button>
+                    </div>
+                    
+                    {reputationData?.badges && reputationData.badges.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-sm font-medium text-gray-900 mb-2">Recent Badges</p>
+                        <div className="flex space-x-2">
+                          {reputationData.badges.slice(0, 3).map((badge) => (
+                            <div key={badge.id} className="text-2xl" title={badge.badge_name}>
+                              {badge.badge_icon}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -582,6 +644,14 @@ const PatientDashboard = ({ user, token }) => {
                   </table>
                 </div>
               </div>
+            )}
+
+            {activeTab === 'reputation' && (
+              <ReputationDashboard 
+                userId={dashboardData?.id} 
+                profileType="patient" 
+                currentUser={dashboardData}
+              />
             )}
           </div>
         </div>

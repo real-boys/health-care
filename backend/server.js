@@ -3,118 +3,327 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
+const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
 require('dotenv').config();
 
+const JobProcessor = require('./services/jobProcessor');
+
+// API Gateway imports
+const { APIGateway, CircuitBreaker, EnhancedRateLimiter, RequestCache, ApiVersioning } = require('./middleware/apiGateway');
+const { ServiceRegistry, GatewayProxy } = require('./services/serviceRegistry');
+
+// Initialize job processor
+const jobProcessor = new JobProcessor();
+
+// Initialize API Gateway
+const apiGateway = new APIGateway({
+  circuitBreaker: {
+    failureThreshold: 5,
+    resetTimeout: 30000
+  },
+  rateLimiter: {
+    windowMs: 60000,
+    maxRequests: 100,
+    slowDown: {
+      enabled: true,
+      threshold: 20,
+      delayMs: 100
+    }
+  },
+  cache: {
+    maxSize: 500,
+    ttl: 60000,
+    ttlByPath: {
+      '/api/providers': 300000,  // 5 minutes for providers
+      '/api/patients': 60000      // 1 minute for patients
+    }
+  },
+  versioning: {
+    currentVersion: 'v1',
+    supportedVersions: ['v1'],
+    deprecatedVersions: [],
+    sunsetDates: {}
+  },
+  securityHeaders: {
+    hsts: { maxAge: 31536000, includeSubDomains: true },
+    frameguard: { action: 'deny' }
+  }
+});
+
+// Initialize Service Registry
+const serviceRegistry = new ServiceRegistry({
+  heartbeatInterval: 30000,
+  heartbeatTimeout: 90000,
+  healthCheckInterval: 60000,
+  loadBalancerStrategy: 'round-robin'
+});
+
+// Initialize Gateway Proxy
+const gatewayProxy = new GatewayProxy(serviceRegistry, { timeout: 30000 });
+
+// Register internal services
+serviceRegistry.register('auth', { host: 'localhost', port: 3000, metadata: { version: 'v1' } });
+serviceRegistry.register('patients', { host: 'localhost', port: 3000, metadata: { version: 'v1' } });
+serviceRegistry.register('providers', { host: 'localhost', port: 3000, metadata: { version: 'v1' } });
+serviceRegistry.register('appointments', { host: 'localhost', port: 3000, metadata: { version: 'v1' } });
+serviceRegistry.register('telemedicine', { host: 'localhost', port: 3000, metadata: { version: 'v1' } });
+
+// Import routes
 const authRoutes = require('./routes/auth');
 const patientRoutes = require('./routes/patients');
-const medicalRecordsRoutes = require('./routes/medicalRecords');
-const claimsRoutes = require('./routes/claims');
+const telemedicineRoutes = require('./routes/telemedicine');
+const fraudDetectionRoutes = require('./routes/fraudDetection');
+const providerDirectoryRoutes = require('./routes/providerDirectory');
 const appointmentsRoutes = require('./routes/appointments');
-const paymentsRoutes = require('./routes/payments');
-const contributorVerificationRoutes = require('./routes/contributorVerification');
-const providersRoutes = require('./routes/providers');
 const providerAvailabilityRoutes = require('./routes/providerAvailability');
-const providerVerificationRoutes = require('./routes/providerVerification');
 const reviewModerationRoutes = require('./routes/reviewModeration');
-const directorySyncRoutes = require('./routes/directorySync');
-const automatedClaimProcessingRoutes = require('./routes/automatedClaimProcessing');
-const rateLimitingRoutes = require('./routes/rateLimiting');
-
-const { initializeDatabase } = require('./database/init');
-const { authenticateToken } = require('./middleware/auth');
-const { cacheMiddleware } = require('./middleware/cache');
-const { errorHandler } = require('./middleware/errorHandler');
-const { userRateLimit, premiumRateLimit, adminRateLimit } = require('./middleware/rateLimit');
+const paymentsRoutes = require('./routes/payments');
+const paymentsExportRoutes = require('./src/routes/paymentsExport');
+const stellarRoutes = require('./routes/stellar');
+const hl7FhirRoutes = require('./routes/hl7-fhir');
+const enhancedPaymentRoutes = require('./routes/enhancedPayments');
+const ehrIntegrationRoutes = require('./routes/ehrIntegration');
+const insuranceRoutes = require('./routes/insurance');
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
-    methods: ["GET", "POST"]
+    origin: '*', // In production, restrict to actual frontend URL
+    methods: ['GET', 'POST']
   }
 });
 
-const PORT = process.env.PORT || 5000;
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
+// Middleware
 app.use(helmet());
+app.use(cors());
 app.use(compression());
-app.use(morgan('combined'));
-app.use(limiter);
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
-  credentials: true
-}));
-app.use(express.json({ limit: '10mb' }));
+app.use(morgan('dev'));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
+// API Gateway Middleware Stack
+const gatewayMiddleware = apiGateway.middleware();
+gatewayMiddleware.forEach(middleware => app.use(middleware));
 
-app.use('/api/auth', userRateLimit(), authRoutes);
-app.use('/api/patients', authenticateToken, userRateLimit(), cacheMiddleware, patientRoutes);
-app.use('/api/medical-records', authenticateToken, userRateLimit(), cacheMiddleware, medicalRecordsRoutes);
-app.use('/api/claims', authenticateToken, userRateLimit(), cacheMiddleware, claimsRoutes);
-app.use('/api/appointments', authenticateToken, userRateLimit(), cacheMiddleware, appointmentsRoutes);
-app.use('/api/payments', authenticateToken, userRateLimit(), cacheMiddleware, paymentsRoutes);
-app.use('/api/contributor', authenticateToken, userRateLimit(), contributorVerificationRoutes);
-app.use('/api/providers', userRateLimit(), providersRoutes);
-app.use('/api/provider-availability', authenticateToken, userRateLimit(), providerAvailabilityRoutes);
-app.use('/api/provider-verification', userRateLimit(), providerVerificationRoutes);
-app.use('/api/review-moderation', authenticateToken, userRateLimit(), reviewModerationRoutes);
-app.use('/api/directory-sync', authenticateToken, premiumRateLimit(), directorySyncRoutes);
-app.use('/api/automated-claim-processing', authenticateToken, premiumRateLimit(), automatedClaimProcessingRoutes);
-app.use('/api/rate-limiting', authenticateToken, userRateLimit(), rateLimitingRoutes);
+// Database setup
+const DB_PATH = path.join(__dirname, 'database', 'healthcare.sqlite');
 
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/patients', patientRoutes);
+app.use('/api/telemedicine', telemedicineRoutes);
+app.use('/api/fraud', fraudDetectionRoutes);
+app.use('/api/providers', providerDirectoryRoutes);
+app.use('/api/appointments', appointmentsRoutes);
+app.use('/api/provider-availability', providerAvailabilityRoutes);
+app.use('/api/review-moderation', reviewModerationRoutes);
+app.use('/api/payments', paymentsRoutes);
+app.use('/api/payments', paymentsExportRoutes);
+app.use('/api/stellar', stellarRoutes);
+app.use('/api/provider-integration', hl7FhirRoutes);
+app.use('/api/payment-gateway', enhancedPaymentRoutes);
+app.use('/api/ehr-integration', ehrIntegrationRoutes);
+app.use('/api/insurance', insuranceRoutes);
+
+// Health check
 app.get('/api/health', (req, res) => {
+  const services = serviceRegistry.getAllServices();
+  const circuitBreakerStates = {};
+  
+  // Get circuit breaker states for all services
+  const cb = apiGateway.getCircuitBreaker();
+  for (const serviceName of Object.keys(services)) {
+    const state = cb.getState(serviceName);
+    circuitBreakerStates[serviceName] = state.status;
+  }
+  
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    gateway: {
+      version: req.apiVersion || 'v1',
+      cache: {
+        enabled: true,
+        size: apiGateway.getCache().cache.size
+      },
+      circuitBreaker: circuitBreakerStates,
+      rateLimiter: {
+        windowMs: 60000,
+        maxRequests: 100
+      }
+    },
+    services: {
+      registered: Object.keys(services).length,
+      details: services,
+      jobProcessor: jobProcessor.isRunning,
+      transformations: true
+    }
   });
 });
+
+// Service Registry Management Routes
+app.get('/api/gateway/services', (req, res) => {
+  res.json(serviceRegistry.getAllServices());
+});
+
+app.post('/api/gateway/services/:name/register', (req, res) => {
+  const { name } = req.params;
+  const instance = serviceRegistry.register(name, req.body);
+  res.status(201).json(instance.toJSON());
+});
+
+app.delete('/api/gateway/services/:name/:instanceId', (req, res) => {
+  const { name, instanceId } = req.params;
+  const success = serviceRegistry.deregister(name, instanceId);
+  res.json({ success });
+});
+
+app.post('/api/gateway/services/:name/heartbeat/:instanceId', (req, res) => {
+  const { name, instanceId } = req.params;
+  const success = serviceRegistry.heartbeat(name, instanceId);
+  res.json({ success });
+});
+
+// Cache management routes
+app.delete('/api/gateway/cache', (req, res) => {
+  apiGateway.getCache().invalidate('*');
+  res.json({ success: true, message: 'Cache cleared' });
+});
+
+app.delete('/api/gateway/cache/:pattern', (req, res) => {
+  const { pattern } = req.params;
+  apiGateway.getCache().invalidate(pattern);
+  res.json({ success: true, message: `Cache invalidated for pattern: ${pattern}` });
+});
+
+// Socket.io initialization for Telemedicine signaling
+const TelemedicineService = require('./services/telemedicineService');
+const telemedicineService = new TelemedicineService(io);
+telemedicineService.initialize();
+
+// Real-time data broadcaster initialization
+const RealtimeDataBroadcaster = require('./services/realtimeDataBroadcaster');
+const realtimeDataBroadcaster = new RealtimeDataBroadcaster(io);
+
+// Make broadcaster accessible globally
+global.realtimeBroadcaster = realtimeDataBroadcaster;
+
+// Transaction WebSocket server initialization
+const TransactionServer = require('./src/websocket/transactionServer');
+const TransactionMonitor = require('./src/services/transactionMonitor');
+const TransactionEvents = require('./src/events/transactionEvents');
+
+// Initialize transaction services
+const transactionMonitor = new TransactionMonitor();
+const transactionServer = new TransactionServer(io);
+const transactionEvents = new TransactionEvents(transactionServer, transactionMonitor);
+
+// Make services accessible globally
+global.transactionMonitor = transactionMonitor;
+global.transactionServer = transactionServer;
+global.transactionEvents = transactionEvents;
+
+// System monitoring service initialization
+const { SystemMonitoringService, getMonitoringService } = require('./services/systemMonitoringService');
+const monitoringService = getMonitoringService(io);
+global.monitoringService = monitoringService;
+
+// Dashboard routes
+const dashboardRoutes = require('./routes/dashboard');
+app.use('/api/dashboard', dashboardRoutes);
+
+// Search routes
+const searchRoutes = require('./routes/search');
+app.use('/api/search', searchRoutes);
+
+// Document management routes
+const documentRoutes = require('./routes/documents');
+app.use('/api/documents', documentRoutes);
+
+// User profile management routes
+const profileRoutes = require('./routes/profile');
+app.use('/api/profile', profileRoutes);
+
+// Transaction routes
+const transactionRoutes = require('./routes/transactions');
+app.use('/api/transactions', transactionRoutes);
+
+// Static file serving for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
-  
-  socket.on('join-patient-room', (patientId) => {
-    socket.join(`patient-${patientId}`);
-    console.log(`Socket ${socket.id} joined room for patient ${patientId}`);
-  });
-  
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+    console.log('User disconnected:', socket.id);
   });
 });
 
-app.use(errorHandler);
+// Error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
 
+// Database init
+async function initializeDatabase() {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database(DB_PATH, (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      console.log('Database initialized');
+      resolve();
+    });
+  });
+}
+
+// Start server
 async function startServer() {
   try {
     await initializeDatabase();
-    server.listen(PORT, () => {
-      console.log(`🚀 Healthcare API Server running on port ${PORT}`);
-      console.log(`📊 Dashboard available at: http://localhost:${PORT}/api/health`);
+    
+    // Initialize monitoring service
+    monitoringService.initialize();
+    console.log('[Server] System monitoring service initialized');
+    
+    // Initialize transaction services
+    await transactionMonitor.initialize();
+    console.log('[Server] Transaction monitoring service initialized');
+    
+    server.listen(3000, () => {
+      console.log('Server running on port 3000');
+      console.log('[Server] Real-time dashboard available at /dashboard');
+      console.log('[Server] Transaction WebSocket endpoint: /ws/transactions');
     });
+
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
   }
 }
 
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received, shutting down gracefully');
+
+  await jobProcessor.shutdown();
+  await transactionEvents.shutdown();
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  console.log('SIGINT received, shutting down gracefully');
+
+  await jobProcessor.shutdown();
+  await transactionEvents.shutdown();
+  process.exit(0);
+});
+
 startServer();
 
-module.exports = { app, io };
+module.exports = { app, io, apiGateway, serviceRegistry };

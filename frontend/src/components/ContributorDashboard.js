@@ -8,8 +8,12 @@ import {
   DollarSign,
   Activity,
   FileText,
-  ExternalLink
+  ExternalLink,
+  Star,
+  Trophy
 } from 'lucide-react';
+import ReputationDashboard from './ReputationDashboard';
+import StarRating from './StarRating';
 
 const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssue, onReviewIssue }) => {
   const [activeTab, setActiveTab] = useState('available');
@@ -232,6 +236,18 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
             <CheckCircle className="w-4 h-4" />
             Reviews
           </button>
+          
+          <button
+            onClick={() => setActiveTab('reputation')}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md ${
+              activeTab === 'reputation'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            <Trophy className="w-4 h-4" />
+            Reputation
+          </button>
         </div>
       </div>
 
@@ -279,6 +295,14 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
             Your recent issue reviews and outcomes.
           </div>
         </div>
+      )}
+
+      {activeTab === 'reputation' && (
+        <ReputationDashboard 
+          userId={contributorStats?.id} 
+          profileType="contributor" 
+          currentUser={contributorStats}
+        />
       )}
     </div>
   );

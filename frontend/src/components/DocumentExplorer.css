@@ -1,0 +1,487 @@
+/* Document Explorer Styles */
+
+.document-explorer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f3f4f6;
+  overflow: hidden;
+}
+
+/* Header */
+.explorer-header {
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.explorer-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* Main Layout */
+.explorer-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.explorer-sidebar {
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-section {
+  padding: 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.sidebar-section:last-child {
+  border-bottom: none;
+}
+
+.sidebar-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+}
+
+.btn-new-folder {
+  width: 100%;
+  padding: 0.75rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.btn-new-folder:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Folders List */
+.folders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+.folder-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #4b5563;
+  transition: all 0.2s ease;
+  text-align: left;
+  user-select: none;
+  min-width: 0;
+}
+
+.folder-item:hover {
+  background: #f3f4f6;
+}
+
+.folder-item.active {
+  background: #eff6ff;
+  border-left: 3px solid #3b82f6;
+  padding-left: calc(0.75rem - 3px);
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.folder-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.folder-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doc-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.4rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Storage Stats */
+.storage-stats {
+  margin-top: auto;
+}
+
+.storage-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.storage-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #4b5563;
+  display: flex;
+  justify-content: space-between;
+}
+
+.storage-info strong {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.storage-bar {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.storage-used {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
+  width: 65%;
+}
+
+/* Main Content */
+.explorer-main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+/* Top Bar */
+.explorer-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  gap: 1rem;
+}
+
+.explorer-topbar h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1f2937;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.topbar-controls .btn-icon {
+  padding: 0.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.topbar-controls .btn-icon:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.topbar-controls .btn-upload {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.topbar-controls .btn-upload:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Upload Section */
+.upload-section {
+  padding: 1.5rem 2rem;
+  background: white;
+  margin: 1rem 1.5rem 0 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+/* Content Area */
+.explorer-main > div:last-child {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 2rem;
+}
+
+.explorer-main > div:last-child > * {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-dialog {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+
+.modal-dialog h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.modal-dialog input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  margin-bottom: 1.5rem;
+  box-sizing: border-box;
+}
+
+.modal-dialog input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+}
+
+/* Scrollbar */
+.folders-list::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+.folders-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.folders-list::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 0.25rem;
+}
+
+.folders-list::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .explorer-layout {
+    grid-template-columns: 250px 1fr;
+  }
+
+  .explorer-sidebar {
+    max-width: 250px;
+  }
+
+  .explorer-topbar {
+    padding: 1rem 1.5rem;
+  }
+
+  .explorer-main > div:last-child {
+    padding: 1rem 1.5rem;
+  }
+
+  .upload-section {
+    margin: 1rem 0 0 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .explorer-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .explorer-sidebar {
+    display: none;
+  }
+
+  .explorer-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .explorer-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .explorer-topbar {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .explorer-topbar h2 {
+    width: 100%;
+  }
+
+  .topbar-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .topbar-controls .btn-upload {
+    width: 100%;
+    text-align: center;
+  }
+
+  .explorer-main > div:last-child {
+    padding: 1rem;
+  }
+
+  .upload-section {
+    padding: 1rem;
+    max-height: 350px;
+  }
+
+  .modal-dialog {
+    width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .explorer-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .explorer-header h1 {
+    font-size: 1.1rem;
+  }
+
+  .explorer-topbar {
+    padding: 0.75rem 1rem;
+  }
+
+  .explorer-main > div:last-child {
+    padding: 0.75rem;
+  }
+
+  .modal-dialog h3 {
+    font-size: 1rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

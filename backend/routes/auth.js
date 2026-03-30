@@ -5,6 +5,7 @@ const path = require('path');
 const { generateTokens, hashPassword, comparePassword, validateRegistration, validateLogin } = require('../middleware/auth');
 const { setCache, deleteCache } = require('../middleware/cache');
 
+
 const router = express.Router();
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../database/healthcare.db');
 
@@ -132,9 +133,10 @@ router.post('/refresh', (req, res, next) => {
   }
 });
 
-router.post('/logout', (req, res) => {
+
   deleteCache('/api/patients');
   res.json({ message: 'Logged out successfully' });
 });
 
+<
 module.exports = router;

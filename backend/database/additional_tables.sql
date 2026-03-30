@@ -176,6 +176,64 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Note: This trigger would need to be implemented carefully to avoid performance issues
--- CREATE TRIGGER trigger_track_profile_view
---     AFTER SELECT ON healthcare_providers
---     FOR EACH ROW EXECUTE FUNCTION track_provider_profile_view();
+-- Telemedicine Appointments table
+CREATE TABLE IF NOT EXISTS telemedicine_appointments (
+    id SERIAL PRIMARY KEY,
+    patient_id INTEGER REFERENCES patients(id),
+    provider_id INTEGER REFERENCES healthcare_providers(id),
+    appointment_date TIMESTAMP NOT NULL,
+    duration_minutes INTEGER DEFAULT 30,
+    status VARCHAR(20) DEFAULT 'scheduled', -- 'scheduled', 'in-progress', 'completed', 'cancelled', 'waiting'
+    room_id VARCHAR(100) UNIQUE, -- For WebRTC signaling
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Telemedicine Prescriptions table
+CREATE TABLE IF NOT EXISTS telemedicine_prescriptions (
+    id SERIAL PRIMARY KEY,
+    appointment_id INTEGER REFERENCES telemedicine_appointments(id),
+    patient_id INTEGER REFERENCES patients(id),
+    provider_id INTEGER REFERENCES healthcare_providers(id),
+    medication_name VARCHAR(255) NOT NULL,
+    dosage VARCHAR(100),
+    frequency VARCHAR(100),
+    instructions TEXT,
+    issue_date DATE DEFAULT CURRENT_DATE,
+    expiry_date DATE,
+    status VARCHAR(20) DEFAULT 'active', -- 'active', 'filled', 'expired'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Telemedicine Remote Monitoring data
+CREATE TABLE IF NOT EXISTS telemedicine_remote_monitoring (
+    id SERIAL PRIMARY KEY,
+    patient_id INTEGER REFERENCES patients(id),
+    metric_type VARCHAR(50) NOT NULL, -- 'heart_rate', 'blood_pressure', 'glucose', 'weight', 'temperature'
+    metric_value DECIMAL(10,2) NOT NULL,
+    metric_unit VARCHAR(20),
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    source VARCHAR(50) -- 'manual', 'wearable_device', 'iot_sensor'
+);
+
+-- Telemedicine File Sharing table
+CREATE TABLE IF NOT EXISTS telemedicine_files (
+    id SERIAL PRIMARY KEY,
+    appointment_id INTEGER REFERENCES telemedicine_appointments(id),
+    sender_id INTEGER REFERENCES users(id),
+    file_name VARCHAR(255) NOT NULL,
+    file_path TEXT NOT NULL,
+    file_type VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indexes for telemedicine tables
+CREATE INDEX IF NOT EXISTS idx_telemedicine_appointments_patient ON telemedicine_appointments(patient_id);
+CREATE INDEX IF NOT EXISTS idx_telemedicine_appointments_provider ON telemedicine_appointments(provider_id);
+CREATE INDEX IF NOT EXISTS idx_telemedicine_appointments_status ON telemedicine_appointments(status);
+CREATE INDEX IF NOT EXISTS idx_telemedicine_appointments_date ON telemedicine_appointments(appointment_date);
+CREATE INDEX IF NOT EXISTS idx_telemedicine_prescriptions_patient ON telemedicine_prescriptions(patient_id);
+CREATE INDEX IF NOT EXISTS idx_telemedicine_remote_monitoring_patient ON telemedicine_remote_monitoring(patient_id);
+CREATE INDEX IF NOT EXISTS idx_telemedicine_remote_monitoring_type ON telemedicine_remote_monitoring(metric_type);
+CREATE INDEX IF NOT EXISTS idx_telemedicine_files_appointment ON telemedicine_files(appointment_id);

@@ -1,0 +1,162 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "apply": "Aplicar",
+    "reset": "Restablecer",
+    "confirm": "Confirmar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "yes": "Sí",
+    "no": "No",
+    "success": "Éxito",
+    "error": "Error",
+    "warning": "Advertencia",
+    "info": "Información"
+  },
+  "navigation": {
+    "dashboard": "Panel de Control",
+    "patients": "Pacientes",
+    "providers": "Proveedores",
+    "payments": "Pagos",
+    "notifications": "Notificaciones",
+    "fraud": "Detección de Fraude",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "logout": "Cerrar Sesión",
+    "language": "Idioma"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "forgotPassword": "¿Olvidó su Contraseña?",
+    "resetPassword": "Restablecer Contraseña",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "rememberMe": "Recuérdame",
+    "signIn": "Ingresar",
+    "signOut": "Salir",
+    "welcomeBack": "Bienvenido de Nuevo"
+  },
+  "dashboard": {
+    "title": "Resumen Operativo",
+    "overview": "Resumen",
+    "statistics": "Estadísticas",
+    "recentActivity": "Actividad Reciente",
+    "quickActions": "Acciones Rápidas",
+    "totalPatients": "Total de Pacientes",
+    "totalProviders": "Total de Proveedores",
+    "totalPayments": "Total de Pagos",
+    "pendingClaims": "Reclamaciones Pendientes"
+  },
+  "patients": {
+    "title": "Análisis de Pacientes",
+    "patientList": "Lista de Pacientes",
+    "addPatient": "Agregar Paciente",
+    "editPatient": "Editar Paciente",
+    "viewPatient": "Ver Detalles del Paciente",
+    "patientId": "ID del Paciente",
+    "patientName": "Nombre del Paciente",
+    "dateOfBirth": "Fecha de Nacimiento",
+    "gender": "Género",
+    "contact": "Información de Contacto",
+    "medicalHistory": "Historial Médico",
+    "insurance": "Información de Seguro"
+  },
+  "providers": {
+    "title": "Entidades de Proveedores",
+    "providerList": "Lista de Proveedores",
+    "addProvider": "Agregar Proveedor",
+    "editProvider": "Editar Proveedor",
+    "providerName": "Nombre del Proveedor",
+    "specialty": "Especialidad",
+    "credentials": "Credenciales",
+    "contact": "Contacto",
+    "rating": "Calificación"
+  },
+  "payments": {
+    "title": "Análisis de Pagos",
+    "paymentHistory": "Historial de Pagos",
+    "makePayment": "Realizar Pago",
+    "paymentAmount": "Monto",
+    "paymentMethod": "Método de Pago",
+    "paymentStatus": "Estado",
+    "paymentDate": "Fecha",
+    "transactionId": "ID de Transacción",
+    "creditCard": "Tarjeta de Crédito",
+    "paypal": "PayPal",
+    "crypto": "Criptomoneda",
+    "completed": "Completado",
+    "pending": "Pendiente",
+    "failed": "Fallido",
+    "refunded": "Reembolsado"
+  },
+  "fraud": {
+    "title": "Inteligencia de Fraude",
+    "detection": "Detección",
+    "alerts": "Alertas",
+    "riskScore": "Nivel de Riesgo",
+    "suspiciousActivity": "Actividad Sospechosa",
+    "investigate": "Investigar",
+    "resolved": "Resuelto",
+    "flagged": "Marcado"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "markAllRead": "Marcar Todo como Leído",
+    "noNotifications": "Sin notificaciones",
+    "newNotification": "Nueva Notificación",
+    "type": {
+      "payment": "Notificación de Pago",
+      "appointment": "Recordatorio de Cita",
+      "alert": "Alerta de Seguridad",
+      "system": "Actualización del Sistema"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "general": "Configuración General",
+    "security": "Seguridad",
+    "privacy": "Privacidad",
+    "notifications": "Notificaciones",
+    "appearance": "Apariencia",
+    "language": "Preferencias de Idioma"
+  },
+  "sync": {
+    "status": "Estado de Sincronización",
+    "online": "En Línea",
+    "offline": "Sin Conexión",
+    "syncing": "Sincronizando...",
+    "synced": "Sincronizado",
+    "pending": "Pendiente de Sincronizar",
+    "lastSync": "Última Sincronización",
+    "retry": "Reintentar",
+    "conflict": "Conflicto Detectado",
+    "resolveConflict": "Resolver Conflicto"
+  },
+  "errors": {
+    "networkError": "Error de red. Por favor verifique su conexión.",
+    "serverError": "Error del servidor. Intente más tarde.",
+    "notFound": "Recurso no encontrado.",
+    "unauthorized": "Acceso no autorizado.",
+    "validationError": "Por favor verifique sus datos.",
+    "paymentFailed": "Pago fallido. Intente nuevamente."
+  },
+  "validation": {
+    "required": "Este campo es obligatorio",
+    "invalidEmail": "Correo electrónico inválido",
+    "minLength": "Debe tener al menos {{length}} caracteres",
+    "maxLength": "Debe tener máximo {{length}} caracteres",
+    "passwordMatch": "Las contraseñas no coinciden",
+    "invalidFormat": "Formato inválido"
+  }
+}

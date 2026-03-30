@@ -1,0 +1,405 @@
+warning: `dev_dependencies` is deprecated in favor of `dev-dependencies` and will not work in the 2024 edition
+(in the `healthcare-drips` package)
+   3.084794200s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `derive_arbitrary` is newer than we are 13418866590.939177800s > 13418866362.856394800s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\arbitrary-1.3.2"
+   3.168513400s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `build_script_build` is newer than we are 13418866458.300251200s > 13418866365.895857300s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\typenum-1.19.0"
+   3.185597000s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `curve25519_dalek_derive` is newer than we are 13418866593.176210600s > 13418866363.040415200s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\curve25519-dalek-4.1.2"
+   3.214097500s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `zerocopy_derive` is newer than we are 13418866599.774185600s > 13418866366.154282200s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\zerocopy-0.7.35"
+   3.217249100s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `build_script_build` is newer than we are 13418866457.898481700s > 13418866364.106914000s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde-1.0.192"
+   3.247816900s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `build_script_build` is newer than we are 13418866584.192032300s > 13418866362.885379000s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\backtrace-0.3.69"
+   3.252523000s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `zeroize` is newer than we are 13418866366.163275800s > 13418866363.162861700s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\der-0.7.10"
+   3.263404600s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `zeroize` is newer than we are 13418866366.163275800s > 13418866363.020429200s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\crypto-bigint-0.5.5"
+   3.263812600s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `subtle` is newer than we are 13418866365.640600400s > 13418866363.276455300s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ff-0.13.1"
+   3.299155000s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `build_script_build` is newer than we are 13418866581.933727900s > 13418866363.699561100s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\num-traits-0.2.17"
+   3.417396800s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `build_script_build` is newer than we are 13418866582.245748300s > 13418866363.570635500s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\libm-0.2.16"
+   3.434321400s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `spin` is newer than we are 13418866364.533890500s > 13418866364.529894800s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-wasmi-0.31.1-soroban.20.0.1"
+   3.460936400s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `build_script_build` is newer than we are 13418866463.980355500s > 13418866365.864869300s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\thiserror-1.0.55"
+   3.461286900s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: dependency on `build_script_build` is newer than we are 13418866621.534003100s > 13418866364.547882600s "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-strkey-0.0.8"
+   3.545202000s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("healthcare_drips", ["cdylib"], "C:\\Users\\dmanl\\OneDrive\\Documents\\GitHub\\health-care\\src\\lib.rs", Edition2021) }
+   3.545614200s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\healthcare-drips-9c8e65bcc97431c4\lib-healthcare_drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   3.651894700s  INFO prepare_target{force=false package_id=soroban-sdk v20.5.0 target="soroban_sdk"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-sdk v20.5.0/Check { test: false }/TargetInner { name_inferred: true, doctest: false, ..: lib_target("soroban_sdk", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-sdk-20.5.0\\src\\lib.rs", Edition2021) }
+   3.651974900s  INFO prepare_target{force=false package_id=soroban-sdk v20.5.0 target="soroban_sdk"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\soroban-sdk-467d747328070b14\lib-soroban_sdk`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_libgit2_prerelease
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: git_midx_writer_dump
+  18: git_filter_source_repo
+  19: git_midx_writer_dump
+  20: BaseThreadInitThunk
+  21: RtlUserThreadStart
+   3.752416300s  INFO prepare_target{force=false package_id=arbitrary v1.3.2 target="arbitrary"}: cargo::core::compiler::fingerprint: fingerprint dirty for arbitrary v1.3.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("arbitrary", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\arbitrary-1.3.2\\src\\lib.rs", Edition2021) }
+   3.752593600s  INFO prepare_target{force=false package_id=arbitrary v1.3.2 target="arbitrary"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "derive_arbitrary", dep_mtime: FileTime { seconds: 13418866590, nanos: 939177800 }, max_mtime: FileTime { seconds: 13418866362, nanos: 856394800 } })
+   3.768022300s  INFO prepare_target{force=false package_id=derive_arbitrary v1.4.2 target="derive_arbitrary"}: cargo::core::compiler::fingerprint: fingerprint dirty for derive_arbitrary v1.4.2/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("derive_arbitrary", ["proc-macro"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\derive_arbitrary-1.4.2\\src\\lib.rs", Edition2021) }
+   3.768115100s  INFO prepare_target{force=false package_id=derive_arbitrary v1.4.2 target="derive_arbitrary"}: cargo::core::compiler::fingerprint:     dirty: NothingObvious
+   4.034781700s  INFO prepare_target{force=false package_id=ed25519-dalek v2.0.0 target="ed25519_dalek"}: cargo::core::compiler::fingerprint: fingerprint dirty for ed25519-dalek v2.0.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("ed25519_dalek", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ed25519-dalek-2.0.0\\src\\lib.rs", Edition2021) }
+   4.034947500s  INFO prepare_target{force=false package_id=ed25519-dalek v2.0.0 target="ed25519_dalek"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "sha2" })
+   4.128595700s  INFO prepare_target{force=false package_id=curve25519-dalek v4.1.2 target="curve25519_dalek"}: cargo::core::compiler::fingerprint: fingerprint dirty for curve25519-dalek v4.1.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("curve25519_dalek", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\curve25519-dalek-4.1.2\\src\\lib.rs", Edition2021) }
+   4.128672000s  INFO prepare_target{force=false package_id=curve25519-dalek v4.1.2 target="curve25519_dalek"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "curve25519_dalek_derive", dep_mtime: FileTime { seconds: 13418866593, nanos: 176210600 }, max_mtime: FileTime { seconds: 13418866363, nanos: 40415200 } })
+   4.369156400s  INFO prepare_target{force=false package_id=digest v0.10.7 target="digest"}: cargo::core::compiler::fingerprint: fingerprint dirty for digest v0.10.7/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("digest", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\digest-0.10.7\\src\\lib.rs", Edition2018) }
+   4.369300000s  INFO prepare_target{force=false package_id=digest v0.10.7 target="digest"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "crypto_common" })
+   4.466417000s  INFO prepare_target{force=false package_id=block-buffer v0.10.4 target="block_buffer"}: cargo::core::compiler::fingerprint: fingerprint dirty for block-buffer v0.10.4/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("block_buffer", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\block-buffer-0.10.4\\src\\lib.rs", Edition2018) }
+   4.466548600s  INFO prepare_target{force=false package_id=block-buffer v0.10.4 target="block_buffer"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "generic_array" })
+   4.567548000s  INFO prepare_target{force=false package_id=generic-array v0.14.9 target="generic_array"}: cargo::core::compiler::fingerprint: fingerprint dirty for generic-array v0.14.9/Check { test: false }/TargetInner { ..: lib_target("generic_array", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\generic-array-0.14.9\\src\\lib.rs", Edition2015) }
+   4.567678500s  INFO prepare_target{force=false package_id=generic-array v0.14.9 target="generic_array"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "typenum" })
+   4.675705500s  INFO prepare_target{force=false package_id=typenum v1.19.0 target="typenum"}: cargo::core::compiler::fingerprint: fingerprint dirty for typenum v1.19.0/Check { test: false }/TargetInner { ..: lib_target("typenum", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\typenum-1.19.0\\src\\lib.rs", Edition2018) }
+   4.675849400s  INFO prepare_target{force=false package_id=typenum v1.19.0 target="typenum"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "build_script_build", dep_mtime: FileTime { seconds: 13418866458, nanos: 300251200 }, max_mtime: FileTime { seconds: 13418866365, nanos: 895857300 } })
+   4.832081800s  INFO prepare_target{force=false package_id=crypto-common v0.1.6 target="crypto_common"}: cargo::core::compiler::fingerprint: fingerprint dirty for crypto-common v0.1.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("crypto_common", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\crypto-common-0.1.6\\src\\lib.rs", Edition2018) }
+   4.832228200s  INFO prepare_target{force=false package_id=crypto-common v0.1.6 target="crypto_common"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "typenum" })
+   4.946324500s  INFO prepare_target{force=false package_id=ed25519 v2.2.3 target="ed25519"}: cargo::core::compiler::fingerprint: fingerprint dirty for ed25519 v2.2.3/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("ed25519", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ed25519-2.2.3\\src\\lib.rs", Edition2021) }
+   4.946405700s  INFO prepare_target{force=false package_id=ed25519 v2.2.3 target="ed25519"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "signature" })
+   5.045666800s  INFO prepare_target{force=false package_id=signature v2.2.0 target="signature"}: cargo::core::compiler::fingerprint: fingerprint dirty for signature v2.2.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("signature", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\signature-2.2.0\\src\\lib.rs", Edition2021) }
+   5.045792400s  INFO prepare_target{force=false package_id=signature v2.2.0 target="signature"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "digest" })
+   5.263972100s  INFO prepare_target{force=false package_id=sha2 v0.10.8 target="sha2"}: cargo::core::compiler::fingerprint: fingerprint dirty for sha2 v0.10.8/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sha2", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\sha2-0.10.8\\src\\lib.rs", Edition2018) }
+   5.264108600s  INFO prepare_target{force=false package_id=sha2 v0.10.8 target="sha2"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "digest" })
+   5.416074400s  INFO prepare_target{force=false package_id=rand v0.8.5 target="rand"}: cargo::core::compiler::fingerprint: fingerprint dirty for rand v0.8.5/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("rand", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rand-0.8.5\\src\\lib.rs", Edition2018) }
+   5.416207300s  INFO prepare_target{force=false package_id=rand v0.8.5 target="rand"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "rand_chacha" })
+   5.549284500s  INFO prepare_target{force=false package_id=rand_chacha v0.3.1 target="rand_chacha"}: cargo::core::compiler::fingerprint: fingerprint dirty for rand_chacha v0.3.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("rand_chacha", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rand_chacha-0.3.1\\src\\lib.rs", Edition2018) }
+   5.549417800s  INFO prepare_target{force=false package_id=rand_chacha v0.3.1 target="rand_chacha"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "ppv_lite86" })
+   5.632172000s  INFO prepare_target{force=false package_id=ppv-lite86 v0.2.20 target="ppv_lite86"}: cargo::core::compiler::fingerprint: fingerprint dirty for ppv-lite86 v0.2.20/Check { test: false }/TargetInner { ..: lib_target("ppv_lite86", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ppv-lite86-0.2.20\\src\\lib.rs", Edition2021) }
+   5.632249900s  INFO prepare_target{force=false package_id=ppv-lite86 v0.2.20 target="ppv_lite86"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "zerocopy" })
+   5.717332000s  INFO prepare_target{force=false package_id=zerocopy v0.7.35 target="zerocopy"}: cargo::core::compiler::fingerprint: fingerprint dirty for zerocopy v0.7.35/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("zerocopy", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\zerocopy-0.7.35\\src\\lib.rs", Edition2018) }
+   5.717420800s  INFO prepare_target{force=false package_id=zerocopy v0.7.35 target="zerocopy"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "zerocopy_derive", dep_mtime: FileTime { seconds: 13418866599, nanos: 774185600 }, max_mtime: FileTime { seconds: 13418866366, nanos: 154282200 } })
+   5.896298000s  INFO prepare_target{force=false package_id=serde v1.0.192 target="serde"}: cargo::core::compiler::fingerprint: fingerprint dirty for serde v1.0.192/Check { test: false }/TargetInner { name_inferred: true, doc_scrape_examples: Disabled, ..: lib_target("serde", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde-1.0.192\\src\\lib.rs", Edition2018) }
+   5.896611200s  INFO prepare_target{force=false package_id=serde v1.0.192 target="serde"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "build_script_build", dep_mtime: FileTime { seconds: 13418866457, nanos: 898481700 }, max_mtime: FileTime { seconds: 13418866364, nanos: 106914000 } })
+   5.995557200s  INFO prepare_target{force=false package_id=serde_json v1.0.108 target="serde_json"}: cargo::core::compiler::fingerprint: fingerprint dirty for serde_json v1.0.108/Check { test: false }/TargetInner { name_inferred: true, doc_scrape_examples: Disabled, ..: lib_target("serde_json", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde_json-1.0.108\\src\\lib.rs", Edition2021) }
+   5.995696600s  INFO prepare_target{force=false package_id=serde_json v1.0.108 target="serde_json"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "serde" })
+   6.101441200s  INFO prepare_target{force=false package_id=soroban-env-host v20.3.0 target="soroban_env_host"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-env-host v20.3.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("soroban_env_host", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-env-host-20.3.0\\src\\lib.rs", Edition2021) }
+   6.101519900s  INFO prepare_target{force=false package_id=soroban-env-host v20.3.0 target="soroban_env_host"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\soroban-env-host-1bc4ae6d2e867b03\lib-soroban_env_host`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_libgit2_prerelease
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: git_midx_writer_dump
+  19: git_filter_source_repo
+  20: git_midx_writer_dump
+  21: BaseThreadInitThunk
+  22: RtlUserThreadStart
+   6.216239300s  INFO prepare_target{force=false package_id=backtrace v0.3.69 target="backtrace"}: cargo::core::compiler::fingerprint: fingerprint dirty for backtrace v0.3.69/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("backtrace", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\backtrace-0.3.69\\src\\lib.rs", Edition2018) }
+   6.216319500s  INFO prepare_target{force=false package_id=backtrace v0.3.69 target="backtrace"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "build_script_build", dep_mtime: FileTime { seconds: 13418866584, nanos: 192032300 }, max_mtime: FileTime { seconds: 13418866362, nanos: 885379000 } })
+   6.369083600s  INFO prepare_target{force=false package_id=hmac v0.12.1 target="hmac"}: cargo::core::compiler::fingerprint: fingerprint dirty for hmac v0.12.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("hmac", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\hmac-0.12.1\\src\\lib.rs", Edition2018) }
+   6.369228200s  INFO prepare_target{force=false package_id=hmac v0.12.1 target="hmac"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "digest" })
+   6.446051800s  INFO prepare_target{force=false package_id=k256 v0.13.1 target="k256"}: cargo::core::compiler::fingerprint: fingerprint dirty for k256 v0.13.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("k256", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\k256-0.13.1\\src\\lib.rs", Edition2021) }
+   6.446139400s  INFO prepare_target{force=false package_id=k256 v0.13.1 target="k256"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "ecdsa_core" })
+   6.524515900s  INFO prepare_target{force=false package_id=ecdsa v0.16.9 target="ecdsa"}: cargo::core::compiler::fingerprint: fingerprint dirty for ecdsa v0.16.9/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("ecdsa", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ecdsa-0.16.9\\src\\lib.rs", Edition2021) }
+   6.524678600s  INFO prepare_target{force=false package_id=ecdsa v0.16.9 target="ecdsa"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "rfc6979" })
+   6.599132900s  INFO prepare_target{force=false package_id=der v0.7.10 target="der"}: cargo::core::compiler::fingerprint: fingerprint dirty for der v0.7.10/Check { test: false }/TargetInner { ..: lib_target("der", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\der-0.7.10\\src\\lib.rs", Edition2021) }
+   6.599261300s  INFO prepare_target{force=false package_id=der v0.7.10 target="der"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "zeroize", dep_mtime: FileTime { seconds: 13418866366, nanos: 163275800 }, max_mtime: FileTime { seconds: 13418866363, nanos: 162861700 } })
+   6.685198900s  INFO prepare_target{force=false package_id=elliptic-curve v0.13.8 target="elliptic_curve"}: cargo::core::compiler::fingerprint: fingerprint dirty for elliptic-curve v0.13.8/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("elliptic_curve", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\elliptic-curve-0.13.8\\src\\lib.rs", Edition2021) }
+   6.685360900s  INFO prepare_target{force=false package_id=elliptic-curve v0.13.8 target="elliptic_curve"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "sec1" })
+   6.792583000s  INFO prepare_target{force=false package_id=crypto-bigint v0.5.5 target="crypto_bigint"}: cargo::core::compiler::fingerprint: fingerprint dirty for crypto-bigint v0.5.5/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("crypto_bigint", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\crypto-bigint-0.5.5\\src\\lib.rs", Edition2021) }
+   6.793128200s  INFO prepare_target{force=false package_id=crypto-bigint v0.5.5 target="crypto_bigint"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "zeroize", dep_mtime: FileTime { seconds: 13418866366, nanos: 163275800 }, max_mtime: FileTime { seconds: 13418866363, nanos: 20429200 } })
+   6.860716700s  INFO prepare_target{force=false package_id=ff v0.13.1 target="ff"}: cargo::core::compiler::fingerprint: fingerprint dirty for ff v0.13.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("ff", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\ff-0.13.1\\src\\lib.rs", Edition2021) }
+   6.860835300s  INFO prepare_target{force=false package_id=ff v0.13.1 target="ff"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "subtle", dep_mtime: FileTime { seconds: 13418866365, nanos: 640600400 }, max_mtime: FileTime { seconds: 13418866363, nanos: 276455300 } })
+   6.924274600s  INFO prepare_target{force=false package_id=group v0.13.0 target="group"}: cargo::core::compiler::fingerprint: fingerprint dirty for group v0.13.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("group", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\group-0.13.0\\src\\lib.rs", Edition2021) }
+   6.924357900s  INFO prepare_target{force=false package_id=group v0.13.0 target="group"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "ff" })
+   6.993864800s  INFO prepare_target{force=false package_id=pkcs8 v0.10.2 target="pkcs8"}: cargo::core::compiler::fingerprint: fingerprint dirty for pkcs8 v0.10.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("pkcs8", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\pkcs8-0.10.2\\src\\lib.rs", Edition2021) }
+   6.993956200s  INFO prepare_target{force=false package_id=pkcs8 v0.10.2 target="pkcs8"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "der" })
+   7.060186800s  INFO prepare_target{force=false package_id=spki v0.7.3 target="spki"}: cargo::core::compiler::fingerprint: fingerprint dirty for spki v0.7.3/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("spki", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\spki-0.7.3\\src\\lib.rs", Edition2021) }
+   7.060281900s  INFO prepare_target{force=false package_id=spki v0.7.3 target="spki"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "der" })
+   7.135065300s  INFO prepare_target{force=false package_id=sec1 v0.7.3 target="sec1"}: cargo::core::compiler::fingerprint: fingerprint dirty for sec1 v0.7.3/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sec1", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\sec1-0.7.3\\src\\lib.rs", Edition2021) }
+   7.135193700s  INFO prepare_target{force=false package_id=sec1 v0.7.3 target="sec1"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "der" })
+   7.244962700s  INFO prepare_target{force=false package_id=rfc6979 v0.4.0 target="rfc6979"}: cargo::core::compiler::fingerprint: fingerprint dirty for rfc6979 v0.4.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("rfc6979", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rfc6979-0.4.0\\src\\lib.rs", Edition2021) }
+   7.245102000s  INFO prepare_target{force=false package_id=rfc6979 v0.4.0 target="rfc6979"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "hmac" })
+   7.351362800s  INFO prepare_target{force=false package_id=num-integer v0.1.45 target="num_integer"}: cargo::core::compiler::fingerprint: fingerprint dirty for num-integer v0.1.45/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("num_integer", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\num-integer-0.1.45\\src\\lib.rs", Edition2015) }
+   7.351453500s  INFO prepare_target{force=false package_id=num-integer v0.1.45 target="num_integer"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "num_traits" })
+   7.432027500s  INFO prepare_target{force=false package_id=num-traits v0.2.17 target="num_traits"}: cargo::core::compiler::fingerprint: fingerprint dirty for num-traits v0.2.17/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("num_traits", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\num-traits-0.2.17\\src\\lib.rs", Edition2018) }
+   7.432159600s  INFO prepare_target{force=false package_id=num-traits v0.2.17 target="num_traits"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "build_script_build", dep_mtime: FileTime { seconds: 13418866581, nanos: 933727900 }, max_mtime: FileTime { seconds: 13418866363, nanos: 699561100 } })
+   7.526902200s  INFO prepare_target{force=false package_id=sha3 v0.10.8 target="sha3"}: cargo::core::compiler::fingerprint: fingerprint dirty for sha3 v0.10.8/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sha3", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\sha3-0.10.8\\src\\lib.rs", Edition2018) }
+   7.526997600s  INFO prepare_target{force=false package_id=sha3 v0.10.8 target="sha3"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "digest" })
+   7.564297500s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="soroban_env_common"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-env-common v20.3.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("soroban_env_common", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-env-common-20.3.0\\src\\lib.rs", Edition2021) }
+   7.564375900s  INFO prepare_target{force=false package_id=soroban-env-common v20.3.0 target="soroban_env_common"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\soroban-env-common-3aa9f274ca8cd7a5\lib-soroban_env_common`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_libgit2_prerelease
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: git_midx_writer_dump
+  20: git_filter_source_repo
+  21: git_midx_writer_dump
+  22: BaseThreadInitThunk
+  23: RtlUserThreadStart
+   7.718572900s  INFO prepare_target{force=false package_id=soroban-wasmi v0.31.1-soroban.20.0.1 target="soroban_wasmi"}: cargo::core::compiler::fingerprint: fingerprint dirty for soroban-wasmi v0.31.1-soroban.20.0.1/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("soroban_wasmi", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-wasmi-0.31.1-soroban.20.0.1\\src\\lib.rs", Edition2021) }
+   7.718690100s  INFO prepare_target{force=false package_id=soroban-wasmi v0.31.1-soroban.20.0.1 target="soroban_wasmi"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "spin", dep_mtime: FileTime { seconds: 13418866364, nanos: 533890500 }, max_mtime: FileTime { seconds: 13418866364, nanos: 529894800 } })
+   7.893056500s  INFO prepare_target{force=false package_id=wasmi_core v0.13.0 target="wasmi_core"}: cargo::core::compiler::fingerprint: fingerprint dirty for wasmi_core v0.13.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("wasmi_core", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\wasmi_core-0.13.0\\src\\lib.rs", Edition2021) }
+   7.893148700s  INFO prepare_target{force=false package_id=wasmi_core v0.13.0 target="wasmi_core"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "num_traits" })
+   7.998330900s  INFO prepare_target{force=false package_id=libm v0.2.16 target="libm"}: cargo::core::compiler::fingerprint: fingerprint dirty for libm v0.2.16/Check { test: false }/TargetInner { ..: lib_target("libm", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\libm-0.2.16\\src\\lib.rs", Edition2021) }
+   7.998410500s  INFO prepare_target{force=false package_id=libm v0.2.16 target="libm"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "build_script_build", dep_mtime: FileTime { seconds: 13418866582, nanos: 245748300 }, max_mtime: FileTime { seconds: 13418866363, nanos: 570635500 } })
+   8.163286300s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="stellar_xdr"}: cargo::core::compiler::fingerprint: fingerprint error for stellar-xdr v20.1.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("stellar_xdr", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-xdr-20.1.0\\src\\lib.rs", Edition2021) }
+   8.163502000s  INFO prepare_target{force=false package_id=stellar-xdr v20.1.0 target="stellar_xdr"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\stellar-xdr-72ba35e39b361d14\lib-stellar_xdr`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: git_filter_source_repo
+  15: git_libgit2_prerelease
+  16: <unknown>
+  17: <unknown>
+  18: <unknown>
+  19: <unknown>
+  20: git_midx_writer_dump
+  21: git_filter_source_repo
+  22: git_midx_writer_dump
+  23: BaseThreadInitThunk
+  24: RtlUserThreadStart
+   8.328235300s  INFO prepare_target{force=false package_id=hex v0.4.3 target="hex"}: cargo::core::compiler::fingerprint: fingerprint dirty for hex v0.4.3/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("hex", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\hex-0.4.3\\src\\lib.rs", Edition2018) }
+   8.328309700s  INFO prepare_target{force=false package_id=hex v0.4.3 target="hex"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "serde" })
+   8.395073800s  INFO prepare_target{force=false package_id=serde_with v3.12.0 target="serde_with"}: cargo::core::compiler::fingerprint: fingerprint dirty for serde_with v3.12.0/Check { test: false }/TargetInner { ..: lib_target("serde_with", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde_with-3.12.0\\src\\lib.rs", Edition2021) }
+   8.396342100s  INFO prepare_target{force=false package_id=serde_with v3.12.0 target="serde_with"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "hex" })
+   8.479443200s  INFO prepare_target{force=false package_id=stellar-strkey v0.0.8 target="stellar_strkey"}: cargo::core::compiler::fingerprint: fingerprint dirty for stellar-strkey v0.0.8/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("stellar_strkey", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\stellar-strkey-0.0.8\\src\\lib.rs", Edition2021) }
+   8.479585200s  INFO prepare_target{force=false package_id=stellar-strkey v0.0.8 target="stellar_strkey"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "build_script_build", dep_mtime: FileTime { seconds: 13418866621, nanos: 534003100 }, max_mtime: FileTime { seconds: 13418866364, nanos: 547882600 } })
+   8.578745600s  INFO prepare_target{force=false package_id=thiserror v1.0.55 target="thiserror"}: cargo::core::compiler::fingerprint: fingerprint dirty for thiserror v1.0.55/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("thiserror", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\thiserror-1.0.55\\src\\lib.rs", Edition2021) }
+   8.578872600s  INFO prepare_target{force=false package_id=thiserror v1.0.55 target="thiserror"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDependency { name: "build_script_build", dep_mtime: FileTime { seconds: 13418866463, nanos: 980355500 }, max_mtime: FileTime { seconds: 13418866365, nanos: 864869300 } })
+   8.592514800s  INFO prepare_target{force=false package_id=soroban-ledger-snapshot v20.5.0 target="soroban_ledger_snapshot"}: cargo::core::compiler::fingerprint: fingerprint error for soroban-ledger-snapshot v20.5.0/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("soroban_ledger_snapshot", ["lib"], "C:\\Users\\dmanl\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\soroban-ledger-snapshot-20.5.0\\src\\lib.rs", Edition2021) }
+   8.592588900s  INFO prepare_target{force=false package_id=soroban-ledger-snapshot v20.5.0 target="soroban_ledger_snapshot"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\soroban-ledger-snapshot-6323dd1c7e514183\lib-soroban_ledger_snapshot`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_libgit2_prerelease
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: <unknown>
+  18: git_midx_writer_dump
+  19: git_filter_source_repo
+  20: git_midx_writer_dump
+  21: BaseThreadInitThunk
+  22: RtlUserThreadStart
+   8.640166000s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("healthcare_drips", ["cdylib"], "C:\\Users\\dmanl\\OneDrive\\Documents\\GitHub\\health-care\\src\\lib.rs", Edition2021) }
+   8.640250800s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare_drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\healthcare-drips-9a847f654bebecd3\test-lib-healthcare_drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   8.644917500s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care)/Check { test: false }/TargetInner { name: "healthcare-drips", doc: true, ..: with_path("C:\\Users\\dmanl\\OneDrive\\Documents\\GitHub\\health-care\\src\\main.rs", Edition2021) }
+   8.644987700s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\healthcare-drips-f12e6593a197c43b\bin-healthcare-drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   8.649058500s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint: fingerprint error for healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care)/Check { test: true }/TargetInner { name: "healthcare-drips", doc: true, ..: with_path("C:\\Users\\dmanl\\OneDrive\\Documents\\GitHub\\health-care\\src\\main.rs", Edition2021) }
+   8.649127900s  INFO prepare_target{force=false package_id=healthcare-drips v2.0.0 (C:\Users\dmanl\OneDrive\Documents\GitHub\health-care) target="healthcare-drips"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\dmanl\OneDrive\Documents\GitHub\health-care\target\debug\.fingerprint\healthcare-drips-11ba7e2fc33ca413\test-bin-healthcare-drips`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+    Checking typenum v1.19.0
+    Checking der v0.7.10
+    Checking serde v1.0.192
+    Checking num-traits v0.2.17
+    Checking generic-array v0.14.9
+    Checking ff v0.13.1
+    Checking spki v0.7.3
+    Checking zerocopy v0.7.35
+    Checking pkcs8 v0.10.2
+    Checking group v0.13.0
+    Checking block-buffer v0.10.4
+    Checking crypto-common v0.1.6
+    Checking crypto-bigint v0.5.5
+    Checking sec1 v0.7.3
+    Checking digest v0.10.7
+    Checking libm v0.2.16
+    Checking signature v2.2.0
+    Checking hmac v0.12.1
+    Checking thiserror v1.0.55
+    Checking hex v0.4.3
+   Compiling derive_arbitrary v1.4.2
+    Checking stellar-strkey v0.0.8
+    Checking elliptic-curve v0.13.8
+    Checking wasmi_core v0.13.0
+    Checking serde_with v3.12.0
+    Checking rfc6979 v0.4.0
+    Checking sha2 v0.10.8
+    Checking ppv-lite86 v0.2.20
+    Checking soroban-wasmi v0.31.1-soroban.20.0.1
+    Checking arbitrary v1.3.2
+    Checking rand_chacha v0.3.1
+    Checking curve25519-dalek v4.1.2
+    Checking ecdsa v0.16.9
+    Checking stellar-xdr v20.1.0
+    Checking ed25519 v2.2.3
+    Checking backtrace v0.3.69
+    Checking k256 v0.13.1
+    Checking sha3 v0.10.8
+    Checking ed25519-dalek v2.0.0
+    Checking num-integer v0.1.45
+    Checking rand v0.8.5
+    Checking serde_json v1.0.108
+error: could not compile `stellar-xdr` (lib) due to 1836 previous errors
