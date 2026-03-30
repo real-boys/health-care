@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import './i18n'; // Import i18n configuration
 import App from './App';
 import './App.css';
 import { NetworkProvider } from './chain/NetworkContext';

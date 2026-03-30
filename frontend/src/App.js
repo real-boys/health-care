@@ -2,6 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ShieldAlert, Users, Database, LayoutDashboard, Search, Command, DollarSign, Bell } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './components/LanguageSwitcher';
+import SyncStatusIndicator from './components/SyncStatusIndicator';
 import FraudDetectionPage from './pages/FraudDetectionPage';
 import PaymentHistoryAnalytics from './components/PaymentHistoryAnalytics';
 import NotificationManagementDashboard from './components/NotificationManagementDashboard';
@@ -41,6 +44,8 @@ const SidebarItem = ({ to, icon, label, badge }) => {
 };
 
 const Layout = ({ children }) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="flex bg-[#0a0c10] min-h-screen">
        {/* Stealth Sidebar */}
@@ -68,30 +73,38 @@ const Layout = ({ children }) => {
                 </div>
              </div>
 
+             {/* Sync Status Indicator */}
+             <div className="mb-6 flex justify-end">
+                <SyncStatusIndicator />
+             </div>
+
              <nav className="space-y-1.5">
-                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">Command Center</p>
-                <SidebarItem to="/" icon={<LayoutDashboard size={20} />} label="Operational Overview" />
-                <SidebarItem to="/patients" icon={<Users size={20} />} label="Patient Forensics" />
-                <SidebarItem to="/providers" icon={<Database size={20} />} label="Provider Entities" />
-                <SidebarItem to="/payments" icon={<DollarSign size={20} />} label="Payment Analytics" />
-                <SidebarItem to="/notifications" icon={<Bell size={20} />} label="Notifications" badge="NEW" />
+                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">{t('navigation.dashboard')}</p>
+                <SidebarItem to="/" icon={<LayoutDashboard size={20} />} label={t('dashboard.title')} />
+                <SidebarItem to="/patients" icon={<Users size={20} />} label={t('navigation.patients')} />
+                <SidebarItem to="/providers" icon={<Database size={20} />} label={t('navigation.providers')} />
+                <SidebarItem to="/payments" icon={<DollarSign size={20} />} label={t('navigation.payments')} />
+                <SidebarItem to="/notifications" icon={<Bell size={20} />} label={t('navigation.notifications')} badge="NEW" />
                 
                 <div className="pt-8 mb-4">
-                   <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">Anti-Fraud Engine</p>
-                   <SidebarItem to="/fraud" icon={<ShieldAlert size={20} />} label="Fraud Intelligence" />
+                   <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">{t('fraud.detection')}</p>
+                   <SidebarItem to="/fraud" icon={<ShieldAlert size={20} />} label={t('navigation.fraud')} />
                 </div>
              </nav>
           </div>
           
           <div className="mt-auto p-6 border-t border-slate-900 bg-slate-900/10">
-             <div className="flex items-center gap-3 p-2 bg-slate-900/40 rounded-2xl border border-slate-800/50">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex-center font-bold text-white shadow-lg overflow-hidden relative">
-                   <span className="relative z-10 text-xs">JS</span>
-                   <div className="absolute inset-0 bg-white/10 blur-sm"></div>
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  <div className="text-sm font-bold text-slate-200 truncate">John Smith</div>
-                  <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Level 4 Admin</div>
+             <div className="flex flex-col gap-3">
+                <LanguageSwitcher />
+                <div className="flex items-center gap-3 p-2 bg-slate-900/40 rounded-2xl border border-slate-800/50">
+                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex-center font-bold text-white shadow-lg overflow-hidden relative">
+                      <span className="relative z-10 text-xs">JS</span>
+                      <div className="absolute inset-0 bg-white/10 blur-sm"></div>
+                   </div>
+                   <div className="flex-1 overflow-hidden">
+                     <div className="text-sm font-bold text-slate-200 truncate">John Smith</div>
+                     <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Level 4 Admin</div>
+                   </div>
                 </div>
              </div>
           </div>
@@ -137,5 +150,13 @@ function App() {
     </Router>
   );
 }
+
+export default App;
+
+export default App;
+
+export default App;
+
+export default App;
 
 export default App;

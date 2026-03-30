@@ -1,0 +1,162 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "search": "Search",
+    "filter": "Filter",
+    "apply": "Apply",
+    "reset": "Reset",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "patients": "Patients",
+    "providers": "Providers",
+    "payments": "Payments",
+    "notifications": "Notifications",
+    "fraud": "Fraud Detection",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Logout",
+    "language": "Language"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "forgotPassword": "Forget Password?",
+    "resetPassword": "Reset Password",
+    "email": "Email",
+    "password": "Password",
+    "rememberMe": "Remember Me",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "welcomeBack": "Welcome Back"
+  },
+  "dashboard": {
+    "title": "Operational Overview",
+    "overview": "Overview",
+    "statistics": "Statistics",
+    "recentActivity": "Recent Activity",
+    "quickActions": "Quick Actions",
+    "totalPatients": "Total Patients",
+    "totalProviders": "Total Providers",
+    "totalPayments": "Total Payments",
+    "pendingClaims": "Pending Claims"
+  },
+  "patients": {
+    "title": "Patient Forensics",
+    "patientList": "Patient List",
+    "addPatient": "Add Patient",
+    "editPatient": "Edit Patient",
+    "viewPatient": "View Patient Details",
+    "patientId": "Patient ID",
+    "patientName": "Patient Name",
+    "dateOfBirth": "Date of Birth",
+    "gender": "Gender",
+    "contact": "Contact Information",
+    "medicalHistory": "Medical History",
+    "insurance": "Insurance Information"
+  },
+  "providers": {
+    "title": "Provider Entities",
+    "providerList": "Provider List",
+    "addProvider": "Add Provider",
+    "editProvider": "Edit Provider",
+    "providerName": "Provider Name",
+    "specialty": "Specialty",
+    "credentials": "Credentials",
+    "contact": "Contact",
+    "rating": "Rating"
+  },
+  "payments": {
+    "title": "Payment Analytics",
+    "paymentHistory": "Payment History",
+    "makePayment": "Make Payment",
+    "paymentAmount": "Amount",
+    "paymentMethod": "Payment Method",
+    "paymentStatus": "Status",
+    "paymentDate": "Date",
+    "transactionId": "Transaction ID",
+    "creditCard": "Credit Card",
+    "paypal": "PayPal",
+    "crypto": "Cryptocurrency",
+    "completed": "Completed",
+    "pending": "Pending",
+    "failed": "Failed",
+    "refunded": "Refunded"
+  },
+  "fraud": {
+    "title": "Fraud Intelligence",
+    "detection": "Detection",
+    "alerts": "Alerts",
+    "riskScore": "Risk Score",
+    "suspiciousActivity": "Suspicious Activity",
+    "investigate": "Investigate",
+    "resolved": "Resolved",
+    "flagged": "Flagged"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark All as Read",
+    "noNotifications": "No notifications",
+    "newNotification": "New Notification",
+    "type": {
+      "payment": "Payment Notification",
+      "appointment": "Appointment Reminder",
+      "alert": "Security Alert",
+      "system": "System Update"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "general": "General Settings",
+    "security": "Security",
+    "privacy": "Privacy",
+    "notifications": "Notifications",
+    "appearance": "Appearance",
+    "language": "Language Preferences"
+  },
+  "sync": {
+    "status": "Sync Status",
+    "online": "Online",
+    "offline": "Offline",
+    "syncing": "Syncing...",
+    "synced": "Synced",
+    "pending": "Pending Sync",
+    "lastSync": "Last Sync",
+    "retry": "Retry",
+    "conflict": "Conflict Detected",
+    "resolveConflict": "Resolve Conflict"
+  },
+  "errors": {
+    "networkError": "Network error. Please check your connection.",
+    "serverError": "Server error. Please try again later.",
+    "notFound": "Resource not found.",
+    "unauthorized": "Unauthorized access.",
+    "validationError": "Please check your input.",
+    "paymentFailed": "Payment failed. Please try again."
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "minLength": "Must be at least {{length}} characters",
+    "maxLength": "Must be at most {{length}} characters",
+    "passwordMatch": "Passwords do not match",
+    "invalidFormat": "Invalid format"
+  }
+}
