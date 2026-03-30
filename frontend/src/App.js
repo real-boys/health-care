@@ -19,7 +19,8 @@ import {
   Database,
   Lock,
   Cpu,
-  CreditCard as CreditIcon
+  CreditCard as CreditIcon,
+  Search
 } from 'lucide-react';
 import './App.css';
 import MedicalRecordManager from './components/MedicalRecordManager';
@@ -27,6 +28,7 @@ import MFASystem from './components/MFASystem';
 import ClaimEngine from './components/ClaimEngine';
 import PaymentGateways from './components/PaymentGateways';
 import PatientDashboard from './components/PatientDashboard';
+import ProviderDirectory from './components/ProviderDirectory';
 
 // Contract ABIs (simplified for demo)
 const HEALTHCARE_DRIPS_ABI = [
@@ -299,6 +301,13 @@ function App() {
               Contributors
             </button>
             <button 
+              onClick={() => setActiveTab('providers')}
+              className={activeTab === 'providers' ? 'active' : ''}
+            >
+              <Search className="w-4 h-4" />
+              Providers
+            </button>
+            <button 
               onClick={() => setActiveTab('records')}
               className={activeTab === 'records' ? 'active' : ''}
             >
@@ -356,6 +365,7 @@ function App() {
             {activeTab === 'dashboard' && <Dashboard />}
             {activeTab === 'funding' && <FundingRequests />}
             {activeTab === 'contributors' && <Contributors />}
+            {activeTab === 'providers' && <ProviderDirectory account={account} contract={contract} />}
             {activeTab === 'records' && <MedicalRecordManager account={account} contract={contract} />}
             {activeTab === 'security' && <MFASystem account={account} contract={contract} />}
             {activeTab === 'engine' && <ClaimEngine account={account} contract={contract} />}
