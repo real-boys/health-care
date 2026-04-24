@@ -1,0 +1,173 @@
+---
+# Event-Driven Service Deployment for EventStore
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-service
+  namespace: healthcare
+  labels:
+    app: event-service
+    version: v1
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: event-service
+  template:
+    metadata:
+      labels:
+        app: event-service
+        version: v1
+    spec:
+      serviceAccountName: healthcare-service
+      containers:
+      - name: event-service
+        image: healthcare/event-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 3006
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: SERVICE_NAME
+          value: "event-service"
+        - name: SERVICE_PORT
+          value: "3006"
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: NODE_ENV
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MONGODB_URI
+        - name: KAFKA_BROKERS
+          value: "kafka-service.healthcare.svc.cluster.local:9092"
+        - name: RABBITMQ_URL
+          value: "amqp://guest:guest@rabbitmq.healthcare.svc.cluster.local:5672"
+        - name: REDIS_URL
+          value: "redis://:$(REDIS_PASSWORD)@redis.healthcare.svc.cluster.local:6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: REDIS_PASSWORD
+        - name: CONSUL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: service-discovery-config
+              key: consul_host
+        - name: CONSUL_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: service-discovery-config
+              key: consul_port
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOG_LEVEL
+        resources:
+          requests:
+            cpu: "300m"
+            memory: "512Mi"
+          limits:
+            cpu: "600m"
+            memory: "1Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+
+---
+# Event Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-service
+  namespace: healthcare
+  labels:
+    app: event-service
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 3006
+    targetPort: 3006
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  selector:
+    app: event-service
+
+---
+# Horizontal Pod Autoscaler for Event Service
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: event-service-hpa
+  namespace: healthcare
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: event-service
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: event-service-pdb
+  namespace: healthcare
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: event-service

@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: healthcare
+  labels:
+    name: healthcare
+    istio-injection: enabled
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: consul
+  labels:
+    name: consul
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: istio-system
+  labels:
+    name: istio-system
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-discovery-config
+  namespace: healthcare
+data:
+  consul_host: "consul.consul.svc.cluster.local"
+  consul_port: "8500"
+  consul_datacenter: "dc1"
+  service_discovery_type: "consul"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: healthcare
+data:
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  REDIS_HOST: "redis.healthcare.svc.cluster.local"
+  REDIS_PORT: "6379"
+  MONGODB_HOST: "mongodb.healthcare.svc.cluster.local"
+  MONGODB_PORT: "27017"
+  MONGODB_DATABASE: "healthcare"
+  SERVICE_MESH_ENABLED: "true"
+  ISTIO_ENABLED: "true"
+  TRACING_ENABLED: "true"
+  JAEGER_AGENT_HOST: "jaeger-agent.healthcare.svc.cluster.local"
+  JAEGER_AGENT_PORT: "6831"
+  PROMETHEUS_ENABLED: "true"
+  METRICS_PORT: "9090"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+  namespace: healthcare
+type: Opaque
+stringData:
+  MONGODB_USER: "healthcare_admin"
+  MONGODB_PASSWORD: "secure_password_here"
+  MONGODB_URI: "mongodb://healthcare_admin:secure_password_here@mongodb.healthcare.svc.cluster.local:27017/healthcare"
+  REDIS_PASSWORD: "redis_password_here"
+  JWT_SECRET: "your_jwt_secret_key_here"
+  STRIPE_SECRET_KEY: "sk_live_your_stripe_key"
+  PAYPAL_SECRET: "your_paypal_secret"
+  DB_ENCRYPTION_KEY: "encryption_key_here"
+  API_GATEWAY_SECRET: "api_gateway_secret_key"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registry-credentials
+  namespace: healthcare
+type: kubernetes.io/dockercfg
+data:
+  .dockercfg: eyJyZWdpc3RyeS5leGFtcGxlLmNvbSI6eyJ1c2VybmFtZSI6InVzZXJuYW1lIiwicGFzc3dvcmQiOiJwYXNzd29yZCIsImF1dGgiOiJ1c2VybmFtZTpwYXNzd29yZCJ9fQ==
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ServiceAccount
+metadata:
+  name: healthcare-service
+  namespace: healthcare
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: healthcare-cluster-role
+rules:
+- apiGroups: [""]
+  resources: ["services", "endpoints", "pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "statefulsets"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: healthcare-cluster-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: healthcare-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: healthcare-service
+  namespace: healthcare

@@ -10,6 +10,7 @@ const sqlite3 = require('sqlite3').verbose();
 require('dotenv').config();
 
 const JobProcessor = require('./services/jobProcessor');
+const NotificationIntegration = require('./services/notificationIntegration');
 
 // API Gateway imports
 const { APIGateway, CircuitBreaker, EnhancedRateLimiter, RequestCache, ApiVersioning } = require('./middleware/apiGateway');
@@ -87,9 +88,7 @@ const hl7FhirRoutes = require('./routes/hl7-fhir');
 const enhancedPaymentRoutes = require('./routes/enhancedPayments');
 const ehrIntegrationRoutes = require('./routes/ehrIntegration');
 const insuranceRoutes = require('./routes/insurance');
-const complianceRoutes = require('./routes/compliance');
-const fileStorageRoutes = require('./routes/fileStorage');
-const enhancedSecurityRoutes = require('./routes/enhancedSecurity');
+
 
 const app = express();
 const server = createServer(app);
@@ -131,9 +130,7 @@ app.use('/api/provider-integration', hl7FhirRoutes);
 app.use('/api/payment-gateway', enhancedPaymentRoutes);
 app.use('/api/ehr-integration', ehrIntegrationRoutes);
 app.use('/api/insurance', insuranceRoutes);
-app.use('/api/compliance', complianceRoutes);
-app.use('/api/file-storage', fileStorageRoutes);
-app.use('/api/enhanced-security', enhancedSecurityRoutes);
+
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -239,20 +236,7 @@ const { SystemMonitoringService, getMonitoringService } = require('./services/sy
 const monitoringService = getMonitoringService(io);
 global.monitoringService = monitoringService;
 
-// Compliance monitoring service initialization
-const ComplianceMonitoringService = require('./services/complianceMonitoringService');
-const complianceService = new ComplianceMonitoringService();
-global.complianceService = complianceService;
 
-// File storage service initialization
-const FileStorageService = require('./services/fileStorageService');
-const fileStorageService = new FileStorageService();
-global.fileStorageService = fileStorageService;
-
-// Enhanced security monitoring service initialization
-const EnhancedSecurityMonitoringService = require('./services/enhancedSecurityMonitoringService');
-const enhancedSecurityService = new EnhancedSecurityMonitoringService();
-global.enhancedSecurityService = enhancedSecurityService;
 
 // Dashboard routes
 const dashboardRoutes = require('./routes/dashboard');
@@ -273,6 +257,11 @@ app.use('/api/profile', profileRoutes);
 // Transaction routes
 const transactionRoutes = require('./routes/transactions');
 app.use('/api/transactions', transactionRoutes);
+
+// Notification routes
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/notification-preferences', notificationPreferencesRoutes);
+app.use('/api/notifications-enhanced', enhancedNotificationRoutes);
 
 // Static file serving for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
