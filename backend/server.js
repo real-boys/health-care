@@ -91,6 +91,10 @@ const insuranceRoutes = require('./routes/insurance');
 const notificationRoutes = require('./routes/notifications');
 const notificationPreferencesRoutes = require('./routes/notificationPreferences');
 const enhancedNotificationRoutes = require('./routes/enhancedNotifications');
+const backupRoutes = require('./routes/backup');
+const securityMonitoringRoutes = require('./routes/securityMonitoring');
+const fileStorageRoutes = require('./routes/fileStorage');
+const complianceMonitoringRoutes = require('./routes/complianceMonitoring');
 
 const app = express();
 const server = createServer(app);
@@ -132,6 +136,10 @@ app.use('/api/provider-integration', hl7FhirRoutes);
 app.use('/api/payment-gateway', enhancedPaymentRoutes);
 app.use('/api/ehr-integration', ehrIntegrationRoutes);
 app.use('/api/insurance', insuranceRoutes);
+app.use('/api/backup', backupRoutes);
+app.use('/api/security', securityMonitoringRoutes);
+app.use('/api/files', fileStorageRoutes);
+app.use('/api/compliance', complianceMonitoringRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
