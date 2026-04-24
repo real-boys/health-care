@@ -12,12 +12,20 @@ require('dotenv').config();
 const JobProcessor = require('./services/jobProcessor');
 const NotificationIntegration = require('./services/notificationIntegration');
 
+// Compliance Monitoring imports
+const ComplianceMonitoringService = require('./services/complianceMonitoringService');
+const RegulatoryRuleEngine = require('./services/regulatoryRuleEngine');
+
 // API Gateway imports
 const { APIGateway, CircuitBreaker, EnhancedRateLimiter, RequestCache, ApiVersioning } = require('./middleware/apiGateway');
 const { ServiceRegistry, GatewayProxy } = require('./services/serviceRegistry');
 
 // Initialize job processor
 const jobProcessor = new JobProcessor();
+
+// Initialize Compliance Monitoring Services
+const ruleEngine = new RegulatoryRuleEngine();
+let complianceService = null;
 
 // Initialize API Gateway
 const apiGateway = new APIGateway({
@@ -297,6 +305,12 @@ async function startServer() {
   try {
     await initializeDatabase();
     
+    // Initialize compliance monitoring service
+    complianceService = new ComplianceMonitoringService(io, global.notificationService);
+    app.locals.complianceService = complianceService;
+    app.locals.ruleEngine = ruleEngine;
+    console.log('[Server] Compliance monitoring service initialized');
+    
     // Initialize monitoring service
     monitoringService.initialize();
     console.log('[Server] System monitoring service initialized');
@@ -309,6 +323,7 @@ async function startServer() {
       console.log('Server running on port 3000');
       console.log('[Server] Real-time dashboard available at /dashboard');
       console.log('[Server] Transaction WebSocket endpoint: /ws/transactions');
+      console.log('[Server] Compliance monitoring API available at /api/compliance');
     });
 
   } catch (error) {
