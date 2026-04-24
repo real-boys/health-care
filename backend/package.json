@@ -39,7 +39,14 @@
     "bull": "^4.11.3",
     "redis": "^4.6.8",
     "winston": "^3.10.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "node-schedule": "^2.1.1",
+    "mongoose": "^7.5.0",
+    "aws-sdk": "^2.1467.0",
+    "sharp": "^0.32.6",
+    "multer": "^1.4.5-lts.1",
+    "mime-types": "^2.1.35",
+    "archiver": "^6.0.1"
   },
   "devDependencies": {
     "@types/node": "^18.11.9",
