@@ -11,8 +11,11 @@ const claimRoutes = require('./routes/claims');
 const paymentRoutes = require('./routes/payments');
 const reportRoutes = require('./routes/reports');
 const auditRoutes = require('./routes/audit');
+const complianceRoutes = require('./routes/compliance');
+const fileStorageRoutes = require('./routes/fileStorage');
 
 const auditLogger = require('./middleware/auditLogger');
+const complianceMonitor = require('./middleware/complianceMonitor');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -35,6 +38,9 @@ app.use(express.urlencoded({ extended: true }));
 // Audit logging for all requests
 app.use(auditLogger);
 
+// Compliance monitoring middleware
+app.use(complianceMonitor);
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/policies', policyRoutes);
@@ -42,6 +48,8 @@ app.use('/api/claims', claimRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/compliance', complianceRoutes);
+app.use('/api/files', fileStorageRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
