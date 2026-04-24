@@ -87,6 +87,9 @@ const hl7FhirRoutes = require('./routes/hl7-fhir');
 const enhancedPaymentRoutes = require('./routes/enhancedPayments');
 const ehrIntegrationRoutes = require('./routes/ehrIntegration');
 const insuranceRoutes = require('./routes/insurance');
+const complianceRoutes = require('./routes/compliance');
+const fileStorageRoutes = require('./routes/fileStorage');
+const enhancedSecurityRoutes = require('./routes/enhancedSecurity');
 
 const app = express();
 const server = createServer(app);
@@ -128,6 +131,9 @@ app.use('/api/provider-integration', hl7FhirRoutes);
 app.use('/api/payment-gateway', enhancedPaymentRoutes);
 app.use('/api/ehr-integration', ehrIntegrationRoutes);
 app.use('/api/insurance', insuranceRoutes);
+app.use('/api/compliance', complianceRoutes);
+app.use('/api/file-storage', fileStorageRoutes);
+app.use('/api/enhanced-security', enhancedSecurityRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -232,6 +238,21 @@ global.transactionEvents = transactionEvents;
 const { SystemMonitoringService, getMonitoringService } = require('./services/systemMonitoringService');
 const monitoringService = getMonitoringService(io);
 global.monitoringService = monitoringService;
+
+// Compliance monitoring service initialization
+const ComplianceMonitoringService = require('./services/complianceMonitoringService');
+const complianceService = new ComplianceMonitoringService();
+global.complianceService = complianceService;
+
+// File storage service initialization
+const FileStorageService = require('./services/fileStorageService');
+const fileStorageService = new FileStorageService();
+global.fileStorageService = fileStorageService;
+
+// Enhanced security monitoring service initialization
+const EnhancedSecurityMonitoringService = require('./services/enhancedSecurityMonitoringService');
+const enhancedSecurityService = new EnhancedSecurityMonitoringService();
+global.enhancedSecurityService = enhancedSecurityService;
 
 // Dashboard routes
 const dashboardRoutes = require('./routes/dashboard');

@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const AuditLog = require('../models/AuditLog');
+const axios = require('axios');
 
 // Email transporter configuration
 const createEmailTransporter = () => {
@@ -15,16 +16,16 @@ const createEmailTransporter = () => {
 };
 
 // Send email notification
-const sendEmail = async (emailData) => {
+const sendEmail = async (to, subject, message) => {
   try {
     const transporter = createEmailTransporter();
     
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: emailData.to,
-      subject: emailData.subject,
-      text: emailData.text || generateEmailText(emailData),
-      html: emailData.html || generateEmailHTML(emailData)
+      to,
+      subject,
+      text: message,
+      html: message
     };
 
     const result = await transporter.sendMail(mailOptions);
@@ -41,10 +42,10 @@ const sendEmail = async (emailData) => {
 };
 
 // Send SMS notification (placeholder - would integrate with SMS service)
-const sendSMS = async (smsData) => {
+const sendSMS = async (phone, message) => {
   try {
     // This would integrate with services like Twilio, AWS SNS, etc.
-    console.log('SMS would be sent:', smsData);
+    console.log('SMS would be sent to', phone, ':', message);
     
     return {
       success: true,
@@ -52,6 +53,46 @@ const sendSMS = async (smsData) => {
     };
   } catch (error) {
     console.error('SMS sending error:', error);
+    throw error;
+  }
+};
+
+// Send Slack message
+const sendSlackMessage = async (message) => {
+  try {
+    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+    if (!webhookUrl) {
+      console.log('Slack webhook URL not configured, message would be sent:', message);
+      return { success: true };
+    }
+
+    const response = await axios.post(webhookUrl, message);
+    
+    return {
+      success: true,
+      response: response.data
+    };
+  } catch (error) {
+    console.error('Slack sending error:', error);
+    throw error;
+  }
+};
+
+// Send webhook
+const sendWebhook = async (url, payload) => {
+  try {
+    const response = await axios.post(url, payload, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    return {
+      success: true,
+      response: response.data
+    };
+  } catch (error) {
+    console.error('Webhook sending error:', error);
     throw error;
   }
 };
@@ -297,6 +338,8 @@ const getNotificationTemplates = () => {
 module.exports = {
   sendEmail,
   sendSMS,
+  sendSlackMessage,
+  sendWebhook,
   sendBulkNotifications,
   scheduleNotification,
   getNotificationTemplates
