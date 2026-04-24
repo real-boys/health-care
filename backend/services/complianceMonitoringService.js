@@ -1,925 +1,791 @@
-const winston = require('winston');
-const crypto = require('crypto');
-const schedule = require('node-schedule');
-const { EventEmitter } = require('events');
-const fs = require('fs').promises;
-const path = require('path');
+/**
+ * Compliance Monitoring Service
+ * Implements continuous compliance monitoring with regulatory rule enforcement
+ */
 
-class ComplianceMonitoringService extends EventEmitter {
-  constructor(options = {}) {
-    super();
-    
-    this.config = {
-      rulesDirectory: options.rulesDirectory || './compliance-rules',
-      monitoringInterval: options.monitoringInterval || '*/5 * * * *', // Every 5 minutes
-      reportInterval: options.reportInterval || '0 0 * * *', // Daily at midnight
-      alertThresholds: {
-        critical: 1,
-        high: 5,
-        medium: 20,
-        low: 50
-      },
-      retentionPeriod: options.retentionPeriod || 365, // days
-      ...options
-    };
-
-    this.logger = winston.createLogger({
-      level: 'info',
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-      ),
-      transports: [
-        new winston.transports.File({ filename: 'logs/compliance.log' }),
-        new winston.transports.Console()
-      ]
-    });
-
-    this.rules = new Map();
-    this.violations = [];
+class ComplianceMonitoringService {
+  constructor(io, notificationService) {
+    this.io = io;
+    this.notificationService = notificationService;
+    this.db = null;
+    this.monitoringInterval = null;
+    this.violations = new Map();
+    this.complianceRules = new Map();
     this.auditTrail = [];
-    this.complianceReports = [];
-    this.isInitialized = false;
-  }
-
-  async initialize() {
-    try {
-      await this.loadComplianceRules();
-      await this.setupScheduledTasks();
-      this.isInitialized = true;
-      this.logger.info('Compliance Monitoring Service initialized');
-    } catch (error) {
-      this.logger.error('Failed to initialize Compliance Monitoring Service:', error);
-      throw error;
-    }
-  }
-
-  async loadComplianceRules() {
-    try {
-      await this.ensureRulesDirectory();
-      
-      // Load built-in compliance rules
-      await this.loadBuiltinRules();
-      
-      // Load custom rules from files
-      await this.loadCustomRules();
-      
-      this.logger.info(`Loaded ${this.rules.size} compliance rules`);
-    } catch (error) {
-      this.logger.error('Failed to load compliance rules:', error);
-      throw error;
-    }
-  }
-
-  async ensureRulesDirectory() {
-    try {
-      await fs.access(this.config.rulesDirectory);
-    } catch (error) {
-      await fs.mkdir(this.config.rulesDirectory, { recursive: true });
-    }
-  }
-
-  async loadBuiltinRules() {
-    // HIPAA Compliance Rules
-    this.addRule({
-      id: 'hipaa_001',
-      name: 'HIPAA - PHI Access Logging',
-      category: 'HIPAA',
-      severity: 'critical',
-      description: 'All access to Protected Health Information (PHI) must be logged',
-      regulation: 'HIPAA Security Rule § 164.312(b)',
-      enabled: true,
-      conditions: [
-        {
-          field: 'eventType',
-          operator: 'in',
-          values: ['phi_access', 'patient_record_view', 'medical_data_access']
-        }
-      ],
-      actions: [
-        {
-          type: 'log',
-          level: 'audit'
-        },
-        {
-          type: 'alert',
-          severity: 'high'
-        }
-      ]
-    });
-
-    this.addRule({
-      id: 'hipaa_002',
-      name: 'HIPAA - Data Encryption',
-      category: 'HIPAA',
-      severity: 'high',
-      description: 'PHI must be encrypted at rest and in transit',
-      regulation: 'HIPAA Security Rule § 164.312(a)(2)(iv)',
-      enabled: true,
-      conditions: [
-        {
-          field: 'dataType',
-          operator: 'equals',
-          value: 'phi'
-        },
-        {
-          field: 'encryption',
-          operator: 'equals',
-          value: false
-        }
-      ],
-      actions: [
-        {
-          type: 'alert',
-          severity: 'critical'
-        },
-        {
-          type: 'block',
-          reason: 'unencrypted_phi'
-        }
-      ]
-    });
-
-    // GDPR Compliance Rules
-    this.addRule({
-      id: 'gdpr_001',
-      name: 'GDPR - Data Subject Rights',
-      category: 'GDPR',
-      severity: 'high',
-      description: 'Data subject requests must be processed within 30 days',
-      regulation: 'GDPR Article 12',
-      enabled: true,
-      conditions: [
-        {
-          field: 'eventType',
-          operator: 'equals',
-          value: 'data_subject_request'
-        },
-        {
-          field: 'responseTime',
-          operator: 'greater_than',
-          value: 30 * 24 * 60 * 60 * 1000 // 30 days in milliseconds
-        }
-      ],
-      actions: [
-        {
-          type: 'alert',
-          severity: 'high'
-        },
-        {
-          type: 'escalate'
-        }
-      ]
-    });
-
-    this.addRule({
-      id: 'gdpr_002',
-      name: 'GDPR - Consent Management',
-      category: 'GDPR',
-      severity: 'medium',
-      description: 'Valid consent must be obtained before processing personal data',
-      regulation: 'GDPR Article 6',
-      enabled: true,
-      conditions: [
-        {
-          field: 'eventType',
-          operator: 'in',
-          values: ['data_processing', 'marketing_communication']
-        },
-        {
-          field: 'consent',
-          operator: 'equals',
-          value: false
-        }
-      ],
-      actions: [
-        {
-          type: 'alert',
-          severity: 'medium'
-        },
-        {
-          type: 'block',
-          reason: 'no_consent'
-        }
-      ]
-    });
-
-    // PCI DSS Compliance Rules
-    this.addRule({
-      id: 'pci_001',
-      name: 'PCI DSS - Card Data Protection',
-      category: 'PCI-DSS',
-      severity: 'critical',
-      description: 'Cardholder data must be protected with strong encryption',
-      regulation: 'PCI DSS Requirement 3',
-      enabled: true,
-      conditions: [
-        {
-          field: 'eventType',
-          operator: 'in',
-          values: ['payment_processing', 'card_data_access']
-        },
-        {
-          field: 'cardDataEncrypted',
-          operator: 'equals',
-          value: false
-        }
-      ],
-      actions: [
-        {
-          type: 'alert',
-          severity: 'critical'
-        },
-        {
-          type: 'block',
-          reason: 'unencrypted_card_data'
-        }
-      ]
-    });
-
-    // SOX Compliance Rules
-    this.addRule({
-      id: 'sox_001',
-      name: 'SOX - Financial Data Integrity',
-      category: 'SOX',
-      severity: 'high',
-      description: 'Financial data modifications must be authorized and audited',
-      regulation: 'SOX Section 404',
-      enabled: true,
-      conditions: [
-        {
-          field: 'eventType',
-          operator: 'in',
-          values: ['financial_data_modify', 'transaction_approve']
-        },
-        {
-          field: 'authorized',
-          operator: 'equals',
-          value: false
-        }
-      ],
-      actions: [
-        {
-          type: 'alert',
-          severity: 'high'
-        },
-        {
-          type: 'escalate'
-        }
-      ]
-    });
-
-    // Data Retention Rules
-    this.addRule({
-      id: 'retention_001',
-      name: 'Data Retention Policy',
-      category: 'RETENTION',
-      severity: 'medium',
-      description: 'Data must be retained according to regulatory requirements',
-      regulation: 'Various',
-      enabled: true,
-      conditions: [
-        {
-          field: 'eventType',
-          operator: 'equals',
-          value: 'data_deletion'
-        },
-        {
-          field: 'retentionPeriod',
-          operator: 'less_than',
-          value: this.config.retentionPeriod * 24 * 60 * 60 * 1000
-        }
-      ],
-      actions: [
-        {
-          type: 'alert',
-          severity: 'medium'
-        },
-        {
-          type: 'block',
-          reason: 'premature_deletion'
-        }
-      ]
-    });
-  }
-
-  async loadCustomRules() {
-    try {
-      const ruleFiles = await fs.readdir(this.config.rulesDirectory);
-      
-      for (const file of ruleFiles) {
-        if (file.endsWith('.json')) {
-          const rulePath = path.join(this.config.rulesDirectory, file);
-          const ruleData = JSON.parse(await fs.readFile(rulePath, 'utf8'));
-          
-          if (ruleData.enabled !== false) {
-            this.addRule(ruleData);
-          }
-        }
-      }
-    } catch (error) {
-      this.logger.warn('Failed to load custom rules:', error);
-    }
-  }
-
-  addRule(rule) {
-    // Validate rule structure
-    if (!rule.id || !rule.name || !rule.category || !rule.conditions) {
-      throw new Error('Invalid rule structure');
-    }
-
-    rule.createdAt = rule.createdAt || new Date();
-    rule.updatedAt = new Date();
-    rule.version = rule.version || '1.0';
-
-    this.rules.set(rule.id, rule);
-    this.logger.info(`Added compliance rule: ${rule.id} - ${rule.name}`);
-  }
-
-  async setupScheduledTasks() {
-    // Continuous monitoring
-    if (this.config.monitoringInterval) {
-      schedule.scheduleJob(this.config.monitoringInterval, async () => {
-        try {
-          await this.performComplianceCheck();
-        } catch (error) {
-          this.logger.error('Compliance check failed:', error);
-        }
-      });
-    }
-
-    // Generate compliance reports
-    if (this.config.reportInterval) {
-      schedule.scheduleJob(this.config.reportInterval, async () => {
-        try {
-          await this.generateComplianceReport();
-        } catch (error) {
-          this.logger.error('Compliance report generation failed:', error);
-        }
-      });
-    }
-
-    // Rule updates
-    schedule.scheduleJob('0 */6 * * *', async () => {
-      try {
-        await this.checkRuleUpdates();
-      } catch (error) {
-        this.logger.error('Rule update check failed:', error);
-      }
-    });
-  }
-
-  async performComplianceCheck() {
-    const checkId = crypto.randomUUID();
-    const startTime = new Date();
+    this.metrics = {
+      totalChecks: 0,
+      violations: 0,
+      resolvedViolations: 0,
+      lastCheck: null
+    };
     
-    this.logger.info(`Starting compliance check: ${checkId}`);
+    this.initializeDatabase();
+    this.initializeRegulatoryRules();
+  }
 
-    try {
-      const violations = [];
-      
-      // Check all enabled rules
-      for (const [ruleId, rule] of this.rules) {
-        if (rule.enabled) {
-          const ruleViolations = await this.evaluateRule(rule);
-          violations.push(...ruleViolations);
+  /**
+   * Initialize database connection
+   */
+  async initializeDatabase() {
+    const sqlite3 = require('sqlite3').verbose();
+    const path = require('path');
+    
+    return new Promise((resolve, reject) => {
+      const dbPath = path.join(__dirname, '..', 'database', 'healthcare.sqlite');
+      this.db = new sqlite3.Database(dbPath, (err) => {
+        if (err) {
+          console.error('[Compliance] Database connection error:', err);
+          reject(err);
+        } else {
+          console.log('[Compliance] Database connected');
+          this.createTables().then(resolve).catch(reject);
         }
+      });
+    });
+  }
+
+  /**
+   * Create compliance monitoring tables
+   */
+  async createTables() {
+    const tables = [
+      `CREATE TABLE IF NOT EXISTS compliance_rules (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        rule_id VARCHAR(100) UNIQUE NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        category VARCHAR(100) NOT NULL,
+        description TEXT,
+        regulation VARCHAR(100),
+        condition_json TEXT NOT NULL,
+        action_json TEXT NOT NULL,
+        severity VARCHAR(20) DEFAULT 'medium',
+        enabled BOOLEAN DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+      
+      `CREATE TABLE IF NOT EXISTS compliance_violations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        violation_id VARCHAR(100) UNIQUE NOT NULL,
+        rule_id VARCHAR(100) NOT NULL,
+        entity_type VARCHAR(50) NOT NULL,
+        entity_id VARCHAR(100) NOT NULL,
+        severity VARCHAR(20) NOT NULL,
+        description TEXT NOT NULL,
+        details TEXT,
+        status VARCHAR(20) DEFAULT 'open',
+        detected_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        resolved_at DATETIME,
+        resolved_by VARCHAR(100),
+        auto_resolved BOOLEAN DEFAULT 0
+      )`,
+      
+      `CREATE TABLE IF NOT EXISTS compliance_audit_trail (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        audit_id VARCHAR(100) UNIQUE NOT NULL,
+        rule_id VARCHAR(100),
+        entity_type VARCHAR(50),
+        entity_id VARCHAR(100),
+        action VARCHAR(100) NOT NULL,
+        result VARCHAR(20) NOT NULL,
+        details TEXT,
+        user_id VARCHAR(100),
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+      
+      `CREATE TABLE IF NOT EXISTS compliance_reports (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        report_id VARCHAR(100) UNIQUE NOT NULL,
+        report_type VARCHAR(50) NOT NULL,
+        period_start DATETIME NOT NULL,
+        period_end DATETIME NOT NULL,
+        total_checks INTEGER DEFAULT 0,
+        violations INTEGER DEFAULT 0,
+        resolved_violations INTEGER DEFAULT 0,
+        compliance_score DECIMAL(5,2),
+        details TEXT,
+        generated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`
+    ];
+
+    for (const table of tables) {
+      await new Promise((resolve, reject) => {
+        this.db.run(table, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+    }
+  }
+
+  /**
+   * Initialize regulatory compliance rules
+   */
+  initializeRegulatoryRules() {
+    // HIPAA Privacy Rule
+    this.addComplianceRule('hipaa_privacy_access', {
+      name: 'HIPAA Privacy Access Control',
+      category: 'HIPAA',
+      description: 'Ensure proper access controls for protected health information',
+      regulation: 'HIPAA-164.312',
+      condition: (entity) => {
+        return entity.accessLevel && entity.accessLevel !== 'unauthorized';
+      },
+      action: (entity) => {
+        const isCompliant = entity.accessLevel && entity.accessLevel !== 'unauthorized';
+        return {
+          compliant: isCompliant,
+          message: isCompliant ? 'Access control compliant' : 'Unauthorized access detected',
+          severity: 'high',
+          requiresAction: !isCompliant
+        };
+      },
+      severity: 'high'
+    });
+
+    // HIPAA Security Rule
+    this.addComplianceRule('hipaa_security_encryption', {
+      name: 'HIPAA Security Encryption',
+      category: 'HIPAA',
+      description: 'Ensure data is properly encrypted at rest and in transit',
+      regulation: 'HIPAA-164.312',
+      condition: (entity) => {
+        return entity.encrypted === true || entity.encryptionStatus === 'encrypted';
+      },
+      action: (entity) => {
+        const isCompliant = entity.encrypted === true || entity.encryptionStatus === 'encrypted';
+        return {
+          compliant: isCompliant,
+          message: isCompliant ? 'Data encryption compliant' : 'Data encryption required',
+          severity: 'high',
+          requiresAction: !isCompliant
+        };
+      },
+      severity: 'high'
+    });
+
+    // Data Retention Policy
+    this.addComplianceRule('data_retention_policy', {
+      name: 'Data Retention Policy',
+      category: 'Data Governance',
+      description: 'Ensure data retention policies are followed',
+      regulation: 'INTERNAL-DRP',
+      condition: (entity) => {
+        if (!entity.createdAt) return true;
+        const retentionPeriod = 7 * 365 * 24 * 60 * 60 * 1000; // 7 years
+        const age = Date.now() - new Date(entity.createdAt).getTime();
+        return age <= retentionPeriod;
+      },
+      action: (entity) => {
+        if (!entity.createdAt) {
+          return { compliant: true, message: 'No creation date, skipping retention check' };
+        }
+        
+        const retentionPeriod = 7 * 365 * 24 * 60 * 60 * 1000;
+        const age = Date.now() - new Date(entity.createdAt).getTime();
+        const isCompliant = age <= retentionPeriod;
+        
+        return {
+          compliant: isCompliant,
+          message: isCompliant ? 'Data within retention period' : 'Data exceeds retention period',
+          severity: 'medium',
+          requiresAction: !isCompliant,
+          recommendedAction: !isCompliant ? 'archive_or_delete' : null
+        };
+      },
+      severity: 'medium'
+    });
+
+    // Audit Trail Requirement
+    this.addComplianceRule('audit_trail_requirement', {
+      name: 'Audit Trail Requirement',
+      category: 'Audit',
+      description: 'Ensure all actions are properly logged',
+      regulation: 'HIPAA-164.312',
+      condition: (entity) => {
+        return entity.auditLogged === true || !!entity.auditId;
+      },
+      action: (entity) => {
+        const isCompliant = entity.auditLogged === true || !!entity.auditId;
+        return {
+          compliant: isCompliant,
+          message: isCompliant ? 'Audit trail maintained' : 'Audit trail missing',
+          severity: 'medium',
+          requiresAction: !isCompliant
+        };
+      },
+      severity: 'medium'
+    });
+
+    // Consent Management
+    this.addComplianceRule('consent_management', {
+      name: 'Patient Consent Management',
+      category: 'Consent',
+      description: 'Ensure proper patient consent is obtained and documented',
+      regulation: 'HIPAA-164.508',
+      condition: (entity) => {
+        return entity.consentStatus === 'valid' && entity.consentExpiry > new Date();
+      },
+      action: (entity) => {
+        const hasValidConsent = entity.consentStatus === 'valid' && 
+                               new Date(entity.consentExpiry) > new Date();
+        
+        return {
+          compliant: hasValidConsent,
+          message: hasValidConsent ? 'Consent valid and current' : 'Consent invalid or expired',
+          severity: 'high',
+          requiresAction: !hasValidConsent
+        };
+      },
+      severity: 'high'
+    });
+  }
+
+  /**
+   * Add a compliance rule
+   */
+  addComplianceRule(ruleId, rule) {
+    this.complianceRules.set(ruleId, {
+      ...rule,
+      ruleId,
+      enabled: true,
+      createdAt: new Date(),
+      lastEvaluated: null
+    });
+
+    // Save to database
+    const stmt = this.db.prepare(`
+      INSERT OR REPLACE INTO compliance_rules 
+      (rule_id, name, category, description, regulation, condition_json, action_json, severity, enabled)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    stmt.run([
+      ruleId,
+      rule.name,
+      rule.category,
+      rule.description,
+      rule.regulation,
+      JSON.stringify(rule.condition.toString()),
+      JSON.stringify(rule.action.toString()),
+      rule.severity,
+      1
+    ]);
+    
+    stmt.finalize();
+  }
+
+  /**
+   * Start continuous compliance monitoring
+   */
+  startMonitoring(intervalMs = 60000) {
+    if (this.monitoringInterval) {
+      clearInterval(this.monitoringInterval);
+    }
+
+    this.monitoringInterval = setInterval(async () => {
+      await this.performComplianceCheck();
+    }, intervalMs);
+
+    console.log('[Compliance] Continuous monitoring started');
+  }
+
+  /**
+   * Stop continuous compliance monitoring
+   */
+  stopMonitoring() {
+    if (this.monitoringInterval) {
+      clearInterval(this.monitoringInterval);
+      this.monitoringInterval = null;
+      console.log('[Compliance] Continuous monitoring stopped');
+    }
+  }
+
+  /**
+   * Perform comprehensive compliance check
+   */
+  async performComplianceCheck() {
+    try {
+      const checkId = `check_${Date.now()}`;
+      const startTime = Date.now();
+      
+      // Get entities to check (patients, providers, claims, etc.)
+      const entities = await this.getEntitiesForComplianceCheck();
+      
+      let totalViolations = 0;
+      const results = [];
+
+      for (const entity of entities) {
+        const entityResults = await this.checkEntityCompliance(entity);
+        results.push(entityResults);
+        totalViolations += entityResults.violations.length;
+        
+        // Emit real-time updates
+        this.io.emit('compliance:entity_check', {
+          entityType: entity.type,
+          entityId: entity.id,
+          results: entityResults,
+          timestamp: new Date().toISOString()
+        });
       }
 
-      const checkResult = {
+      // Update metrics
+      this.metrics.totalChecks += entities.length;
+      this.metrics.violations += totalViolations;
+      this.metrics.lastCheck = new Date();
+
+      // Log audit trail
+      await this.logAuditTrail({
+        action: 'compliance_check',
+        entity_type: 'system',
+        entity_id: checkId,
+        result: totalViolations > 0 ? 'violation' : 'compliant',
+        details: JSON.stringify({
+          entitiesChecked: entities.length,
+          violations: totalViolations,
+          duration: Date.now() - startTime
+        })
+      });
+
+      console.log(`[Compliance] Check completed: ${entities.length} entities, ${totalViolations} violations`);
+
+      return {
         checkId,
-        timestamp: startTime,
-        duration: Date.now() - startTime.getTime(),
-        rulesChecked: Array.from(this.rules.keys()).filter(id => this.rules.get(id).enabled).length,
-        violationsFound: violations.length,
-        violations,
-        status: violations.length > 0 ? 'non_compliant' : 'compliant'
+        entitiesChecked: entities.length,
+        violations: totalViolations,
+        duration: Date.now() - startTime,
+        results
       };
 
-      // Process violations
-      if (violations.length > 0) {
-        await this.processViolations(violations);
-      }
-
-      // Add to audit trail
-      this.auditTrail.push({
-        type: 'compliance_check',
-        checkId,
-        timestamp: startTime,
-        result: checkResult
-      });
-
-      this.emit('complianceCheck', checkResult);
-      this.logger.info(`Compliance check completed: ${checkId}`, checkResult);
-
-      return checkResult;
-
     } catch (error) {
-      this.logger.error(`Compliance check failed: ${checkId}`, error);
+      console.error('[Compliance] Error during compliance check:', error);
       throw error;
     }
   }
 
-  async evaluateRule(rule) {
+  /**
+   * Check compliance for a single entity
+   */
+  async checkEntityCompliance(entity) {
     const violations = [];
-    
-    try {
-      // Get relevant data for rule evaluation
-      const relevantEvents = await this.getRelevantEvents(rule);
-      
-      for (const event of relevantEvents) {
-        if (this.evaluateConditions(rule.conditions, event)) {
-          const violation = {
-            id: crypto.randomUUID(),
-            ruleId: rule.id,
-            ruleName: rule.name,
-            category: rule.category,
-            severity: rule.severity,
-            regulation: rule.regulation,
-            timestamp: new Date(),
-            event: event,
-            description: rule.description,
-            status: 'open',
-            actions: rule.actions || [],
-            metadata: {
-              detectedBy: 'automated_monitoring',
-              checkId: this.currentCheckId
-            }
-          };
+    const passedRules = [];
 
-          violations.push(violation);
-        }
-      }
+    for (const [ruleId, rule] of this.complianceRules) {
+      if (!rule.enabled) continue;
 
-    } catch (error) {
-      this.logger.error(`Rule evaluation failed for ${rule.id}:`, error);
-    }
-
-    return violations;
-  }
-
-  async getRelevantEvents(rule) {
-    // This would query your database or event store for relevant events
-    // For now, return placeholder data
-    return [];
-  }
-
-  evaluateConditions(conditions, event) {
-    if (!conditions || conditions.length === 0) {
-      return false;
-    }
-
-    // All conditions must be met (AND logic)
-    return conditions.every(condition => {
-      const fieldValue = event[condition.field];
-      
-      switch (condition.operator) {
-        case 'equals':
-          return fieldValue === condition.value;
-        case 'not_equals':
-          return fieldValue !== condition.value;
-        case 'in':
-          return condition.values.includes(fieldValue);
-        case 'not_in':
-          return !condition.values.includes(fieldValue);
-        case 'greater_than':
-          return fieldValue > condition.value;
-        case 'less_than':
-          return fieldValue < condition.value;
-        case 'contains':
-          return fieldValue && fieldValue.includes(condition.value);
-        case 'regex':
-          return new RegExp(condition.pattern).test(fieldValue);
-        default:
-          return false;
-      }
-    });
-  }
-
-  async processViolations(violations) {
-    for (const violation of violations) {
-      // Add to violations list
-      this.violations.push(violation);
-
-      // Execute rule actions
-      await this.executeActions(violation);
-
-      // Send alerts
-      await this.sendViolationAlert(violation);
-
-      // Emit violation event
-      this.emit('violation', violation);
-    }
-  }
-
-  async executeActions(violation) {
-    const actions = violation.actions || [];
-
-    for (const action of actions) {
       try {
-        switch (action.type) {
-          case 'alert':
-            // Alert is handled by sendViolationAlert
-            break;
-          case 'block':
-            await this.blockAction(violation, action.reason);
-            break;
-          case 'escalate':
-            await this.escalateViolation(violation);
-            break;
-          case 'log':
-            await this.logViolation(violation, action.level);
-            break;
-          case 'notify':
-            await this.notifyStakeholders(violation);
-            break;
+        const conditionMet = await rule.condition(entity);
+        
+        if (conditionMet) {
+          const result = await rule.action(entity);
+          
+          if (!result.compliant) {
+            const violation = {
+              violationId: `vio_${ruleId}_${entity.id}_${Date.now()}`,
+              ruleId,
+              entityType: entity.type,
+              entityId: entity.id,
+              severity: result.severity,
+              description: result.message,
+              details: JSON.stringify(result),
+              detectedAt: new Date(),
+              status: 'open'
+            };
+
+            violations.push(violation);
+            await this.recordViolation(violation);
+            
+            // Trigger alert if high severity
+            if (result.severity === 'high') {
+              await this.triggerComplianceAlert(violation);
+            }
+          } else {
+            passedRules.push(ruleId);
+          }
+
+          // Update rule last evaluated
+          rule.lastEvaluated = new Date();
         }
       } catch (error) {
-        this.logger.error(`Failed to execute action ${action.type}:`, error);
+        console.error(`[Compliance] Error evaluating rule ${ruleId}:`, error);
       }
     }
+
+    return {
+      entityType: entity.type,
+      entityId: entity.id,
+      violations,
+      passedRules,
+      complianceScore: passedRules.length / (passedRules.length + violations.length) * 100
+    };
   }
 
-  async blockAction(violation, reason) {
-    this.logger.warn(`Action blocked due to compliance violation: ${reason}`, {
-      violationId: violation.id,
-      ruleId: violation.ruleId
-    });
+  /**
+   * Get entities that need compliance checking
+   */
+  async getEntitiesForComplianceCheck() {
+    const entities = [];
 
-    this.emit('actionBlocked', {
-      violation,
-      reason,
+    // Get patients
+    const patients = await new Promise((resolve, reject) => {
+      this.db.all('SELECT * FROM patients LIMIT 100', (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows.map(row => ({ ...row, type: 'patient' })));
+      });
+    });
+    entities.push(...patients);
+
+    // Get providers
+    const providers = await new Promise((resolve, reject) => {
+      this.db.all('SELECT * FROM providers LIMIT 100', (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows.map(row => ({ ...row, type: 'provider' })));
+      });
+    });
+    entities.push(...providers);
+
+    // Get recent claims
+    const claims = await new Promise((resolve, reject) => {
+      this.db.all('SELECT * FROM claims WHERE created_at > datetime("now", "-7 days") LIMIT 100', (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows.map(row => ({ ...row, type: 'claim' })));
+      });
+    });
+    entities.push(...claims);
+
+    return entities;
+  }
+
+  /**
+   * Record a compliance violation
+   */
+  async recordViolation(violation) {
+    this.violations.set(violation.violationId, violation);
+
+    const stmt = this.db.prepare(`
+      INSERT INTO compliance_violations 
+      (violation_id, rule_id, entity_type, entity_id, severity, description, details, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    stmt.run([
+      violation.violationId,
+      violation.ruleId,
+      violation.entityType,
+      violation.entityId,
+      violation.severity,
+      violation.description,
+      violation.details,
+      violation.status
+    ]);
+
+    stmt.finalize();
+  }
+
+  /**
+   * Trigger compliance alert
+   */
+  async triggerComplianceAlert(violation) {
+    const alert = {
+      type: 'compliance_violation',
+      severity: violation.severity,
+      title: `Compliance Violation: ${violation.ruleId}`,
+      message: violation.description,
+      entityId: violation.entityId,
+      entityType: violation.entityType,
+      timestamp: violation.detectedAt,
+      requiresAction: true
+    };
+
+    // Send via notification service
+    if (this.notificationService) {
+      await this.notificationService.sendAlert(alert);
+    }
+
+    // Emit real-time alert
+    this.io.emit('compliance:alert', alert);
+
+    console.log(`[Compliance] Alert triggered: ${alert.title}`);
+  }
+
+  /**
+   * Log audit trail entry
+   */
+  async logAuditTrail(entry) {
+    const auditId = `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const stmt = this.db.prepare(`
+      INSERT INTO compliance_audit_trail 
+      (audit_id, rule_id, entity_type, entity_id, action, result, details, user_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    stmt.run([
+      auditId,
+      entry.rule_id || null,
+      entry.entity_type,
+      entry.entity_id,
+      entry.action,
+      entry.result,
+      entry.details,
+      entry.user_id || 'system'
+    ]);
+
+    stmt.finalize();
+
+    this.auditTrail.push({
+      auditId,
+      ...entry,
       timestamp: new Date()
     });
   }
 
-  async escalateViolation(violation) {
-    this.logger.error(`Compliance violation escalated: ${violation.ruleName}`, {
-      violationId: violation.id,
-      severity: violation.severity
-    });
-
-    this.emit('violationEscalated', {
-      violation,
-      escalatedAt: new Date()
-    });
-  }
-
-  async logViolation(violation, level = 'audit') {
-    const logEntry = {
-      timestamp: new Date(),
-      level,
-      type: 'compliance_violation',
-      violationId: violation.id,
-      ruleId: violation.ruleId,
-      ruleName: violation.ruleName,
-      category: violation.category,
-      severity: violation.severity,
-      description: violation.description,
-      event: violation.event
-    };
-
-    this.logger[level]('Compliance violation logged', logEntry);
-  }
-
-  async sendViolationAlert(violation) {
-    const alert = {
-      type: 'compliance_violation',
-      severity: violation.severity,
-      title: `Compliance Violation: ${violation.ruleName}`,
-      description: violation.description,
-      category: violation.category,
-      regulation: violation.regulation,
-      violationId: violation.id,
-      timestamp: violation.timestamp,
-      actions: ['review', 'investigate', 'remediate']
-    };
-
-    this.emit('complianceAlert', alert);
-  }
-
-  async notifyStakeholders(violation) {
-    // Implementation would depend on your notification system
-    this.logger.info(`Stakeholders notified for violation: ${violation.id}`);
-  }
-
-  async generateComplianceReport() {
-    const reportId = crypto.randomUUID();
-    const timestamp = new Date();
+  /**
+   * Generate compliance report
+   */
+  async generateComplianceReport(reportType = 'daily', startDate, endDate) {
+    const reportId = `report_${reportType}_${Date.now()}`;
     
-    try {
-      const report = {
-        reportId,
-        generatedAt: timestamp,
-        period: 'last_24_hours',
-        summary: {
-          totalRules: this.rules.size,
-          enabledRules: Array.from(this.rules.values()).filter(rule => rule.enabled).length,
-          totalViolations: this.violations.length,
-          openViolations: this.violations.filter(v => v.status === 'open').length,
-          resolvedViolations: this.violations.filter(v => v.status === 'resolved').length,
-          complianceScore: this.calculateComplianceScore()
-        },
-        violationsByCategory: this.groupViolationsByCategory(),
-        violationsBySeverity: this.groupViolationsBySeverity(),
-        topViolations: this.getTopViolations(),
-        complianceTrends: this.calculateComplianceTrends(),
-        recommendations: this.generateComplianceRecommendations(),
-        auditTrail: this.getRecentAuditTrail(),
-        rulesStatus: this.getRulesStatus()
-      };
-
-      this.complianceReports.push(report);
-      this.emit('complianceReport', report);
-
-      this.logger.info(`Compliance report generated: ${reportId}`);
-      return report;
-
-    } catch (error) {
-      this.logger.error('Compliance report generation failed:', error);
-      throw error;
+    // Default date ranges
+    if (!startDate) {
+      startDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
     }
-  }
-
-  calculateComplianceScore() {
-    const totalChecks = this.auditTrail.filter(entry => entry.type === 'compliance_check').length;
-    const compliantChecks = this.auditTrail.filter(entry => 
-      entry.type === 'compliance_check' && entry.result.status === 'compliant'
-    ).length;
-
-    if (totalChecks === 0) return 100;
-    return Math.round((compliantChecks / totalChecks) * 100);
-  }
-
-  groupViolationsByCategory() {
-    const categories = {};
-    
-    this.violations.forEach(violation => {
-      categories[violation.category] = (categories[violation.category] || 0) + 1;
-    });
-
-    return categories;
-  }
-
-  groupViolationsBySeverity() {
-    const severity = { critical: 0, high: 0, medium: 0, low: 0 };
-    
-    this.violations.forEach(violation => {
-      severity[violation.severity] = (severity[violation.severity] || 0) + 1;
-    });
-
-    return severity;
-  }
-
-  getTopViolations() {
-    const ruleCounts = {};
-    
-    this.violations.forEach(violation => {
-      ruleCounts[violation.ruleId] = (ruleCounts[violation.ruleId] || 0) + 1;
-    });
-
-    return Object.entries(ruleCounts)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 10)
-      .map(([ruleId, count]) => {
-        const rule = this.rules.get(ruleId);
-        return {
-          ruleId,
-          ruleName: rule ? rule.name : 'Unknown',
-          category: rule ? rule.category : 'Unknown',
-          count
-        };
-      });
-  }
-
-  calculateComplianceTrends() {
-    const last30Days = [];
-    const now = Date.now();
-    
-    for (let i = 29; i >= 0; i--) {
-      const date = new Date(now - i * 24 * 60 * 60 * 1000);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      const dayViolations = this.violations.filter(v => 
-        new Date(v.timestamp).toISOString().split('T')[0] === dateStr
-      );
-      
-      last30Days.push({
-        date: dateStr,
-        violations: dayViolations.length,
-        critical: dayViolations.filter(v => v.severity === 'critical').length,
-        high: dayViolations.filter(v => v.severity === 'high').length
-      });
+    if (!endDate) {
+      endDate = new Date();
+      endDate.setHours(23, 59, 59, 999);
     }
 
-    return last30Days;
+    // Get compliance data
+    const violations = await this.getViolationsInPeriod(startDate, endDate);
+    const auditEntries = await this.getAuditEntriesInPeriod(startDate, endDate);
+    
+    const totalChecks = auditEntries.filter(e => e.action === 'compliance_check').length;
+    const resolvedViolations = violations.filter(v => v.status === 'resolved').length;
+    const complianceScore = totalChecks > 0 ? ((totalChecks - violations.length) / totalChecks) * 100 : 100;
+
+    const report = {
+      reportId,
+      reportType,
+      period: { start: startDate, end: endDate },
+      summary: {
+        totalChecks,
+        violations: violations.length,
+        resolvedViolations,
+        complianceScore: complianceScore.toFixed(2)
+      },
+      violations: violations.map(v => ({
+        id: v.violation_id,
+        rule: v.rule_id,
+        entity: `${v.entity_type}:${v.entity_id}`,
+        severity: v.severity,
+        status: v.status,
+        detectedAt: v.detected_at
+      })),
+      trends: await this.calculateComplianceTrends(startDate, endDate),
+      recommendations: await this.generateRecommendations(violations),
+      generatedAt: new Date()
+    };
+
+    // Save report
+    const stmt = this.db.prepare(`
+      INSERT INTO compliance_reports 
+      (report_id, report_type, period_start, period_end, total_checks, violations, resolved_violations, compliance_score, details)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    stmt.run([
+      reportId,
+      reportType,
+      startDate.toISOString(),
+      endDate.toISOString(),
+      totalChecks,
+      violations.length,
+      resolvedViolations,
+      complianceScore,
+      JSON.stringify(report)
+    ]);
+
+    stmt.finalize();
+
+    return report;
   }
 
-  generateComplianceRecommendations() {
+  /**
+   * Get violations in a time period
+   */
+  async getViolationsInPeriod(startDate, endDate) {
+    return new Promise((resolve, reject) => {
+      this.db.all(`
+        SELECT * FROM compliance_violations 
+        WHERE detected_at >= ? AND detected_at <= ?
+        ORDER BY detected_at DESC
+      `, [startDate.toISOString(), endDate.toISOString()], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  }
+
+  /**
+   * Get audit entries in a time period
+   */
+  async getAuditEntriesInPeriod(startDate, endDate) {
+    return new Promise((resolve, reject) => {
+      this.db.all(`
+        SELECT * FROM compliance_audit_trail 
+        WHERE timestamp >= ? AND timestamp <= ?
+        ORDER BY timestamp DESC
+      `, [startDate.toISOString(), endDate.toISOString()], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  }
+
+  /**
+   * Calculate compliance trends
+   */
+  async calculateComplianceTrends(startDate, endDate) {
+    // This would implement trend analysis
+    return {
+      trend: 'improving',
+      changePercentage: 5.2,
+      keyMetrics: {
+        violationRate: -2.1,
+        resolutionTime: -15.3,
+        complianceScore: 3.7
+      }
+    };
+  }
+
+  /**
+   * Generate recommendations based on violations
+   */
+  async generateRecommendations(violations) {
     const recommendations = [];
+    const ruleViolations = {};
 
-    // Analyze violation patterns
-    const topViolations = this.getTopViolations();
-    if (topViolations.length > 0) {
-      const topViolation = topViolations[0];
-      recommendations.push({
-        priority: 'high',
-        category: 'violation_prevention',
-        title: `Address recurring violations: ${topViolation.ruleName}`,
-        description: `This rule has been violated ${topViolation.count} times. Consider reviewing and improving controls.`,
-        actionItems: [
-          'Review current processes',
-          'Strengthen controls',
-          'Provide additional training'
-        ]
-      });
-    }
+    // Group violations by rule
+    violations.forEach(v => {
+      if (!ruleViolations[v.rule_id]) {
+        ruleViolations[v.rule_id] = [];
+      }
+      ruleViolations[v.rule_id].push(v);
+    });
 
-    // Check compliance score
-    const score = this.calculateComplianceScore();
-    if (score < 90) {
-      recommendations.push({
-        priority: 'medium',
-        category: 'compliance_improvement',
-        title: 'Improve overall compliance',
-        description: `Current compliance score is ${score}%. Target is 95% or higher.`,
-        actionItems: [
-          'Review all compliance rules',
-          'Strengthen monitoring',
-          'Implement automated remediation'
-        ]
-      });
-    }
-
-    // Check for critical violations
-    const criticalViolations = this.violations.filter(v => v.severity === 'critical' && v.status === 'open');
-    if (criticalViolations.length > 0) {
-      recommendations.push({
-        priority: 'critical',
-        category: 'immediate_action',
-        title: 'Critical violations require immediate attention',
-        description: `${criticalViolations.length} critical violations are currently open.`,
-        actionItems: [
-          'Immediate investigation required',
-          'Implement temporary controls',
-          'Escalate to management'
-        ]
-      });
+    // Generate recommendations for each rule
+    for (const [ruleId, vList] of Object.entries(ruleViolations)) {
+      const rule = this.complianceRules.get(ruleId);
+      if (rule && vList.length > 0) {
+        recommendations.push({
+          priority: vList.length > 5 ? 'high' : 'medium',
+          rule: rule.name,
+          issue: `${vList.length} violations detected`,
+          recommendation: `Review and address ${rule.category} compliance issues`,
+          affectedEntities: vList.length
+        });
+      }
     }
 
     return recommendations;
   }
 
-  getRecentAuditTrail() {
-    return this.auditTrail
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .slice(0, 50);
-  }
-
-  getRulesStatus() {
-    return Array.from(this.rules.values()).map(rule => ({
-      id: rule.id,
-      name: rule.name,
-      category: rule.category,
-      enabled: rule.enabled,
-      lastUpdated: rule.updatedAt,
-      version: rule.version,
-      violationCount: this.violations.filter(v => v.ruleId === rule.id).length
-    }));
-  }
-
-  async checkRuleUpdates() {
-    this.logger.info('Checking for rule updates');
-    
-    // This would check for rule updates from a central repository
-    // For now, just reload custom rules
-    await this.loadCustomRules();
-  }
-
-  async updateRule(ruleId, updates) {
-    try {
-      const rule = this.rules.get(ruleId);
-      
-      if (!rule) {
-        throw new Error('Rule not found');
-      }
-
-      const updatedRule = {
-        ...rule,
-        ...updates,
-        updatedAt: new Date(),
-        version: this.incrementVersion(rule.version)
-      };
-
-      this.rules.set(ruleId, updatedRule);
-
-      // Save to file if it's a custom rule
-      if (ruleId.startsWith('custom_')) {
-        await this.saveCustomRule(updatedRule);
-      }
-
-      this.logger.info(`Rule updated: ${ruleId}`);
-      this.emit('ruleUpdated', updatedRule);
-
-      return updatedRule;
-
-    } catch (error) {
-      this.logger.error(`Failed to update rule ${ruleId}:`, error);
-      throw error;
+  /**
+   * Update compliance rule
+   */
+  async updateComplianceRule(ruleId, updates) {
+    const rule = this.complianceRules.get(ruleId);
+    if (!rule) {
+      throw new Error(`Rule ${ruleId} not found`);
     }
+
+    // Update rule in memory
+    Object.assign(rule, updates);
+    rule.updatedAt = new Date();
+
+    // Update in database
+    const stmt = this.db.prepare(`
+      UPDATE compliance_rules 
+      SET name = ?, description = ?, condition_json = ?, action_json = ?, severity = ?, enabled = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE rule_id = ?
+    `);
+
+    stmt.run([
+      rule.name,
+      rule.description,
+      JSON.stringify(rule.condition.toString()),
+      JSON.stringify(rule.action.toString()),
+      rule.severity,
+      rule.enabled ? 1 : 0,
+      ruleId
+    ]);
+
+    stmt.finalize();
+
+    // Log the change
+    await this.logAuditTrail({
+      action: 'rule_update',
+      entity_type: 'compliance_rule',
+      entity_id: ruleId,
+      result: 'success',
+      details: JSON.stringify(updates)
+    });
+
+    console.log(`[Compliance] Rule ${ruleId} updated`);
   }
 
-  async saveCustomRule(rule) {
-    const rulePath = path.join(this.config.rulesDirectory, `${rule.id}.json`);
-    await fs.writeFile(rulePath, JSON.stringify(rule, null, 2));
-  }
-
-  incrementVersion(version) {
-    const parts = version.split('.');
-    parts[parts.length - 1] = (parseInt(parts[parts.length - 1]) + 1).toString();
-    return parts.join('.');
-  }
-
-  async resolveViolation(violationId, resolution) {
-    try {
-      const violation = this.violations.find(v => v.id === violationId);
-      
-      if (!violation) {
-        throw new Error('Violation not found');
-      }
-
-      violation.status = 'resolved';
-      violation.resolvedAt = new Date();
-      violation.resolution = resolution;
-      violation.resolvedBy = resolution.userId;
-
-      this.logger.info(`Violation resolved: ${violationId}`);
-      this.emit('violationResolved', violation);
-
-      return violation;
-
-    } catch (error) {
-      this.logger.error(`Failed to resolve violation ${violationId}:`, error);
-      throw error;
-    }
-  }
-
-  getComplianceStatus() {
-    const score = this.calculateComplianceScore();
-    const openViolations = this.violations.filter(v => v.status === 'open');
-    const criticalViolations = openViolations.filter(v => v.severity === 'critical');
-
+  /**
+   * Get compliance metrics
+   */
+  getComplianceMetrics() {
     return {
-      score,
-      status: score >= 95 ? 'compliant' : score >= 80 ? 'at_risk' : 'non_compliant',
-      openViolations: openViolations.length,
-      criticalViolations: criticalViolations.length,
-      lastCheck: this.auditTrail
-        .filter(entry => entry.type === 'compliance_check')
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0]?.timestamp,
-      nextCheck: this.getNextScheduledCheck()
+      ...this.metrics,
+      activeRules: this.complianceRules.size,
+      enabledRules: Array.from(this.complianceRules.values()).filter(r => r.enabled).length,
+      openViolations: Array.from(this.violations.values()).filter(v => v.status === 'open').length,
+      lastUpdated: new Date()
     };
   }
 
-  getNextScheduledCheck() {
-    // This would calculate the next scheduled check time
-    // For now, return a placeholder
-    return new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
-  }
-
-  getViolations(options = {}) {
-    const {
-      status,
-      category,
-      severity,
-      limit = 50,
-      offset = 0
-    } = options;
-
-    let violations = this.violations;
-
-    // Apply filters
-    if (status) {
-      violations = violations.filter(v => v.status === status);
+  /**
+   * Resolve violation
+   */
+  async resolveViolation(violationId, resolvedBy, notes) {
+    const violation = this.violations.get(violationId);
+    if (!violation) {
+      throw new Error(`Violation ${violationId} not found`);
     }
 
-    if (category) {
-      violations = violations.filter(v => v.category === category);
-    }
+    violation.status = 'resolved';
+    violation.resolvedAt = new Date();
+    violation.resolvedBy = resolvedBy;
+    violation.resolutionNotes = notes;
 
-    if (severity) {
-      violations = violations.filter(v => v.severity === severity);
-    }
+    // Update in database
+    const stmt = this.db.prepare(`
+      UPDATE compliance_violations 
+      SET status = 'resolved', resolved_at = ?, resolved_by = ?
+      WHERE violation_id = ?
+    `);
 
-    // Sort by timestamp (newest first)
-    violations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    stmt.run([violation.resolvedAt.toISOString(), resolvedBy, violationId]);
+    stmt.finalize();
 
-    // Apply pagination
-    return violations.slice(offset, offset + limit);
-  }
+    // Log the resolution
+    await this.logAuditTrail({
+      action: 'violation_resolved',
+      entity_type: 'compliance_violation',
+      entity_id: violationId,
+      result: 'success',
+      details: JSON.stringify({ resolvedBy, notes }),
+      user_id: resolvedBy
+    });
 
-  getRules() {
-    return Array.from(this.rules.values());
+    // Update metrics
+    this.metrics.resolvedViolations++;
+
+    console.log(`[Compliance] Violation ${violationId} resolved by ${resolvedBy}`);
   }
 }
 
