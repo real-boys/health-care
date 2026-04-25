@@ -6,6 +6,21 @@
 
 const crypto = require('crypto');
 const { LRUCache } = require('lru-cache');
+const jwt = require('jsonwebtoken');
+const winston = require('winston');
+
+// Configure Logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'logs/gateway.log' }),
+  ],
+});
+
 
 // ============================================
 // Circuit Breaker Pattern
@@ -248,7 +263,17 @@ class EnhancedRateLimiter {
       keyGenerator: (req) => `${tier}:${this.defaultKeyGenerator(req)}`
     });
   }
+
+  // Per-user rate limiting
+  userRateLimit(config) {
+    return this.middleware({
+      windowMs: config.windowMs || 60000,
+      maxRequests: config.maxRequests || 50,
+      keyGenerator: (req) => req.user ? `user:${req.user.id}` : `ip:${this.defaultKeyGenerator(req)}`
+    });
+  }
 }
+
 
 // ============================================
 // Request Cache
@@ -624,14 +649,69 @@ class APIGateway {
     this.responseTransformer = new ResponseTransformer(options.responseTransformer);
     this.securityHeaders = new SecurityHeaders(options.securityHeaders);
     
+    this.metrics = {
+      totalRequests: 0,
+      totalFailures: 0,
+      averageResponseTime: 0,
+      statusCodes: {}
+    };
+
     this.options = options;
   }
+
+  // JWT Authentication Middleware
+  authenticate(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: 'Authorization header missing' });
+
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.JWT_SECRET || 'secret', (err, user) => {
+      if (err) return res.status(403).json({ error: 'Invalid or expired token' });
+      req.user = user;
+      next();
+    });
+  }
+
+  // Monitoring Middleware
+  monitor() {
+    return (req, res, next) => {
+      const start = Date.now();
+      this.metrics.totalRequests++;
+
+      res.on('finish', () => {
+        const duration = Date.now() - start;
+        const status = res.statusCode;
+        
+        this.metrics.statusCodes[status] = (this.metrics.statusCodes[status] || 0) + 1;
+        if (status >= 400) this.metrics.totalFailures++;
+        
+        // Update rolling average response time
+        this.metrics.averageResponseTime = (this.metrics.averageResponseTime * (this.metrics.totalRequests - 1) + duration) / this.metrics.totalRequests;
+
+        logger.info({
+          method: req.method,
+          url: req.originalUrl,
+          status,
+          duration,
+          userId: req.user ? req.user.id : null,
+          ip: req.ip
+        });
+      });
+
+      next();
+    };
+  }
+
 
   // Full gateway middleware stack
   middleware() {
     const stack = [
+      // Monitoring
+      this.monitor(),
+
       // Security headers
       this.securityHeaders.middleware(),
+
       
       // Request ID
       RequestTransformer.addRequestId(),
