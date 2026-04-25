@@ -10,6 +10,10 @@ import SEOHead from './components/SEO/SEOHead';
 import FraudDetectionPage from './pages/FraudDetectionPage';
 import PaymentHistoryAnalytics from './components/PaymentHistoryAnalytics';
 import NotificationManagementDashboard from './components/NotificationManagementDashboard';
+import { AnimationProvider } from './context/AnimationContext';
+import { ABTestingProvider } from './context/ABTestingContext';
+import { VoiceControl } from './components/VoiceControl';
+import { useNavigate } from 'react-router-dom';
 
 const SidebarItem = ({ to, icon, label, badge }) => {
    const location = useLocation();
@@ -46,10 +50,23 @@ const SidebarItem = ({ to, icon, label, badge }) => {
 const Layout = ({ children }) => {
    const { t } = useTranslation();
 
+   const navigate = useNavigate();
+
+   React.useEffect(() => {
+      const handleVoice = (e) => {
+         const { type, payload } = e.detail;
+         if (type === 'navigate') {
+            navigate(payload);
+         }
+      };
+      window.addEventListener('voice-command', handleVoice);
+      return () => window.removeEventListener('voice-command', handleVoice);
+   }, [navigate]);
+
    return (
       <div className="flex bg-[#0a0c10] min-h-screen">
          {/* Stealth Sidebar */}
-         <aside className="w-72 bg-[#050608] border-r border-slate-900 flex flex-col hidden xl:flex shrink-0 h-screen sticky top-0 z-50">
+         <aside className="w-72 bg-[#050608] border-r border-slate-900 flex flex-col hidden xl:flex shrink-0 h-screen sticky top-0 z-50 no-print">
             <div className="p-8">
                <div className="flex items-center gap-3 mb-10">
                   <div className="w-10 h-10 rounded-2xl premium-gradient flex-center shadow-[0_0_20px_rgba(99,102,241,0.4)]">
@@ -172,11 +189,19 @@ const AppWithSEO = () => {
 function App() {
    return (
       <HelmetProvider>
-         <Router>
-            <Layout>
-               <AppWithSEO />
-            </Layout>
-         </Router>
+         <AnimationProvider>
+            <ABTestingProvider userId="user-123">
+               <Router>
+                  <Layout>
+                     <AppWithSEO />
+                     <VoiceControl onCommand={(type, payload) => {
+                        // This will be handled inside Layout's navigate context
+                        window.dispatchEvent(new CustomEvent('voice-command', { detail: { type, payload } }));
+                     }} />
+                  </Layout>
+               </Router>
+            </ABTestingProvider>
+         </AnimationProvider>
       </HelmetProvider>
    );
 }
