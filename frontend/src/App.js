@@ -15,9 +15,20 @@ import {
   AlertCircle,
   UserPlus,
   FileText,
-  Award
+  Award,
+  Mic,
+  MicOff,
+  Download
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import './App.css';
+
+// New components and hooks
+import AnimatedPage from './components/animations/AnimatedPage';
+import { HoverScale, FadeIn, LoadingDots } from './components/animations/MicroInteraction';
+import ReportExporter from './components/reports/ReportExporter';
+import { useABTest } from './contexts/ABTestingContext';
+import useVoiceInterface from './hooks/useVoiceInterface';
 
 // Contract ABIs (simplified for demo)
 const HEALTHCARE_DRIPS_ABI = [
@@ -44,6 +55,18 @@ function App() {
   const [fundingRequests, setFundingRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  // A/B Testing
+  const { getVariant, trackEvent } = useABTest();
+  const heroVariant = getVariant('hero_layout', ['A', 'B']);
+
+  // Voice Interface
+  const { isListening, startListening, speak } = useVoiceInterface({
+    'go to dashboard': () => setActiveTab('dashboard'),
+    'show funding': () => setActiveTab('funding'),
+    'show contributors': () => setActiveTab('contributors'),
+    'connect wallet': () => connectWallet(),
+  });
 
   // Contract addresses (would come from deployment.json)
   const CONTRACT_ADDRESS = "0x..."; // Replace with actual address
@@ -128,125 +151,163 @@ function App() {
     }
   };
 
-  const Dashboard = () => (
-    <div className="dashboard">
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon">
-            <TrendingUp className="w-6 h-6" />
-          </div>
-          <div className="stat-content">
-            <h3>Active Premium Drips</h3>
-            <p className="stat-number">{premiumDrips.length}</p>
-          </div>
-        </div>
-        
-        <div className="stat-card">
-          <div className="stat-icon">
-            <DollarSign className="w-6 h-6" />
-          </div>
-          <div className="stat-content">
-            <h3>Monthly Premium</h3>
-            <p className="stat-number">$500</p>
-          </div>
-        </div>
-        
-        <div className="stat-card">
-          <div className="stat-icon">
-            <Calendar className="w-6 h-6" />
-          </div>
-          <div className="stat-content">
-            <h3>Next Payment</h3>
-            <p className="stat-number">Dec 15, 2024</p>
-          </div>
-        </div>
-        
-        <div className="stat-card">
-          <div className="stat-icon">
-            <Shield className="w-6 h-6" />
-          </div>
-          <div className="stat-content">
-            <h3>Coverage Status</h3>
-            <p className="stat-number active">Active</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="action-section">
-        <button onClick={createPremiumDrip} disabled={loading} className="btn-primary">
-          <CreditCard className="w-4 h-4 mr-2" />
-          {loading ? 'Creating...' : 'Create Premium Drip'}
-        </button>
-      </div>
+  const VoiceAssistant = () => (
+    <div 
+      className={`voice-assistant-badge ${isListening ? 'listening' : ''}`}
+      onClick={startListening}
+    >
+      {isListening ? <Mic className="w-6 h-6 text-red-500" /> : <MicOff className="w-6 h-6 text-gray-500" />}
+      <span>{isListening ? 'Listening...' : 'Voice Control'}</span>
     </div>
+  );
+
+  const Dashboard = () => (
+    <AnimatedPage>
+      <div className="dashboard" id="dashboard-report">
+        <div className="flex justify-between items-center mb-6">
+          <FadeIn>
+            <h2 className="text-2xl font-bold text-white">
+              {heroVariant === 'A' ? 'Patient Dashboard' : 'Your Healthcare Overview'}
+            </h2>
+          </FadeIn>
+          <ReportExporter 
+            targetId="dashboard-report" 
+            filename="healthcare-report"
+            data={premiumDrips} 
+          />
+        </div>
+
+        <div className="stats-grid">
+          <HoverScale>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <TrendingUp className="w-6 h-6" />
+              </div>
+              <div className="stat-content">
+                <h3>Active Premium Drips</h3>
+                <p className="stat-number">{premiumDrips.length}</p>
+              </div>
+            </div>
+          </HoverScale>
+          
+          <HoverScale>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <DollarSign className="w-6 h-6" />
+              </div>
+              <div className="stat-content">
+                <h3>Monthly Premium</h3>
+                <p className="stat-number">$500</p>
+              </div>
+            </div>
+          </HoverScale>
+          
+          <HoverScale>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <Calendar className="w-6 h-6" />
+              </div>
+              <div className="stat-content">
+                <h3>Next Payment</h3>
+                <p className="stat-number">Dec 15, 2024</p>
+              </div>
+            </div>
+          </HoverScale>
+          
+          <HoverScale>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <Shield className="w-6 h-6" />
+              </div>
+              <div className="stat-content">
+                <h3>Coverage Status</h3>
+                <p className="stat-number active">Active</p>
+              </div>
+            </div>
+          </HoverScale>
+        </div>
+
+        <div className="action-section">
+          <HoverScale>
+            <button onClick={createPremiumDrip} disabled={loading} className="btn-primary">
+              <CreditCard className="w-4 h-4 mr-2" />
+              {loading ? <LoadingDots /> : 'Create Premium Drip'}
+            </button>
+          </HoverScale>
+        </div>
+      </div>
+    </AnimatedPage>
   );
 
   const FundingRequests = () => (
-    <div className="funding-requests">
-      <h2>Community Funding Requests</h2>
-      <div className="requests-grid">
-        {fundingRequests.map((requestId, index) => (
-          <div key={index} className="request-card">
-            <div className="request-header">
-              <h3>Emergency Surgery Fund</h3>
-              <span className="request-status">Active</span>
-            </div>
-            <div className="request-body">
-              <p>Patient needs funding for critical medical procedure</p>
-              <div className="request-amount">
-                <DollarSign className="w-4 h-4" />
-                <span>2,500</span>
+    <AnimatedPage>
+      <div className="funding-requests">
+        <FadeIn>
+          <h2>Community Funding Requests</h2>
+        </FadeIn>
+        <div className="requests-grid">
+          {fundingRequests.map((requestId, index) => (
+            <HoverScale key={index}>
+              <div className="request-card">
+                <div className="request-header">
+                  <h3>Emergency Surgery Fund</h3>
+                  <span className="request-status">Active</span>
+                </div>
+                <div className="request-body">
+                  <p>Patient needs funding for critical medical procedure</p>
+                  <div className="request-amount">
+                    <DollarSign className="w-4 h-4" />
+                    <span>2,500</span>
+                  </div>
+                </div>
+                <div className="request-actions">
+                  <button 
+                    onClick={() => {
+                      contributeToFunding(requestId, '0.1');
+                      trackEvent('funding_click', 'contribute', { requestId });
+                    }}
+                    disabled={loading}
+                    className="btn-secondary w-full justify-center"
+                  >
+                    <Heart className="w-4 h-4 mr-2" />
+                    {loading ? <LoadingDots /> : 'Contribute 0.1 ETH'}
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="request-actions">
-              <button 
-                onClick={() => contributeToFunding(requestId, '0.1')}
-                disabled={loading}
-                className="btn-secondary"
-              >
-                <Heart className="w-4 h-4 mr-2" />
-                Contribute 0.1 ETH
-              </button>
-            </div>
-          </div>
-        ))}
+            </HoverScale>
+          ))}
+        </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 
   const Contributors = () => (
-    <div className="contributors">
-      <h2>Contributor Community</h2>
-      <div className="contributors-grid">
-        <div className="contributor-card">
-          <div className="contributor-avatar">
-            <UserPlus className="w-8 h-8" />
-          </div>
-          <div className="contributor-info">
-            <h3>Dr. Sarah Chen</h3>
-            <p>Cardiologist • Reputation: 850</p>
-            <div className="contributor-stats">
-              <span><Award className="w-4 h-4" /> 45 Reviews</span>
-              <span><DollarSign className="w-4 h-4" /> 12.5 ETH Contributed</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="contributor-card">
-          <div className="contributor-avatar">
-            <UserPlus className="w-8 h-8" />
-          </div>
-          <div className="contributor-info">
-            <h3>Dr. Michael Ross</h3>
-            <p>Neurologist • Reputation: 720</p>
-            <div className="contributor-stats">
-              <span><Award className="w-4 h-4" /> 32 Reviews</span>
-              <span><DollarSign className="w-4 h-4" /> 8.3 ETH Contributed</span>
-            </div>
-          </div>
+    <AnimatedPage>
+      <div className="contributors">
+        <FadeIn>
+          <h2>Contributor Community</h2>
+        </FadeIn>
+        <div className="contributors-grid">
+          {[1, 2].map((i) => (
+            <HoverScale key={i}>
+              <div className="contributor-card">
+                <div className="contributor-avatar">
+                  <UserPlus className="w-8 h-8" />
+                </div>
+                <div className="contributor-info">
+                  <h3>{i === 1 ? 'Dr. Sarah Chen' : 'Dr. Michael Ross'}</h3>
+                  <p>{i === 1 ? 'Cardiologist' : 'Neurologist'} • Reputation: {i === 1 ? '850' : '720'}</p>
+                  <div className="contributor-stats">
+                    <span><Award className="w-4 h-4" /> {i === 1 ? '45' : '32'} Reviews</span>
+                    <span><DollarSign className="w-4 h-4" /> {i === 1 ? '12.5' : '8.3'} ETH Contributed</span>
+                  </div>
+                </div>
+              </div>
+            </HoverScale>
+          ))}
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 
   return (
@@ -300,19 +361,26 @@ function App() {
 
       <main className="app-main">
         {!account ? (
-          <div className="connect-prompt">
-            <AlertCircle className="w-12 h-12" />
-            <h2>Connect Your Wallet</h2>
-            <p>Please connect your MetaMask wallet to access the Healthcare Drips platform</p>
-          </div>
+          <FadeIn>
+            <div className="connect-prompt">
+              <AlertCircle className="w-12 h-12" />
+              <h2>Connect Your Wallet</h2>
+              <p>Please connect your MetaMask wallet to access the Healthcare Drips platform</p>
+              <button onClick={connectWallet} className="btn-primary mx-auto mt-4">
+                <Shield className="w-4 h-4 mr-2" />
+                Connect Wallet
+              </button>
+            </div>
+          </FadeIn>
         ) : (
-          <>
-            {activeTab === 'dashboard' && <Dashboard />}
-            {activeTab === 'funding' && <FundingRequests />}
-            {activeTab === 'contributors' && <Contributors />}
-          </>
+          <AnimatePresence mode="wait">
+            {activeTab === 'dashboard' && <Dashboard key="dashboard" />}
+            {activeTab === 'funding' && <FundingRequests key="funding" />}
+            {activeTab === 'contributors' && <Contributors key="contributors" />}
+          </AnimatePresence>
         )}
       </main>
+      <VoiceAssistant />
     </div>
   );
 }
