@@ -1,8 +1,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { ShieldAlert, Users, Database, LayoutDashboard, Search, Command } from 'lucide-react';
+import { 
+  ShieldAlert, Users, Database, LayoutDashboard, Search, Command, 
+  Trophy, FileText, Sparkles, Activity
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import FraudDetectionPage from './pages/FraudDetectionPage';
+import GamificationPage from './pages/GamificationPage';
+import CMSPage from './pages/CMSPage';
+import RecommendationsPage from './pages/RecommendationsPage';
+import useAppStore from './store/useAppStore';
+import StateDebugger from './components/StateDebugger';
 
 const SidebarItem = ({ to, icon, label, badge }) => {
   const location = useLocation();
@@ -39,10 +47,12 @@ const SidebarItem = ({ to, icon, label, badge }) => {
 };
 
 const Layout = ({ children }) => {
+  const { user } = useAppStore();
+
   return (
     <div className="flex bg-[#0a0c10] min-h-screen">
        {/* Stealth Sidebar */}
-       <aside className="w-72 bg-[#050608] border-r border-slate-900 flex flex-col hidden xl:flex shrink-0 h-screen sticky top-0 z-50">
+       <aside className="w-72 bg-[#050608] border-r border-slate-900 flex flex-col hidden xl:flex shrink-0 h-screen sticky top-0 z-50 overflow-y-auto">
           <div className="p-8">
              <div className="flex items-center gap-3 mb-10">
                 <div className="w-10 h-10 rounded-2xl premium-gradient flex-center shadow-[0_0_20px_rgba(99,102,241,0.4)]">
@@ -69,12 +79,23 @@ const Layout = ({ children }) => {
              <nav className="space-y-1.5">
                 <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">Command Center</p>
                 <SidebarItem to="/" icon={<LayoutDashboard size={20} />} label="Operational Overview" />
-                <SidebarItem to="/patients" icon={<Users size={20} />} label="Patient Forensics" />
-                <SidebarItem to="/providers" icon={<Database size={20} />} label="Provider Entities" />
+                <SidebarItem to="/recommendations" icon={<Sparkles size={20} />} label="AI Recommendations" />
                 
-                <div className="pt-8 mb-4">
+                <div className="pt-6 mb-4">
+                   <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">Management</p>
+                   <SidebarItem to="/patients" icon={<Users size={20} />} label="Patient Forensics" />
+                   <SidebarItem to="/providers" icon={<Database size={20} />} label="Provider Entities" />
+                   <SidebarItem to="/cms" icon={<FileText size={20} />} label="Content Nexus" />
+                </div>
+
+                <div className="pt-6 mb-4">
                    <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">Anti-Fraud Engine</p>
                    <SidebarItem to="/fraud" icon={<ShieldAlert size={20} />} label="Fraud Intelligence" badge="NEW" />
+                </div>
+
+                <div className="pt-6 mb-4">
+                   <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">Personal Growth</p>
+                   <SidebarItem to="/gamification" icon={<Trophy size={20} />} label="Performance Center" />
                 </div>
              </nav>
           </div>
@@ -82,12 +103,12 @@ const Layout = ({ children }) => {
           <div className="mt-auto p-6 border-t border-slate-900 bg-slate-900/10">
              <div className="flex items-center gap-3 p-2 bg-slate-900/40 rounded-2xl border border-slate-800/50">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex-center font-bold text-white shadow-lg overflow-hidden relative">
-                   <span className="relative z-10 text-xs">JS</span>
+                   <span className="relative z-10 text-xs">{user.name.split(' ').map(n => n[0]).join('')}</span>
                    <div className="absolute inset-0 bg-white/10 blur-sm"></div>
                 </div>
                 <div className="flex-1 overflow-hidden">
-                  <div className="text-sm font-bold text-slate-200 truncate">John Smith</div>
-                  <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Level 4 Admin</div>
+                  <div className="text-sm font-bold text-slate-200 truncate">{user.name}</div>
+                  <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Level {user.level} Admin</div>
                 </div>
              </div>
           </div>
@@ -110,10 +131,10 @@ const Layout = ({ children }) => {
 const Placeholder = ({ name }) => (
   <div className="flex-center flex-col min-h-screen text-slate-500 space-y-4">
      <div className="w-20 h-20 rounded-3xl bg-slate-900 border border-slate-800 flex-center">
-        <Database size={40} className="text-slate-700" />
+        <Activity size={40} className="text-slate-700" />
      </div>
      <h2 className="text-2xl font-bold text-slate-400">{name} Service</h2>
-     <p className="max-w-xs text-center text-sm">This module is currently initializing. Please check Fraud Intelligence for a live demonstration.</p>
+     <p className="max-w-xs text-center text-sm">This module is currently initializing. Please check the sidebar for live demonstrations.</p>
   </div>
 );
 
@@ -126,8 +147,12 @@ function App() {
           <Route path="/patients" element={<Placeholder name="Patient Records" />} />
           <Route path="/providers" element={<Placeholder name="Provider Registry" />} />
           <Route path="/fraud" element={<FraudDetectionPage />} />
+          <Route path="/gamification" element={<GamificationPage />} />
+          <Route path="/cms" element={<CMSPage />} />
+          <Route path="/recommendations" element={<RecommendationsPage />} />
         </Routes>
       </Layout>
+      <StateDebugger />
     </Router>
   );
 }
