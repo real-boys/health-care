@@ -1,10 +1,12 @@
 const nodemailer = require('nodemailer');
 const twilio = require('twilio');
+const admin = require('firebase-admin');
 
 class NotificationDeliveryService {
   constructor() {
     this.emailTransporter = null;
     this.twilioClient = null;
+    this.firebaseApp = null;
     this.initializeServices();
   }
 
@@ -37,6 +39,40 @@ class NotificationDeliveryService {
         process.env.TWILIO_ACCOUNT_SID,
         process.env.TWILIO_AUTH_TOKEN
       );
+    }
+
+    // Initialize Firebase Admin for FCM
+    this.initializeFirebase();
+  }
+
+  initializeFirebase() {
+    try {
+      if (!admin.apps.length) {
+        const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+        
+        if (serviceAccountPath && process.env.FCM_SERVER_KEY) {
+          // Initialize with service account file
+          const serviceAccount = require(serviceAccountPath);
+          this.firebaseApp = admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+          });
+        } else if (process.env.FCM_SERVER_KEY) {
+          // Initialize with server key
+          this.firebaseApp = admin.initializeApp({
+            credential: admin.credential.cert({
+              projectId: process.env.FCM_PROJECT_ID,
+              clientEmail: process.env.FCM_CLIENT_EMAIL,
+              privateKey: process.env.FCM_PRIVATE_KEY?.replace(/\\n/g, '\n')
+            })
+          });
+        } else {
+          console.warn('Firebase Admin not configured. Push notifications will be simulated.');
+        }
+      } else {
+        this.firebaseApp = admin.apps[0];
+      }
+    } catch (error) {
+      console.error('Failed to initialize Firebase Admin:', error);
     }
   }
 
@@ -105,30 +141,94 @@ class NotificationDeliveryService {
   }
 
   async sendPushNotification(deviceTokens, title, message, data = {}) {
-    // This would integrate with FCM (Firebase Cloud Messaging) or APNS
-    // For now, we'll simulate the push notification
     try {
-      console.log(`Push notification sent to ${deviceTokens.length} devices`);
-      console.log(`Title: ${title}, Message: ${message}`);
-      
-      // In a real implementation, you would use FCM or APNS libraries
-      // const admin = require('firebase-admin');
-      // await admin.messaging().sendToDevice(deviceTokens, {
-      //   notification: { title, body: message },
-      //   data: data
-      // });
+      if (!this.firebaseApp) {
+        console.warn('Firebase Admin not initialized. Simulating push notification.');
+        return {
+          success: true,
+          deviceCount: deviceTokens.length,
+          message: 'Push notification simulated successfully',
+          simulated: true
+        };
+      }
 
+      const notification = {
+        notification: {
+          title,
+          body: message,
+          sound: 'default',
+          badge: '1'
+        },
+        data: data || {},
+        android: {
+          priority: 'high',
+          notification: {
+            sound: 'default',
+            clickAction: 'FLUTTER_NOTIFICATION_CLICK'
+          }
+        },
+        apns: {
+          payload: {
+            aps: {
+              sound: 'default',
+              badge: 1
+            }
+          }
+        }
+      };
+
+      // Send to multiple devices in chunks (FCM limit is 500 tokens per request)
+      const chunkSize = 500;
+      const results = [];
+      
+      for (let i = 0; i < deviceTokens.length; i += chunkSize) {
+        const chunk = deviceTokens.slice(i, i + chunkSize);
+        
+        try {
+          const response = await admin.messaging().sendMulticast({
+            tokens: chunk,
+            ...notification
+          });
+          
+          results.push({
+            successCount: response.successCount,
+            failureCount: response.failureCount,
+            failedTokens: response.responses
+              .map((resp, idx) => resp.error ? chunk[idx] : null)
+              .filter(Boolean)
+          });
+          
+        } catch (chunkError) {
+          console.error(`Failed to send push notification to chunk ${i}:`, chunkError);
+          results.push({
+            successCount: 0,
+            failureCount: chunk.length,
+            error: chunkError.message
+          });
+        }
+      }
+
+      const totalSuccess = results.reduce((sum, r) => sum + r.successCount, 0);
+      const totalFailures = results.reduce((sum, r) => sum + r.failureCount, 0);
+      const allFailedTokens = results.flatMap(r => r.failedTokens || []);
+
+      console.log(`Push notification sent to ${deviceTokens.length} devices: ${totalSuccess} success, ${totalFailures} failures`);
+      
       return {
-        success: true,
+        success: totalSuccess > 0,
         deviceCount: deviceTokens.length,
-        message: 'Push notification sent successfully'
+        successCount: totalSuccess,
+        failureCount: totalFailures,
+        failedTokens: allFailedTokens,
+        message: `Push notification sent to ${totalSuccess}/${deviceTokens.length} devices`
       };
     } catch (error) {
       console.error('Failed to send push notification:', error);
       
       return {
         success: false,
-        error: error.message
+        error: error.message,
+        deviceCount: deviceTokens.length
       };
     }
   }

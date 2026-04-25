@@ -5,6 +5,11 @@ import {
   Trophy, FileText, Sparkles, Activity
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { HelmetProvider } from 'react-helmet-async';
+import LanguageSwitcher from './components/LanguageSwitcher';
+import SyncStatusIndicator from './components/SyncStatusIndicator';
+import SEOHead from './components/SEO/SEOHead';
 import FraudDetectionPage from './pages/FraudDetectionPage';
 import GamificationPage from './pages/GamificationPage';
 import CMSPage from './pages/CMSPage';
@@ -13,37 +18,35 @@ import useAppStore from './store/useAppStore';
 import StateDebugger from './components/StateDebugger';
 
 const SidebarItem = ({ to, icon, label, badge }) => {
-  const location = useLocation();
-  const isActive = location.pathname === to || (to === '/' && location.pathname === '');
+   const location = useLocation();
+   const isActive = location.pathname === to || (to === '/' && location.pathname === '');
 
-  return (
-    <Link to={to} className="relative group block outline-none">
-       <div className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-          isActive 
-          ? 'bg-indigo-500/10 text-indigo-400' 
-          : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/40'
-       }`}>
-          <div className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}>
-            {icon}
-          </div>
-          <span className="font-semibold text-sm tracking-wide">{label}</span>
-          
-          {badge && (
-             <span className={`ml-auto px-2 py-0.5 rounded-lg text-[10px] font-black ${
-                isActive ? 'bg-indigo-500 text-white' : 'bg-rose-600/80 text-white'
-             }`}>
-               {badge}
-             </span>
-          )}
-       </div>
-       {isActive && (
-          <motion.div 
-            layoutId="sidebarActive" 
-            className="absolute left-0 top-2 bottom-2 w-1 bg-indigo-500 rounded-full" 
-          />
-       )}
-    </Link>
-  );
+   return (
+      <Link to={to} className="relative group block outline-none">
+         <div className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${isActive
+            ? 'bg-indigo-500/10 text-indigo-400'
+            : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/40'
+            }`}>
+            <div className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}>
+               {icon}
+            </div>
+            <span className="font-semibold text-sm tracking-wide">{label}</span>
+
+            {badge && (
+               <span className={`ml-auto px-2 py-0.5 rounded-lg text-[10px] font-black ${isActive ? 'bg-indigo-500 text-white' : 'bg-rose-600/80 text-white'
+                  }`}>
+                  {badge}
+               </span>
+            )}
+         </div>
+         {isActive && (
+            <motion.div
+               layoutId="sidebarActive"
+               className="absolute left-0 top-2 bottom-2 w-1 bg-indigo-500 rounded-full"
+            />
+         )}
+      </Link>
+   );
 };
 
 const Layout = ({ children }) => {
@@ -137,6 +140,41 @@ const Placeholder = ({ name }) => (
      <p className="max-w-xs text-center text-sm">This module is currently initializing. Please check the sidebar for live demonstrations.</p>
   </div>
 );
+
+const AppWithSEO = () => {
+   const location = useLocation();
+
+   const getBreadcrumbs = () => {
+      const pathSegments = location.pathname.split('/').filter(Boolean);
+      const breadcrumbs = [{ name: 'Home', path: '/' }];
+
+      let currentPath = '';
+      pathSegments.forEach((segment, index) => {
+         currentPath += `/${segment}`;
+         const name = segment.charAt(0).toUpperCase() + segment.slice(1);
+         breadcrumbs.push({ name, path: currentPath });
+      });
+
+      return breadcrumbs;
+   };
+
+   return (
+      <>
+         <SEOHead
+            page={location.pathname}
+            breadcrumbs={getBreadcrumbs()}
+         />
+         <Routes>
+            <Route path="/" element={<Placeholder name="Main Dashboard" />} />
+            <Route path="/patients" element={<Placeholder name="Patient Records" />} />
+            <Route path="/providers" element={<Placeholder name="Provider Registry" />} />
+            <Route path="/payments" element={<PaymentHistoryAnalytics />} />
+            <Route path="/notifications" element={<NotificationManagementDashboard />} />
+            <Route path="/fraud" element={<FraudDetectionPage />} />
+         </Routes>
+      </>
+   );
+};
 
 function App() {
   return (

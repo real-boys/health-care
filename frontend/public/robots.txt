@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://aegis-health.com/sitemap.xml
+Sitemap: https://aegis-health.com/sitemap-pages.xml
+Sitemap: https://aegis-health.com/sitemap-images.xml
+
+# Block common non-content paths
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /*.json$
+Disallow: /_next/
+Disallow: /static/
+
+# Allow specific important paths
+Allow: /api/providers/
+Allow: /api/search/
+
+Crawl-delay: 1

@@ -1,0 +1,208 @@
+---
+# ConfigMap for Application Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: healthcare-config
+  namespace: healthcare
+data:
+  # Service Discovery Configuration
+  CONSUL_HOST: "consul.consul.svc.cluster.local"
+  CONSUL_PORT: "8500"
+  SERVICE_DISCOVERY_TYPE: "consul"
+  
+  # Database Configuration
+  MONGODB_HOST: "mongodb.healthcare.svc.cluster.local"
+  MONGODB_PORT: "27017"
+  MONGODB_DATABASE: "healthcare"
+  MONGODB_REPLSET: "rs0"
+  
+  # Redis Configuration
+  REDIS_HOST: "redis.healthcare.svc.cluster.local"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  
+  # Service Configuration
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  
+  # Service Ports
+  AUTH_SERVICE_PORT: "3001"
+  PATIENT_SERVICE_PORT: "3002"
+  CLAIMS_SERVICE_PORT: "3003"
+  NOTIFICATION_SERVICE_PORT: "3004"
+  PAYMENT_SERVICE_PORT: "3005"
+  API_GATEWAY_PORT: "5000"
+  
+  # gRPC Configuration
+  GRPC_ENABLED: "true"
+  AUTH_SERVICE_GRPC_PORT: "50051"
+  PATIENT_SERVICE_GRPC_PORT: "50052"
+  CLAIMS_SERVICE_GRPC_PORT: "50053"
+  NOTIFICATION_SERVICE_GRPC_PORT: "50054"
+  PAYMENT_SERVICE_GRPC_PORT: "50055"
+  
+  # Tracing Configuration
+  JAEGER_AGENT_HOST: "jaeger-agent.healthcare.svc.cluster.local"
+  JAEGER_AGENT_PORT: "6831"
+  JAEGER_SAMPLER_TYPE: "const"
+  JAEGER_SAMPLER_PARAM: "1"
+  
+  # Metrics Configuration
+  PROMETHEUS_ENABLED: "true"
+  METRICS_PORT: "9090"
+  METRICS_INTERVAL: "60000"
+  
+  # Service Mesh Configuration
+  SERVICE_MESH_ENABLED: "true"
+  ISTIO_ENABLED: "true"
+  
+  # Rate Limiting Configuration
+  RATE_LIMIT_ENABLED: "true"
+  RATE_LIMIT_WINDOW: "60000"
+  RATE_LIMIT_MAX_REQUESTS: "1000"
+  
+  # Security Configuration
+  CORS_ENABLED: "true"
+  CORS_ORIGINS: "http://localhost:3000,https://app.example.com"
+  HELMET_ENABLED: "true"
+  
+  # API Configuration
+  API_VERSION: "v1"
+  API_PREFIX: "/api"
+  
+  # Cache Configuration
+  CACHE_ENABLED: "true"
+  CACHE_TTL: "3600"
+  CACHE_MAX_SIZE: "1000"
+
+---
+# ConfigMap for Deployment Settings
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deployment-config
+  namespace: healthcare
+data:
+  deployment-strategy: |
+    {
+      "services": {
+        "auth-service": {
+          "replicas": 3,
+          "strategy": "RollingUpdate",
+          "resources": {
+            "requests": {"cpu": "250m", "memory": "256Mi"},
+            "limits": {"cpu": "500m", "memory": "512Mi"}
+          }
+        },
+        "patient-service": {
+          "replicas": 3,
+          "strategy": "RollingUpdate",
+          "resources": {
+            "requests": {"cpu": "250m", "memory": "256Mi"},
+            "limits": {"cpu": "500m", "memory": "512Mi"}
+          }
+        },
+        "claims-service": {
+          "replicas": 3,
+          "strategy": "RollingUpdate",
+          "resources": {
+            "requests": {"cpu": "300m", "memory": "512Mi"},
+            "limits": {"cpu": "600m", "memory": "1Gi"}
+          }
+        },
+        "payment-service": {
+          "replicas": 3,
+          "strategy": "RollingUpdate",
+          "resources": {
+            "requests": {"cpu": "300m", "memory": "512Mi"},
+            "limits": {"cpu": "600m", "memory": "1Gi"}
+          }
+        },
+        "notification-service": {
+          "replicas": 2,
+          "strategy": "RollingUpdate",
+          "resources": {
+            "requests": {"cpu": "200m", "memory": "256Mi"},
+            "limits": {"cpu": "400m", "memory": "512Mi"}
+          }
+        }
+      }
+    }
+
+---
+# ConfigMap for Health Check Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: health-check-config
+  namespace: healthcare
+data:
+  auth-service-health.js: |
+    module.exports = {
+      endpoint: '/health',
+      readinessEndpoint: '/ready',
+      livenessEndpoint: '/live',
+      initialDelaySeconds: 30,
+      periodSeconds: 10,
+      timeoutSeconds: 5,
+      failureThreshold: 3,
+      successThreshold: 1
+    };
+  
+  payment-service-health.js: |
+    module.exports = {
+      endpoint: '/health',
+      readinessEndpoint: '/ready',
+      livenessEndpoint: '/live',
+      checks: {
+        database: true,
+        redis: true,
+        externalApi: true
+      },
+      initialDelaySeconds: 30,
+      periodSeconds: 10,
+      timeoutSeconds: 5,
+      failureThreshold: 3
+    };
+
+---
+# ConfigMap for Logging Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logging-config
+  namespace: healthcare
+data:
+  winston-config.json: |
+    {
+      "level": "info",
+      "format": "json",
+      "transports": [
+        {
+          "type": "console",
+          "level": "debug"
+        },
+        {
+          "type": "file",
+          "filename": "/var/log/app.log",
+          "level": "info",
+          "maxsize": 5242880,
+          "maxFiles": 5,
+          "tailable": true
+        },
+        {
+          "type": "file",
+          "filename": "/var/log/error.log",
+          "level": "error",
+          "maxsize": 5242880,
+          "maxFiles": 5
+        }
+      ],
+      "exceptionHandlers": [
+        {
+          "type": "file",
+          "filename": "/var/log/exceptions.log"
+        }
+      ]
+    }

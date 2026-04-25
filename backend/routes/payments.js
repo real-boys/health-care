@@ -861,4 +861,603 @@ async function getCurrencyConversionRate(from, to) {
   return rates[`${from}-${to}`] || 1;
 }
 
+// ============================================
+// PAYMENT HISTORY & ANALYTICS ENDPOINTS
+// ============================================
+
+// Comprehensive Payment Analytics
+router.get('/analytics/overview', async (req, res, next) => {
+  const { startDate, endDate, patientId } = req.query;
+  const db = getDatabase();
+  
+  try {
+    let dateFilter = '';
+    const params = [];
+    
+    if (startDate && endDate) {
+      dateFilter = 'AND payment_date BETWEEN ? AND ?';
+      params.push(startDate, endDate);
+    }
+    
+    // Overall statistics
+    const overallStats = await new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          COUNT(*) as total_transactions,
+          SUM(payment_amount) as total_amount,
+          AVG(payment_amount) as avg_transaction_amount,
+          COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as completed_count,
+          SUM(CASE WHEN payment_status = 'completed' THEN payment_amount ELSE 0 END) as completed_amount,
+          COUNT(CASE WHEN payment_status = 'pending' THEN 1 END) as pending_count,
+          SUM(CASE WHEN payment_status = 'pending' THEN payment_amount ELSE 0 END) as pending_amount,
+          COUNT(CASE WHEN payment_status = 'failed' THEN 1 END) as failed_count,
+          COUNT(CASE WHEN payment_status = 'refunded' THEN 1 END) as refunded_count,
+          SUM(CASE WHEN payment_status = 'refunded' THEN payment_amount ELSE 0 END) as refunded_amount
+        FROM premium_payments
+        WHERE 1=1 ${dateFilter}
+      `;
+      db.get(query, params, (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+    
+    // Payment method breakdown
+    const methodBreakdown = await new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          payment_method,
+          COUNT(*) as count,
+          SUM(payment_amount) as total_amount,
+          AVG(payment_amount) as avg_amount,
+          COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as success_count,
+          ROUND(COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) * 100.0 / COUNT(*), 2) as success_rate
+        FROM premium_payments
+        WHERE 1=1 ${dateFilter}
+        GROUP BY payment_method
+        ORDER BY total_amount DESC
+      `;
+      db.all(query, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
+    });
+    
+    // Status distribution
+    const statusDistribution = await new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          payment_status,
+          COUNT(*) as count,
+          SUM(payment_amount) as total_amount
+        FROM premium_payments
+        WHERE 1=1 ${dateFilter}
+        GROUP BY payment_status
+      `;
+      db.all(query, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
+    });
+    
+    // Daily trends (last 30 days by default)
+    const dailyTrends = await new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          DATE(payment_date) as date,
+          COUNT(*) as transaction_count,
+          SUM(payment_amount) as total_amount,
+          COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as completed_count
+        FROM premium_payments
+        WHERE 1=1 ${dateFilter}
+        GROUP BY DATE(payment_date)
+        ORDER BY date DESC
+        LIMIT 30
+      `;
+      db.all(query, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
+    });
+    
+    // Monthly trends
+    const monthlyTrends = await new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          strftime('%Y-%m', payment_date) as month,
+          COUNT(*) as transaction_count,
+          SUM(payment_amount) as total_amount,
+          AVG(payment_amount) as avg_amount
+        FROM premium_payments
+        WHERE 1=1 ${dateFilter}
+        GROUP BY strftime('%Y-%m', payment_date)
+        ORDER BY month DESC
+        LIMIT 12
+      `;
+      db.all(query, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
+    });
+    
+    // Top patients by payment volume
+    const topPatients = await new Promise((resolve, reject) => {
+      const patientFilter = patientId ? 'AND patient_id = ?' : '';
+      const queryParams = [...params];
+      if (patientId) queryParams.push(patientId);
+      
+      const query = `
+        SELECT 
+          pp.patient_id,
+          p.first_name || ' ' || p.last_name as patient_name,
+          COUNT(*) as transaction_count,
+          SUM(pp.payment_amount) as total_paid,
+          MAX(pp.payment_date) as last_payment_date
+        FROM premium_payments pp
+        LEFT JOIN patients p ON pp.patient_id = p.id
+        WHERE 1=1 ${dateFilter} ${patientFilter}
+        GROUP BY pp.patient_id
+        ORDER BY total_paid DESC
+        LIMIT 10
+      `;
+      db.all(query, queryParams, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
+    });
+    
+    // Success rate trend
+    const successRateTrend = await new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          DATE(payment_date) as date,
+          COUNT(*) as total,
+          COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as successful,
+          ROUND(COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) * 100.0 / COUNT(*), 2) as success_rate
+        FROM premium_payments
+        WHERE 1=1 ${dateFilter}
+        GROUP BY DATE(payment_date)
+        ORDER BY date DESC
+        LIMIT 30
+      `;
+      db.all(query, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
+    });
+    
+    res.json({
+      success: true,
+      overview: overallStats,
+      methodBreakdown,
+      statusDistribution,
+      dailyTrends,
+      monthlyTrends,
+      topPatients,
+      successRateTrend,
+      dateRange: { startDate, endDate }
+    });
+  } catch (error) {
+    next(error);
+  } finally {
+    db.close();
+  }
+});
+
+// Payment History with Advanced Filtering
+router.get('/history', async (req, res, next) => {
+  const { 
+    page = 1, 
+    limit = 20, 
+    status, 
+    method, 
+    startDate, 
+    endDate,
+    minAmount,
+    maxAmount,
+    search,
+    sortBy = 'payment_date',
+    sortOrder = 'DESC'
+  } = req.query;
+  
+  const db = getDatabase();
+  const offset = (page - 1) * limit;
+  
+  try {
+    let whereConditions = ['1=1'];
+    const params = [];
+    
+    if (status) {
+      whereConditions.push('pp.payment_status = ?');
+      params.push(status);
+    }
+    
+    if (method) {
+      whereConditions.push('pp.payment_method = ?');
+      params.push(method);
+    }
+    
+    if (startDate) {
+      whereConditions.push('pp.payment_date >= ?');
+      params.push(startDate);
+    }
+    
+    if (endDate) {
+      whereConditions.push('pp.payment_date <= ?');
+      params.push(endDate);
+    }
+    
+    if (minAmount) {
+      whereConditions.push('pp.payment_amount >= ?');
+      params.push(parseFloat(minAmount));
+    }
+    
+    if (maxAmount) {
+      whereConditions.push('pp.payment_amount <= ?');
+      params.push(parseFloat(maxAmount));
+    }
+    
+    if (search) {
+      whereConditions.push('(pp.transaction_id LIKE ? OR p.first_name LIKE ? OR p.last_name LIKE ? OR pp.policy_number LIKE ?)');
+      const searchParam = `%${search}%`;
+      params.push(searchParam, searchParam, searchParam, searchParam);
+    }
+    
+    const whereClause = whereConditions.join(' AND ');
+    
+    // Validate sortBy to prevent SQL injection
+    const validSortColumns = ['payment_date', 'payment_amount', 'payment_status', 'payment_method', 'patient_name'];
+    const safeSortBy = validSortColumns.includes(sortBy) ? sortBy : 'payment_date';
+    const safeSortOrder = sortOrder.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+    
+    const sortMapping = {
+      'patient_name': 'p.first_name || \' \' || p.last_name',
+      'payment_date': 'pp.payment_date',
+      'payment_amount': 'pp.payment_amount',
+      'payment_status': 'pp.payment_status',
+      'payment_method': 'pp.payment_method'
+    };
+    
+    const orderClause = `ORDER BY ${sortMapping[safeSortBy] || 'pp.payment_date'} ${safeSortOrder}`;
+    
+    // Get total count
+    const countQuery = `
+      SELECT COUNT(*) as total 
+      FROM premium_payments pp
+      LEFT JOIN patients p ON pp.patient_id = p.id
+      WHERE ${whereClause}
+    `;
+    
+    const totalResult = await new Promise((resolve, reject) => {
+      db.get(countQuery, params, (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+    
+    // Get paginated results
+    const dataQuery = `
+      SELECT 
+        pp.*,
+        p.first_name || ' ' || p.last_name as patient_name,
+        p.email as patient_email,
+        ip.policy_number,
+        ip.insurance_provider
+      FROM premium_payments pp
+      LEFT JOIN patients p ON pp.patient_id = p.id
+      LEFT JOIN insurance_policies ip ON pp.policy_id = ip.id
+      WHERE ${whereClause}
+      ${orderClause}
+      LIMIT ? OFFSET ?
+    `;
+    
+    const transactions = await new Promise((resolve, reject) => {
+      db.all(dataQuery, [...params, parseInt(limit), offset], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
+    });
+    
+    // Get summary stats for filtered results
+    const summaryQuery = `
+      SELECT 
+        COUNT(*) as total_transactions,
+        SUM(payment_amount) as total_amount,
+        AVG(payment_amount) as avg_amount
+      FROM premium_payments pp
+      LEFT JOIN patients p ON pp.patient_id = p.id
+      WHERE ${whereClause}
+    `;
+    
+    const summary = await new Promise((resolve, reject) => {
+      db.get(summaryQuery, params, (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+    
+    res.json({
+      success: true,
+      transactions,
+      pagination: {
+        total: totalResult.total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(totalResult.total / limit)
+      },
+      summary,
+      filters: { status, method, startDate, endDate, minAmount, maxAmount, search }
+    });
+  } catch (error) {
+    next(error);
+  } finally {
+    db.close();
+  }
+});
+
+// Export Payments to CSV
+router.get('/export/csv', async (req, res, next) => {
+  const { status, method, startDate, endDate, patientId } = req.query;
+  const db = getDatabase();
+  
+  try {
+    let whereConditions = ['1=1'];
+    const params = [];
+    
+    if (status) {
+      whereConditions.push('pp.payment_status = ?');
+      params.push(status);
+    }
+    
+    if (method) {
+      whereConditions.push('pp.payment_method = ?');
+      params.push(method);
+    }
+    
+    if (startDate) {
+      whereConditions.push('pp.payment_date >= ?');
+      params.push(startDate);
+    }
+    
+    if (endDate) {
+      whereConditions.push('pp.payment_date <= ?');
+      params.push(endDate);
+    }
+    
+    if (patientId) {
+      whereConditions.push('pp.patient_id = ?');
+      params.push(patientId);
+    }
+    
+    const whereClause = whereConditions.join(' AND ');
+    
+    const query = `
+      SELECT 
+        pp.id,
+        pp.transaction_id,
+        pp.payment_amount,
+        pp.payment_date,
+        pp.payment_method,
+        pp.payment_status,
+        pp.insurance_provider,
+        pp.policy_number,
+        p.first_name || ' ' || p.last_name as patient_name,
+        p.email as patient_email,
+        pp.coverage_period_start,
+        pp.coverage_period_end,
+        pp.created_at
+      FROM premium_payments pp
+      LEFT JOIN patients p ON pp.patient_id = p.id
+      WHERE ${whereClause}
+      ORDER BY pp.payment_date DESC
+    `;
+    
+    const transactions = await new Promise((resolve, reject) => {
+      db.all(query, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
+    });
+    
+    // Generate CSV
+    const csvHeaders = [
+      'Transaction ID',
+      'Patient Name',
+      'Patient Email',
+      'Amount',
+      'Payment Date',
+      'Payment Method',
+      'Status',
+      'Insurance Provider',
+      'Policy Number',
+      'Coverage Start',
+      'Coverage End',
+      'Created At'
+    ].join(',');
+    
+    const csvRows = transactions.map(t => [
+      t.transaction_id || t.id,
+      t.patient_name || '',
+      t.patient_email || '',
+      t.payment_amount || 0,
+      t.payment_date ? new Date(t.payment_date).toISOString() : '',
+      t.payment_method || '',
+      t.payment_status || '',
+      t.insurance_provider || '',
+      t.policy_number || '',
+      t.coverage_period_start || '',
+      t.coverage_period_end || '',
+      t.created_at ? new Date(t.created_at).toISOString() : ''
+    ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(','));
+    
+    const csv = [csvHeaders, ...csvRows].join('\n');
+    
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="payment-history-${new Date().toISOString().split('T')[0]}.csv"`);
+    res.send(csv);
+  } catch (error) {
+    next(error);
+  } finally {
+    db.close();
+  }
+});
+
+// Export Payments to PDF (JSON response for frontend PDF generation)
+router.get('/export/pdf-data', async (req, res, next) => {
+  const { status, method, startDate, endDate, patientId } = req.query;
+  const db = getDatabase();
+  
+  try {
+    let whereConditions = ['1=1'];
+    const params = [];
+    
+    if (status) {
+      whereConditions.push('pp.payment_status = ?');
+      params.push(status);
+    }
+    
+    if (method) {
+      whereConditions.push('pp.payment_method = ?');
+      params.push(method);
+    }
+    
+    if (startDate) {
+      whereConditions.push('pp.payment_date >= ?');
+      params.push(startDate);
+    }
+    
+    if (endDate) {
+      whereConditions.push('pp.payment_date <= ?');
+      params.push(endDate);
+    }
+    
+    if (patientId) {
+      whereConditions.push('pp.patient_id = ?');
+      params.push(patientId);
+    }
+    
+    const whereClause = whereConditions.join(' AND ');
+    
+    // Get transactions
+    const transactions = await new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          pp.*,
+          p.first_name || ' ' || p.last_name as patient_name,
+          ip.policy_number,
+          ip.insurance_provider
+        FROM premium_payments pp
+        LEFT JOIN patients p ON pp.patient_id = p.id
+        LEFT JOIN insurance_policies ip ON pp.policy_id = ip.id
+        WHERE ${whereClause}
+        ORDER BY pp.payment_date DESC
+        LIMIT 1000
+      `;
+      db.all(query, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
+    });
+    
+    // Get summary for PDF header
+    const summary = await new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          COUNT(*) as total_transactions,
+          SUM(payment_amount) as total_amount,
+          SUM(CASE WHEN payment_status = 'completed' THEN payment_amount ELSE 0 END) as completed_amount,
+          COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as completed_count,
+          COUNT(CASE WHEN payment_status = 'pending' THEN 1 END) as pending_count,
+          COUNT(CASE WHEN payment_status = 'failed' THEN 1 END) as failed_count
+        FROM premium_payments pp
+        WHERE ${whereClause}
+      `;
+      db.get(query, params, (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+    
+    res.json({
+      success: true,
+      reportTitle: 'Payment History Report',
+      generatedAt: new Date().toISOString(),
+      filters: { status, method, startDate, endDate, patientId },
+      summary,
+      transactions
+    });
+  } catch (error) {
+    next(error);
+  } finally {
+    db.close();
+  }
+});
+
+// Payment Statistics Summary Card
+router.get('/stats/summary', async (req, res, next) => {
+  const { period = 'month' } = req.query;
+  const db = getDatabase();
+  
+  try {
+    let dateCondition = '';
+    const now = new Date();
+    
+    switch (period) {
+      case 'today':
+        dateCondition = `AND DATE(payment_date) = DATE('now')`;
+        break;
+      case 'week':
+        dateCondition = `AND payment_date >= DATE('now', '-7 days')`;
+        break;
+      case 'month':
+        dateCondition = `AND payment_date >= DATE('now', 'start of month')`;
+        break;
+      case 'year':
+        dateCondition = `AND payment_date >= DATE('now', 'start of year')`;
+        break;
+      default:
+        dateCondition = `AND payment_date >= DATE('now', '-30 days')`;
+    }
+    
+    const stats = await new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          COUNT(*) as total_transactions,
+          COALESCE(SUM(payment_amount), 0) as total_amount,
+          COALESCE(AVG(payment_amount), 0) as avg_amount,
+          COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as completed_count,
+          COALESCE(SUM(CASE WHEN payment_status = 'completed' THEN payment_amount ELSE 0 END), 0) as completed_amount,
+          COUNT(CASE WHEN payment_status = 'pending' THEN 1 END) as pending_count,
+          COUNT(CASE WHEN payment_status = 'failed' THEN 1 END) as failed_count,
+          COUNT(CASE WHEN payment_status = 'refunded' THEN 1 END) as refunded_count,
+          COALESCE(SUM(CASE WHEN payment_status = 'refunded' THEN payment_amount ELSE 0 END), 0) as refunded_amount
+        FROM premium_payments
+        WHERE 1=1 ${dateCondition}
+      `;
+      db.get(query, [], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+    
+    // Calculate success rate
+    const successRate = stats.total_transactions > 0 
+      ? ((stats.completed_count / stats.total_transactions) * 100).toFixed(2)
+      : 0;
+    
+    res.json({
+      success: true,
+      period,
+      stats: {
+        ...stats,
+        success_rate: parseFloat(successRate)
+      }
+    });
+  } catch (error) {
+    next(error);
+  } finally {
+    db.close();
+  }
+});
+
 module.exports = router;

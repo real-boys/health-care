@@ -2,6 +2,7 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const { setCache, deleteCache } = require('../middleware/cache');
+const { patientValidationRules } = require('../middleware/validation');
 
 const router = express.Router();
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../database/healthcare.db');
@@ -97,7 +98,7 @@ router.get('/:patientId', async (req, res, next) => {
   }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', patientValidationRules.createPatient, async (req, res, next) => {
   const { 
     userId, 
     medicalRecordNumber, 
@@ -147,7 +148,7 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.put('/:patientId', async (req, res, next) => {
+router.put('/:patientId', patientValidationRules.updatePatient, async (req, res, next) => {
   const { patientId } = req.params;
   const updateFields = req.body;
   

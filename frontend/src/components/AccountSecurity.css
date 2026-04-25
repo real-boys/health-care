@@ -1,0 +1,593 @@
+.account-security {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.account-security__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.account-security__header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #333;
+}
+
+.account-security__loading,
+.account-security__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.account-security__error {
+  color: #d32f2f;
+}
+
+.account-security__loading svg,
+.account-security__error svg {
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.account-security__alert {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.account-security__alert button {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.account-security__alert--error {
+  background: #ffebee;
+  color: #d32f2f;
+  border-left: 4px solid #d32f2f;
+}
+
+.account-security__alert--success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #2e7d32;
+}
+
+.account-security__alert--warning {
+  background: #fff3e0;
+  color: #e65100;
+  border-left: 4px solid #ff9800;
+}
+
+.account-security__container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.account-security__tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+
+.account-security__tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.account-security__tab:hover {
+  color: #333;
+  background: #f9f9f9;
+}
+
+.account-security__tab.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+.account-security__section {
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.account-security__section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.account-security__section-description {
+  margin: 0 0 1.5rem 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.account-security__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.account-security__form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.account-security__form-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.account-security__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.account-security__input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.account-security__input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.account-security__toggle-password {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.account-security__toggle-password:hover {
+  color: #333;
+}
+
+.account-security__password-strength {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.account-security__strength-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #ddd;
+  margin-bottom: 0.5rem;
+}
+
+.account-security__strength-bar.weak {
+  background: linear-gradient(90deg, #d32f2f, #ff6f00);
+}
+
+.account-security__strength-bar.strong {
+  background: linear-gradient(90deg, #2e7d32, #00c853);
+}
+
+.account-security__password-strength p {
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.account-security__password-strength .success {
+  color: #2e7d32;
+}
+
+.account-security__password-strength .error {
+  color: #d32f2f;
+}
+
+.account-security__requirements {
+  list-style: none;
+  padding: 0;
+  margin: 0.7rem 0 0 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.account-security__requirements li {
+  padding: 0.3rem 0;
+}
+
+.account-security__requirements li:before {
+  content: '• ';
+  color: #999;
+  font-weight: bold;
+  margin-right: 0.3rem;
+}
+
+.account-security__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: #999;
+}
+
+.account-security__empty svg {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.account-security__devices-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.account-security__device-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.account-security__device-item:hover {
+  border-color: #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.account-security__device-info h4 {
+  margin: 0 0 0.3rem 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.account-security__device-id {
+  font-size: 0.8rem;
+  color: #999;
+  font-family: monospace;
+  margin: 0.2rem 0;
+}
+
+.account-security__device-date {
+  margin: 0.3rem 0 0 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.account-security__remove-device-btn {
+  padding: 0.6rem;
+  background: #ffebee;
+  color: #d32f2f;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.account-security__remove-device-btn:hover {
+  background: #ef5350;
+  color: white;
+}
+
+.account-security__activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.account-security__activity-item {
+  padding: 1rem;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 6px;
+}
+
+.account-security__activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.account-security__activity-date {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.account-security__activity-status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.account-security__activity-status--success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.account-security__activity-status--failed {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.account-security__activity-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.account-security__activity-details p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.account-security__activity-details strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.account-security__data-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.account-security__data-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  gap: 1rem;
+}
+
+.account-security__data-action--danger {
+  border-left: 4px solid #d32f2f;
+}
+
+.account-security__action-info h4 {
+  margin: 0 0 0.3rem 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.account-security__action-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.account-security__data-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.account-security__data-btn--export {
+  background: #2196f3;
+  color: white;
+}
+
+.account-security__data-btn--export:hover {
+  background: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.account-security__data-btn--delete {
+  background: #d32f2f;
+  color: white;
+}
+
+.account-security__data-btn--delete:hover {
+  background: #b71c1c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+}
+
+.account-security__activity-summary {
+  padding: 1rem;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 6px;
+}
+
+.account-security__activity-summary h4 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.account-security__summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.account-security__summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.account-security__summary-label {
+  font-size: 0.85rem;
+  color: #999;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.account-security__summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #007bff;
+}
+
+.account-security__submit-btn {
+  padding: 0.8rem 1.5rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
+.account-security__submit-btn:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.account-security__submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .account-security {
+    padding: 1rem;
+  }
+
+  .account-security__tabs {
+    gap: 0;
+    margin: 0 -1rem 0 -1rem;
+  }
+
+  .account-security__tab {
+    padding: 0.8rem 1rem;
+    font-size: 0.85rem;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .account-security__section {
+    padding: 1rem;
+  }
+
+  .account-security__device-item,
+  .account-security__data-action {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .account-security__remove-device-btn,
+  .account-security__data-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .account-security__input {
+    width: 100%;
+  }
+
+  .account-security__summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Scrollbar Styling */
+.account-security__activity-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.account-security__activity-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.account-security__activity-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.account-security__activity-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
