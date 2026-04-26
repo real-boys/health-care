@@ -1,25 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  User, 
-  Award, 
-  TrendingUp, 
-  CheckCircle, 
-  Clock, 
+import {
+  User,
+  Award,
+  TrendingUp,
+  CheckCircle,
+  Clock,
   DollarSign,
   Activity,
   FileText,
   ExternalLink,
   Star,
-  Trophy
+  Trophy,
 } from 'lucide-react';
 import ReputationDashboard from './ReputationDashboard';
 import StarRating from './StarRating';
 
-const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssue, onReviewIssue }) => {
+const ContributorDashboard = ({
+  contributorStats,
+  availableIssues,
+  onApplyToIssue,
+  onReviewIssue,
+}) => {
   const [activeTab, setActiveTab] = useState('available');
   const [selectedIssue, setSelectedIssue] = useState(null);
 
-  const getLevelColor = (level) => {
+  const getLevelColor = level => {
     switch (level) {
       case 'JUNIOR':
         return 'bg-green-100 text-green-800 border-green-200';
@@ -36,7 +41,7 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
     }
   };
 
-  const getLevelIcon = (level) => {
+  const getLevelIcon = level => {
     switch (level) {
       case 'JUNIOR':
         return <Award className="w-4 h-4 text-green-500" />;
@@ -53,7 +58,7 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
     }
   };
 
-  const getLevelName = (level) => {
+  const getLevelName = level => {
     switch (level) {
       case 'JUNIOR':
         return 'Junior Contributor';
@@ -72,16 +77,16 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
 
   const getNextLevel = (currentLevel, reputation) => {
     const thresholds = {
-      'JUNIOR': 50,
-      'INTERMEDIATE': 150,
-      'SENIOR': 300,
-      'EXPERT': 500,
-      'MASTER': 1000
+      JUNIOR: 50,
+      INTERMEDIATE: 150,
+      SENIOR: 300,
+      EXPERT: 500,
+      MASTER: 1000,
     };
-    
+
     const levels = ['JUNIOR', 'INTERMEDIATE', 'SENIOR', 'EXPERT', 'MASTER'];
     const currentIndex = levels.indexOf(currentLevel);
-    
+
     for (let i = currentIndex + 1; i < levels.length; i++) {
       if (reputation >= thresholds[levels[i]]) {
         return levels[i];
@@ -90,7 +95,9 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
     return currentLevel;
   };
 
-  const nextLevel = contributorStats ? getNextLevel(contributorStats.level, contributorStats.reputation) : null;
+  const nextLevel = contributorStats
+    ? getNextLevel(contributorStats.level, contributorStats.reputation)
+    : null;
 
   return (
     <div className="contributor-dashboard">
@@ -102,14 +109,10 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
               <User className="w-6 h-6 text-white" />
             </div>
           </div>
-          
+
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900">
-              Contributor Dashboard
-            </h2>
-            <p className="text-gray-600">
-              Manage your contributions and track your reputation
-            </p>
+            <h2 className="text-xl font-bold text-gray-900">Contributor Dashboard</h2>
+            <p className="text-gray-600">Manage your contributions and track your reputation</p>
           </div>
         </div>
       </div>
@@ -121,7 +124,9 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
             <h3 className="text-lg font-semibold text-gray-900">Current Level</h3>
             {getLevelIcon(contributorStats.level)}
           </div>
-          <div className={`px-3 py-1 rounded-full text-sm font-medium ${getLevelColor(contributorStats.level)}`}>
+          <div
+            className={`px-3 py-1 rounded-full text-sm font-medium ${getLevelColor(contributorStats.level)}`}
+          >
             {getLevelName(contributorStats.level)}
           </div>
         </div>
@@ -131,9 +136,7 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
             <h3 className="text-lg font-semibold text-gray-900">Reputation</h3>
             <TrendingUp className="w-4 h-4 text-green-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900">
-            {contributorStats.reputation}
-          </div>
+          <div className="text-2xl font-bold text-gray-900">{contributorStats.reputation}</div>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -177,15 +180,16 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
       </div>
 
       {/* Total Contributed */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-lg font-semibold text-gray-900">Total Contributed</h3>
-          <DollarSign className="w-4 h-4 text-green-500" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-lg font-semibold text-gray-900">Total Contributed</h3>
+            <DollarSign className="w-4 h-4 text-green-500" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900">
+            {(contributorStats.totalContributed / 1e18).toFixed(2)} ETH
+          </div>
         </div>
-        <div className="text-2xl font-bold text-gray-900">
-          {(contributorStats.totalContributed / 1e18).toFixed(2)} ETH
-        </div>
-      </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-2">
@@ -212,7 +216,7 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
             <FileText className="w-4 h-4" />
             Available Issues
           </button>
-          
+
           <button
             onClick={() => setActiveTab('your-applications')}
             className={`flex-1 px-4 py-2 text-sm font-medium rounded-md ${
@@ -224,7 +228,7 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
             <Activity className="w-4 h-4" />
             Your Applications
           </button>
-          
+
           <button
             onClick={() => setActiveTab('reviews')}
             className={`flex-1 px-4 py-2 text-sm font-medium rounded-md ${
@@ -236,7 +240,7 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
             <CheckCircle className="w-4 h-4" />
             Reviews
           </button>
-          
+
           <button
             onClick={() => setActiveTab('reputation')}
             className={`flex-1 px-4 py-2 text-sm font-medium rounded-md ${
@@ -256,7 +260,7 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Available Issues to Review</h3>
           <div className="space-y-4">
-            {availableIssues.map((issue) => (
+            {availableIssues.map(issue => (
               <div key={issue.id} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div>
@@ -291,16 +295,14 @@ const ContributorDashboard = ({ contributorStats, availableIssues, onApplyToIssu
       {activeTab === 'reviews' && (
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Reviews</h3>
-          <div className="text-gray-600">
-            Your recent issue reviews and outcomes.
-          </div>
+          <div className="text-gray-600">Your recent issue reviews and outcomes.</div>
         </div>
       )}
 
       {activeTab === 'reputation' && (
-        <ReputationDashboard 
-          userId={contributorStats?.id} 
-          profileType="contributor" 
+        <ReputationDashboard
+          userId={contributorStats?.id}
+          profileType="contributor"
           currentUser={contributorStats}
         />
       )}

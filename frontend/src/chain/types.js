@@ -8,4 +8,3 @@ export const CROSS_CHAIN_STATUS = {
   FAILED: 'failed',
   EXPIRED: 'expired',
 };
-

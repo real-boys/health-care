@@ -7,12 +7,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Alert, AlertDescription } from './ui/alert';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { 
-  Vote, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  Users, 
+import {
+  Vote,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Users,
   BarChart3,
   Calendar,
   MessageSquare,
@@ -23,7 +23,9 @@ import {
   Eye,
   ThumbsUp,
   ThumbsDown,
-  Info
+  Info,
+  Settings,
+  Zap,
 } from 'lucide-react';
 
 const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
@@ -45,7 +47,7 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
     try {
       const [proposals, stakeholder] = await Promise.all([
         contract.get_active_proposals(),
-        contract.get_stakeholder(userAddress).catch(() => null)
+        contract.get_stakeholder(userAddress).catch(() => null),
       ]);
 
       setActiveProposals(proposals);
@@ -54,7 +56,7 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
       // Load user's votes and voting stats
       const votes = {};
       const stats = {};
-      
+
       for (const proposal of proposals) {
         try {
           const proposalVotes = await contract.get_votes(proposal.id);
@@ -67,13 +69,13 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
           const totalVotes = proposal.votes_for + proposal.votes_against;
           const approvalPercentage = totalVotes > 0 ? (proposal.votes_for / totalVotes) * 100 : 0;
           const timeRemaining = proposal.voting_deadline - Math.floor(Date.now() / 1000);
-          
+
           stats[proposal.id] = {
             totalVotes,
             approvalPercentage,
             timeRemaining,
             hasVoted: !!userVote,
-            canVote: stakeholder?.is_active && !userVote && timeRemaining > 0
+            canVote: stakeholder?.is_active && !userVote && timeRemaining > 0,
           };
         } catch (error) {
           console.error(`Failed to load data for proposal ${proposal.id}:`, error);
@@ -89,27 +91,22 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
     }
   };
 
-  const handleVote = async (proposalId) => {
+  const handleVote = async proposalId => {
     if (!stakeholderInfo || !stakeholderInfo.is_active) {
       alert('You must be an active stakeholder to vote');
       return;
     }
 
     try {
-      await contract.vote(
-        proposalId,
-        voteForm.support,
-        voteForm.reason,
-        userAddress
-      );
+      await contract.vote(proposalId, voteForm.support, voteForm.reason, userAddress);
 
       onVoteCast && onVoteCast(proposalId);
       setVoteDialogOpen(false);
       setVoteForm({ support: true, reason: '' });
-      
+
       // Refresh data
       await loadVotingData();
-      
+
       alert('Vote cast successfully!');
     } catch (error) {
       console.error('Failed to cast vote:', error);
@@ -123,29 +120,39 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
     setVoteDialogOpen(true);
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
-      case 'Voting': return 'blue';
-      case 'Approved': return 'green';
-      case 'Rejected': return 'red';
-      case 'Emergency': return 'orange';
-      default: return 'gray';
+      case 'Voting':
+        return 'blue';
+      case 'Approved':
+        return 'green';
+      case 'Rejected':
+        return 'red';
+      case 'Emergency':
+        return 'orange';
+      default:
+        return 'gray';
     }
   };
 
-  const getRiskLevelColor = (level) => {
+  const getRiskLevelColor = level => {
     switch (level) {
-      case 'Low': return 'green';
-      case 'Medium': return 'yellow';
-      case 'High': return 'orange';
-      case 'Critical': return 'red';
-      default: return 'gray';
+      case 'Low':
+        return 'green';
+      case 'Medium':
+        return 'yellow';
+      case 'High':
+        return 'orange';
+      case 'Critical':
+        return 'red';
+      default:
+        return 'gray';
     }
   };
 
-  const formatTimeRemaining = (seconds) => {
+  const formatTimeRemaining = seconds => {
     if (seconds <= 0) return 'Ended';
-    
+
     const days = Math.floor(seconds / 86400);
     const hours = Math.floor((seconds % 86400) / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -155,14 +162,14 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
     return `${minutes}m`;
   };
 
-  const getUpgradeTypeIcon = (type) => {
+  const getUpgradeTypeIcon = type => {
     const icons = {
-      'Feature': Settings,
-      'Security': Shield,
-      'BugFix': Zap,
-      'Optimization': BarChart3,
-      'Emergency': AlertTriangle,
-      'Governance': Users
+      Feature: Settings,
+      Security: Shield,
+      BugFix: Zap,
+      Optimization: BarChart3,
+      Emergency: AlertTriangle,
+      Governance: Users,
     };
     return icons[type] || GitBranch;
   };
@@ -226,7 +233,9 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
                 <div className="text-center">
                   <Vote className="w-12 h-12 mx-auto text-gray-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">No Active Proposals</h3>
-                  <p className="text-gray-600">There are currently no proposals requiring your vote.</p>
+                  <p className="text-gray-600">
+                    There are currently no proposals requiring your vote.
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -252,7 +261,10 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
                               <Badge variant={`outline-${riskColor}`}>{proposal.risk_level}</Badge>
                               <Badge variant={`outline-${statusColor}`}>{proposal.status}</Badge>
                               {proposal.emergency && (
-                                <Badge variant="destructive" className="flex items-center space-x-1">
+                                <Badge
+                                  variant="destructive"
+                                  className="flex items-center space-x-1"
+                                >
                                   <AlertTriangle className="w-3 h-3" />
                                   <span>Emergency</span>
                                 </Badge>
@@ -260,7 +272,7 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="text-right text-sm">
                           <div className="flex items-center space-x-1 text-gray-600">
                             <Calendar className="w-4 h-4" />
@@ -273,20 +285,21 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
                         </div>
                       </div>
                     </CardHeader>
-                    
+
                     <CardContent className="space-y-4">
                       <p className="text-gray-700 line-clamp-3">{proposal.description}</p>
-                      
+
                       {/* Voting Progress */}
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">Approval Progress</span>
                           <span className="font-medium">
-                            {stats.approvalPercentage?.toFixed(1) || 0}% / {proposal.required_approval_percentage}%
+                            {stats.approvalPercentage?.toFixed(1) || 0}% /{' '}
+                            {proposal.required_approval_percentage}%
                           </span>
                         </div>
-                        <Progress 
-                          value={Math.min(stats.approvalPercentage || 0, 100)} 
+                        <Progress
+                          value={Math.min(stats.approvalPercentage || 0, 100)}
                           className="h-2"
                         />
                         <div className="flex items-center justify-between text-sm">
@@ -342,13 +355,15 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => {/* Open communications */}}
+                            onClick={() => {
+                              /* Open communications */
+                            }}
                           >
                             <MessageSquare className="w-4 h-4 mr-2" />
                             Discussion
                           </Button>
                         </div>
-                        
+
                         {stats.canVote && (
                           <div className="flex items-center space-x-2">
                             <Button
@@ -370,7 +385,7 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
                             </Button>
                           </div>
                         )}
-                        
+
                         {!stats.canVote && !userVote && (
                           <Badge variant="outline" className="text-gray-600">
                             {stats.timeRemaining <= 0 ? 'Voting Ended' : 'Cannot Vote'}
@@ -415,7 +430,8 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
                           <div>
                             <h4 className="font-semibold">{proposal.title}</h4>
                             <p className="text-sm text-gray-600 mt-1">
-                              Voted {vote.support ? 'FOR' : 'AGAINST'} on {new Date(vote.timestamp * 1000).toLocaleDateString()}
+                              Voted {vote.support ? 'FOR' : 'AGAINST'} on{' '}
+                              {new Date(vote.timestamp * 1000).toLocaleDateString()}
                             </p>
                             {vote.reason && (
                               <p className="text-sm text-gray-700 mt-2 italic">"{vote.reason}"</p>
@@ -494,8 +510,8 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
                           {stats.approvalPercentage?.toFixed(1) || 0}% approval
                         </span>
                       </div>
-                      <Progress 
-                        value={Math.min(stats.approvalPercentage || 0, 100)} 
+                      <Progress
+                        value={Math.min(stats.approvalPercentage || 0, 100)}
                         className="h-2"
                       />
                     </div>
@@ -511,11 +527,9 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
       <Dialog open={voteDialogOpen} onOpenChange={setVoteDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              Cast Your Vote - {selectedProposal?.title}
-            </DialogTitle>
+            <DialogTitle>Cast Your Vote - {selectedProposal?.title}</DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-6">
             {selectedProposal && (
               <div className="p-4 bg-gray-50 rounded-lg">
@@ -536,7 +550,7 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
                 <Button
-                  variant={voteForm.support ? "default" : "outline"}
+                  variant={voteForm.support ? 'default' : 'outline'}
                   onClick={() => setVoteForm(prev => ({ ...prev, support: true }))}
                   className="flex-1"
                 >
@@ -544,7 +558,7 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
                   Vote For
                 </Button>
                 <Button
-                  variant={!voteForm.support ? "default" : "outline"}
+                  variant={!voteForm.support ? 'default' : 'outline'}
                   onClick={() => setVoteForm(prev => ({ ...prev, support: false }))}
                   className="flex-1"
                 >
@@ -557,7 +571,7 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
                 <label className="text-sm font-medium">Reason (Optional)</label>
                 <Textarea
                   value={voteForm.reason}
-                  onChange={(e) => setVoteForm(prev => ({ ...prev, reason: e.target.value }))}
+                  onChange={e => setVoteForm(prev => ({ ...prev, reason: e.target.value }))}
                   placeholder="Explain your voting decision..."
                   rows={3}
                 />
@@ -566,7 +580,8 @@ const VotingDashboard = ({ contract, userAddress, onVoteCast }) => {
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  Your vote is final and cannot be changed. Please review the proposal carefully before submitting.
+                  Your vote is final and cannot be changed. Please review the proposal carefully
+                  before submitting.
                 </AlertDescription>
               </Alert>
             </div>

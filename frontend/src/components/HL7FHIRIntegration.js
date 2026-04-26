@@ -15,7 +15,7 @@ import {
   FileText,
   User,
   AlertTriangle,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react';
 
 const HL7FHIRIntegration = () => {
@@ -37,7 +37,7 @@ const HL7FHIRIntegration = () => {
   const fetchConfigs = async () => {
     try {
       const response = await fetch('/api/hl7-fhir/configs', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       const data = await response.json();
       setConfigs(data);
@@ -49,7 +49,7 @@ const HL7FHIRIntegration = () => {
   const fetchSyncStatus = async () => {
     try {
       const response = await fetch('/api/hl7-fhir/sync-status', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       const data = await response.json();
       setSyncStatus(data);
@@ -61,7 +61,7 @@ const HL7FHIRIntegration = () => {
   const fetchHealthStatus = async () => {
     try {
       const response = await fetch('/api/hl7-fhir/health', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       const data = await response.json();
       setHealthStatus(data);
@@ -70,16 +70,16 @@ const HL7FHIRIntegration = () => {
     }
   };
 
-  const testConnection = async (config) => {
+  const testConnection = async config => {
     setLoading(true);
     try {
       const response = await fetch('/api/hl7-fhir/test-connection', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ config })
+        body: JSON.stringify({ config }),
       });
       const data = await response.json();
       setTestResult(data);
@@ -105,15 +105,21 @@ const HL7FHIRIntegration = () => {
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">{config.name}</h3>
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                  config.type === 'HL7' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                }`}>
+                <span
+                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    config.type === 'HL7'
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-green-100 text-green-800'
+                  }`}
+                >
                   {config.type}
                 </span>
               </div>
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                config.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-              }`}>
+              <span
+                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                  config.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                }`}
+              >
                 {config.isActive ? 'Active' : 'Inactive'}
               </span>
             </div>
@@ -154,18 +160,22 @@ const HL7FHIRIntegration = () => {
       </div>
 
       {testResult && (
-        <div className={`mt-4 p-4 rounded-lg ${
-          testResult.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
-        }`}>
+        <div
+          className={`mt-4 p-4 rounded-lg ${
+            testResult.success
+              ? 'bg-green-50 border border-green-200'
+              : 'bg-red-50 border border-red-200'
+          }`}
+        >
           <div className="flex items-center gap-2">
             {testResult.success ? (
               <CheckCircle className="w-5 h-5 text-green-600" />
             ) : (
               <AlertCircle className="w-5 h-5 text-red-600" />
             )}
-            <span className={`font-medium ${
-              testResult.success ? 'text-green-800' : 'text-red-800'
-            }`}>
+            <span
+              className={`font-medium ${testResult.success ? 'text-green-800' : 'text-red-800'}`}
+            >
               {testResult.message}
             </span>
           </div>
@@ -197,8 +207,16 @@ const HL7FHIRIntegration = () => {
           <div>
             <h4 className="font-medium text-gray-900 mb-3">HL7 Fields</h4>
             <div className="space-y-2">
-              {['PID.5 (Patient Name)', 'PID.7 (Birth Date)', 'PID.8 (Gender)', 'PID.11 (Address)'].map(field => (
-                <div key={field} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              {[
+                'PID.5 (Patient Name)',
+                'PID.7 (Birth Date)',
+                'PID.8 (Gender)',
+                'PID.11 (Address)',
+              ].map(field => (
+                <div
+                  key={field}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                >
                   <span className="text-sm font-medium">{field}</span>
                   <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                 </div>
@@ -209,12 +227,17 @@ const HL7FHIRIntegration = () => {
           <div>
             <h4 className="font-medium text-gray-900 mb-3">FHIR Fields</h4>
             <div className="space-y-2">
-              {['Patient.name', 'Patient.birthDate', 'Patient.gender', 'Patient.address'].map(field => (
-                <div key={field} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium">{field}</span>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                </div>
-              ))}
+              {['Patient.name', 'Patient.birthDate', 'Patient.gender', 'Patient.address'].map(
+                field => (
+                  <div
+                    key={field}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
+                    <span className="text-sm font-medium">{field}</span>
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
@@ -244,7 +267,7 @@ const HL7FHIRIntegration = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Sync Status Dashboard</h2>
-        <button 
+        <button
           onClick={fetchSyncStatus}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
         >
@@ -332,12 +355,17 @@ const HL7FHIRIntegration = () => {
                       {sync.sourceSystem} → {sync.targetSystem}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        sync.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                        sync.status === 'IN_PROGRESS' ? 'bg-yellow-100 text-yellow-800' :
-                        sync.status === 'FAILED' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          sync.status === 'COMPLETED'
+                            ? 'bg-green-100 text-green-800'
+                            : sync.status === 'IN_PROGRESS'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : sync.status === 'FAILED'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
                         {sync.status}
                       </span>
                     </td>
@@ -372,19 +400,17 @@ const HL7FHIRIntegration = () => {
             <FileText className="w-5 h-5 text-blue-600" />
             HL7 Message Tester
           </h3>
-          
+
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                HL7 Message
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">HL7 Message</label>
               <textarea
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 rows={8}
                 placeholder="MSH|^~\&|EPIC|HOSPITAL|LAB|LAB|202312011200||ORM^O01|123456|P|2.5&#10;PID|1||12345^^^HOSPITAL^MR||DOE^JOHN^A||19700101|M||..."
               />
             </div>
-            
+
             <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2">
               <Play className="w-4 h-4" />
               Parse HL7
@@ -397,7 +423,7 @@ const HL7FHIRIntegration = () => {
             <Eye className="w-5 h-5 text-green-600" />
             Data Transformation Preview
           </h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -410,7 +436,7 @@ const HL7FHIRIntegration = () => {
                 <option value="diagnosticreport">DiagnosticReport</option>
               </select>
             </div>
-            
+
             <button className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center justify-center gap-2">
               <Eye className="w-4 h-4" />
               Preview Transformation
@@ -445,7 +471,7 @@ const HL7FHIRIntegration = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Connection Health Monitoring</h2>
-        <button 
+        <button
           onClick={fetchHealthStatus}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
         >
@@ -457,12 +483,18 @@ const HL7FHIRIntegration = () => {
       <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold">Overall System Health</h3>
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-            healthStatus.status === 'healthy' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-          }`}>
-            <div className={`w-2 h-2 rounded-full mr-2 ${
-              healthStatus.status === 'healthy' ? 'bg-green-500' : 'bg-yellow-500'
-            }`}></div>
+          <span
+            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+              healthStatus.status === 'healthy'
+                ? 'bg-green-100 text-green-800'
+                : 'bg-yellow-100 text-yellow-800'
+            }`}
+          >
+            <div
+              className={`w-2 h-2 rounded-full mr-2 ${
+                healthStatus.status === 'healthy' ? 'bg-green-500' : 'bg-yellow-500'
+              }`}
+            ></div>
             {healthStatus.status}
           </span>
         </div>
@@ -472,13 +504,17 @@ const HL7FHIRIntegration = () => {
             <div key={index} className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="font-medium text-gray-900">{connection.name}</h4>
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                  connection.status === 'connected' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}>
+                <span
+                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    connection.status === 'connected'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                  }`}
+                >
                   {connection.status}
                 </span>
               </div>
-              
+
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Last Sync:</span>
@@ -512,7 +548,7 @@ const HL7FHIRIntegration = () => {
           <TrendingUp className="w-5 h-5 text-blue-600" />
           Performance Metrics
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-blue-50 rounded-lg">
             <p className="text-2xl font-bold text-blue-600">98.5%</p>
@@ -540,7 +576,7 @@ const HL7FHIRIntegration = () => {
     { id: 'mapping', label: 'Data Mapping', icon: Map },
     { id: 'sync', label: 'Sync Status', icon: Activity },
     { id: 'testing', label: 'Testing Tools', icon: Play },
-    { id: 'health', label: 'Health Monitor', icon: BarChart3 }
+    { id: 'health', label: 'Health Monitor', icon: BarChart3 },
   ];
 
   return (

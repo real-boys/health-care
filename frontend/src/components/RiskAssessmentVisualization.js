@@ -9,12 +9,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { 
-  Shield, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
-  TrendingUp, 
+import {
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  TrendingUp,
   TrendingDown,
   Activity,
   FileText,
@@ -31,7 +31,8 @@ import {
   Clock,
   Calendar,
   User,
-  ExternalLink
+  ExternalLink,
+  Plus,
 } from 'lucide-react';
 
 const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
@@ -46,7 +47,7 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
     dependencies_affected: [],
     rollback_complexity: 'Low',
     test_coverage: 0,
-    auditor_notes: ''
+    auditor_notes: '',
   });
   const [isSubmittingAssessment, setIsSubmittingAssessment] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -83,7 +84,7 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
     }
   };
 
-  const handleSubmitAssessment = async (proposalId) => {
+  const handleSubmitAssessment = async proposalId => {
     if (!isAdmin) {
       alert('Only administrators can submit risk assessments');
       return;
@@ -104,7 +105,7 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
           test_coverage: assessmentForm.test_coverage,
           auditor_notes: assessmentForm.auditor_notes,
           assessed_by: userAddress,
-          assessment_date: Math.floor(Date.now() / 1000)
+          assessment_date: Math.floor(Date.now() / 1000),
         },
         userAddress
       );
@@ -119,9 +120,9 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
         dependencies_affected: [],
         rollback_complexity: 'Low',
         test_coverage: 0,
-        auditor_notes: ''
+        auditor_notes: '',
       });
-      
+
       await loadRiskAssessmentData();
     } catch (error) {
       console.error('Failed to submit risk assessment:', error);
@@ -131,48 +132,57 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
     }
   };
 
-  const getRiskLevelColor = (level) => {
+  const getRiskLevelColor = level => {
     switch (level) {
-      case 'Low': return 'green';
-      case 'Medium': return 'yellow';
-      case 'High': return 'orange';
-      case 'Critical': return 'red';
-      default: return 'gray';
+      case 'Low':
+        return 'green';
+      case 'Medium':
+        return 'yellow';
+      case 'High':
+        return 'orange';
+      case 'Critical':
+        return 'red';
+      default:
+        return 'gray';
     }
   };
 
-  const getScoreColor = (score) => {
+  const getScoreColor = score => {
     if (score >= 80) return 'green';
     if (score >= 60) return 'yellow';
     if (score >= 40) return 'orange';
     return 'red';
   };
 
-  const getOverallRiskScore = (assessment) => {
+  const getOverallRiskScore = assessment => {
     if (!assessment) return 0;
-    
+
     const securityWeight = 0.3;
     const compatibilityWeight = 0.25;
     const performanceWeight = 0.2;
     const testCoverageWeight = 0.15;
     const complexityWeight = 0.1;
-    
-    const complexityScore = assessment.rollback_complexity === 'Low' ? 100 :
-                           assessment.rollback_complexity === 'Medium' ? 66 :
-                           assessment.rollback_complexity === 'High' ? 33 : 0;
-    
-    const overallScore = (
+
+    const complexityScore =
+      assessment.rollback_complexity === 'Low'
+        ? 100
+        : assessment.rollback_complexity === 'Medium'
+          ? 66
+          : assessment.rollback_complexity === 'High'
+            ? 33
+            : 0;
+
+    const overallScore =
       assessment.security_score * securityWeight +
       assessment.compatibility_score * compatibilityWeight +
       Math.max(0, 100 - Math.abs(assessment.performance_impact)) * performanceWeight +
       assessment.test_coverage * testCoverageWeight +
-      complexityScore * complexityWeight
-    );
-    
+      complexityScore * complexityWeight;
+
     return Math.round(overallScore);
   };
 
-  const getRiskLevelFromScore = (score) => {
+  const getRiskLevelFromScore = score => {
     if (score >= 80) return 'Low';
     if (score >= 60) return 'Medium';
     if (score >= 40) return 'High';
@@ -181,13 +191,14 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
 
   const filteredProposals = proposals.filter(proposal => {
     const assessment = riskAssessments[proposal.id];
-    if (filter === 'pending') return proposal.risk_level === 'High' || proposal.risk_level === 'Critical';
+    if (filter === 'pending')
+      return proposal.risk_level === 'High' || proposal.risk_level === 'Critical';
     if (filter === 'assessed') return assessment !== null && assessment !== undefined;
     if (filter === 'all') return true;
     return true;
   });
 
-  const openAssessmentDialog = (proposal) => {
+  const openAssessmentDialog = proposal => {
     setSelectedProposal(proposal);
     const existingAssessment = riskAssessments[proposal.id];
     if (existingAssessment) {
@@ -199,7 +210,7 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
         dependencies_affected: existingAssessment.dependencies_affected,
         rollback_complexity: existingAssessment.rollback_complexity,
         test_coverage: existingAssessment.test_coverage,
-        auditor_notes: existingAssessment.auditor_notes
+        auditor_notes: existingAssessment.auditor_notes,
       });
     }
   };
@@ -207,46 +218,44 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
   const addBreakingChange = () => {
     setAssessmentForm(prev => ({
       ...prev,
-      breaking_changes: [...prev.breaking_changes, '']
+      breaking_changes: [...prev.breaking_changes, ''],
     }));
   };
 
   const updateBreakingChange = (index, value) => {
     setAssessmentForm(prev => ({
       ...prev,
-      breaking_changes: prev.breaking_changes.map((change, i) => 
-        i === index ? value : change
-      )
+      breaking_changes: prev.breaking_changes.map((change, i) => (i === index ? value : change)),
     }));
   };
 
-  const removeBreakingChange = (index) => {
+  const removeBreakingChange = index => {
     setAssessmentForm(prev => ({
       ...prev,
-      breaking_changes: prev.breaking_changes.filter((_, i) => i !== index)
+      breaking_changes: prev.breaking_changes.filter((_, i) => i !== index),
     }));
   };
 
   const addDependency = () => {
     setAssessmentForm(prev => ({
       ...prev,
-      dependencies_affected: [...prev.dependencies_affected, '']
+      dependencies_affected: [...prev.dependencies_affected, ''],
     }));
   };
 
   const updateDependency = (index, value) => {
     setAssessmentForm(prev => ({
       ...prev,
-      dependencies_affected: prev.dependencies_affected.map((dep, i) => 
+      dependencies_affected: prev.dependencies_affected.map((dep, i) =>
         i === index ? value : dep
-      )
+      ),
     }));
   };
 
-  const removeDependency = (index) => {
+  const removeDependency = index => {
     setAssessmentForm(prev => ({
       ...prev,
-      dependencies_affected: prev.dependencies_affected.filter((_, i) => i !== index)
+      dependencies_affected: prev.dependencies_affected.filter((_, i) => i !== index),
     }));
   };
 
@@ -319,7 +328,7 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                           <Badge variant="outline">{proposal.status}</Badge>
                         </div>
                       </div>
-                      
+
                       <div className="text-right">
                         {assessment ? (
                           <div className="space-y-2">
@@ -338,10 +347,10 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                       </div>
                     </div>
                   </CardHeader>
-                  
+
                   <CardContent className="space-y-4">
                     <p className="text-gray-700 line-clamp-2">{proposal.description}</p>
-                    
+
                     {assessment && (
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
                         <div>
@@ -354,18 +363,29 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                         <div>
                           <div className="text-sm text-gray-600">Compatibility</div>
                           <div className="flex items-center space-x-2">
-                            <Progress value={assessment.compatibility_score} className="h-2 flex-1" />
-                            <span className="text-sm font-medium">{assessment.compatibility_score}</span>
+                            <Progress
+                              value={assessment.compatibility_score}
+                              className="h-2 flex-1"
+                            />
+                            <span className="text-sm font-medium">
+                              {assessment.compatibility_score}
+                            </span>
                           </div>
                         </div>
                         <div>
                           <div className="text-sm text-gray-600">Performance</div>
                           <div className="flex items-center space-x-2">
-                            <div className={`text-sm font-medium ${
-                              assessment.performance_impact > 0 ? 'text-green-600' : 
-                              assessment.performance_impact < 0 ? 'text-red-600' : 'text-gray-600'
-                            }`}>
-                              {assessment.performance_impact > 0 ? '+' : ''}{assessment.performance_impact}%
+                            <div
+                              className={`text-sm font-medium ${
+                                assessment.performance_impact > 0
+                                  ? 'text-green-600'
+                                  : assessment.performance_impact < 0
+                                    ? 'text-red-600'
+                                    : 'text-gray-600'
+                              }`}
+                            >
+                              {assessment.performance_impact > 0 ? '+' : ''}
+                              {assessment.performance_impact}%
                             </div>
                           </div>
                         </div>
@@ -394,12 +414,9 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                           </>
                         )}
                       </div>
-                      
+
                       {isAdmin && !assessment && (
-                        <Button
-                          size="sm"
-                          onClick={() => openAssessmentDialog(proposal)}
-                        >
+                        <Button size="sm" onClick={() => openAssessmentDialog(proposal)}>
                           <Shield className="w-4 h-4 mr-2" />
                           Conduct Assessment
                         </Button>
@@ -416,9 +433,7 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
           {!isAdmin ? (
             <Alert>
               <Lock className="h-4 w-4" />
-              <AlertDescription>
-                Only administrators can conduct risk assessments.
-              </AlertDescription>
+              <AlertDescription>Only administrators can conduct risk assessments.</AlertDescription>
             </Alert>
           ) : (
             <Card>
@@ -433,7 +448,9 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                       <p className="text-sm text-gray-700">{selectedProposal.description}</p>
                       <div className="flex items-center space-x-2 mt-2">
                         <Badge variant="outline">{selectedProposal.upgrade_type}</Badge>
-                        <Badge variant={`outline-${getRiskLevelColor(selectedProposal.risk_level)}`}>
+                        <Badge
+                          variant={`outline-${getRiskLevelColor(selectedProposal.risk_level)}`}
+                        >
                           {selectedProposal.risk_level}
                         </Badge>
                       </div>
@@ -448,14 +465,21 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                             min="0"
                             max="100"
                             value={assessmentForm.security_score}
-                            onChange={(e) => setAssessmentForm(prev => ({ 
-                              ...prev, 
-                              security_score: parseInt(e.target.value) 
-                            }))}
+                            onChange={e =>
+                              setAssessmentForm(prev => ({
+                                ...prev,
+                                security_score: parseInt(e.target.value),
+                              }))
+                            }
                           />
                           <div className="flex items-center justify-between">
-                            <Progress value={assessmentForm.security_score} className="h-2 flex-1" />
-                            <span className="text-sm font-medium ml-2">{assessmentForm.security_score}</span>
+                            <Progress
+                              value={assessmentForm.security_score}
+                              className="h-2 flex-1"
+                            />
+                            <span className="text-sm font-medium ml-2">
+                              {assessmentForm.security_score}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -468,37 +492,54 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                             min="0"
                             max="100"
                             value={assessmentForm.compatibility_score}
-                            onChange={(e) => setAssessmentForm(prev => ({ 
-                              ...prev, 
-                              compatibility_score: parseInt(e.target.value) 
-                            }))}
+                            onChange={e =>
+                              setAssessmentForm(prev => ({
+                                ...prev,
+                                compatibility_score: parseInt(e.target.value),
+                              }))
+                            }
                           />
                           <div className="flex items-center justify-between">
-                            <Progress value={assessmentForm.compatibility_score} className="h-2 flex-1" />
-                            <span className="text-sm font-medium ml-2">{assessmentForm.compatibility_score}</span>
+                            <Progress
+                              value={assessmentForm.compatibility_score}
+                              className="h-2 flex-1"
+                            />
+                            <span className="text-sm font-medium ml-2">
+                              {assessmentForm.compatibility_score}
+                            </span>
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-medium">Performance Impact (-100 to +100)</label>
+                        <label className="text-sm font-medium">
+                          Performance Impact (-100 to +100)
+                        </label>
                         <div className="space-y-2">
                           <Input
                             type="range"
                             min="-100"
                             max="100"
                             value={assessmentForm.performance_impact}
-                            onChange={(e) => setAssessmentForm(prev => ({ 
-                              ...prev, 
-                              performance_impact: parseInt(e.target.value) 
-                            }))}
+                            onChange={e =>
+                              setAssessmentForm(prev => ({
+                                ...prev,
+                                performance_impact: parseInt(e.target.value),
+                              }))
+                            }
                           />
                           <div className="flex items-center justify-between">
-                            <div className={`text-sm font-medium ${
-                              assessmentForm.performance_impact > 0 ? 'text-green-600' : 
-                              assessmentForm.performance_impact < 0 ? 'text-red-600' : 'text-gray-600'
-                            }`}>
-                              {assessmentForm.performance_impact > 0 ? '+' : ''}{assessmentForm.performance_impact}%
+                            <div
+                              className={`text-sm font-medium ${
+                                assessmentForm.performance_impact > 0
+                                  ? 'text-green-600'
+                                  : assessmentForm.performance_impact < 0
+                                    ? 'text-red-600'
+                                    : 'text-gray-600'
+                              }`}
+                            >
+                              {assessmentForm.performance_impact > 0 ? '+' : ''}
+                              {assessmentForm.performance_impact}%
                             </div>
                           </div>
                         </div>
@@ -512,26 +553,32 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                             min="0"
                             max="100"
                             value={assessmentForm.test_coverage}
-                            onChange={(e) => setAssessmentForm(prev => ({ 
-                              ...prev, 
-                              test_coverage: parseInt(e.target.value) 
-                            }))}
+                            onChange={e =>
+                              setAssessmentForm(prev => ({
+                                ...prev,
+                                test_coverage: parseInt(e.target.value),
+                              }))
+                            }
                           />
                           <div className="flex items-center justify-between">
                             <Progress value={assessmentForm.test_coverage} className="h-2 flex-1" />
-                            <span className="text-sm font-medium ml-2">{assessmentForm.test_coverage}%</span>
+                            <span className="text-sm font-medium ml-2">
+                              {assessmentForm.test_coverage}%
+                            </span>
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Rollback Complexity</label>
-                        <Select 
-                          value={assessmentForm.rollback_complexity} 
-                          onValueChange={(value) => setAssessmentForm(prev => ({ 
-                            ...prev, 
-                            rollback_complexity: value 
-                          }))}
+                        <Select
+                          value={assessmentForm.rollback_complexity}
+                          onValueChange={value =>
+                            setAssessmentForm(prev => ({
+                              ...prev,
+                              rollback_complexity: value,
+                            }))
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -540,7 +587,9 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                             <SelectItem value="Low">Low - Simple rollback</SelectItem>
                             <SelectItem value="Medium">Medium - Some complexity</SelectItem>
                             <SelectItem value="High">High - Complex rollback</SelectItem>
-                            <SelectItem value="Critical">Critical - Very difficult rollback</SelectItem>
+                            <SelectItem value="Critical">
+                              Critical - Very difficult rollback
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -553,7 +602,7 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                           <div key={index} className="flex items-center space-x-2 mt-2">
                             <Input
                               value={change}
-                              onChange={(e) => updateBreakingChange(index, e.target.value)}
+                              onChange={e => updateBreakingChange(index, e.target.value)}
                               placeholder="Describe breaking change"
                               className="flex-1"
                             />
@@ -583,7 +632,7 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                           <div key={index} className="flex items-center space-x-2 mt-2">
                             <Input
                               value={dep}
-                              onChange={(e) => updateDependency(index, e.target.value)}
+                              onChange={e => updateDependency(index, e.target.value)}
                               placeholder="Dependency name or module"
                               className="flex-1"
                             />
@@ -611,10 +660,12 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                         <label className="text-sm font-medium">Auditor Notes</label>
                         <Textarea
                           value={assessmentForm.auditor_notes}
-                          onChange={(e) => setAssessmentForm(prev => ({ 
-                            ...prev, 
-                            auditor_notes: e.target.value 
-                          }))}
+                          onChange={e =>
+                            setAssessmentForm(prev => ({
+                              ...prev,
+                              auditor_notes: e.target.value,
+                            }))
+                          }
                           placeholder="Detailed assessment notes and recommendations..."
                           rows={4}
                         />
@@ -622,13 +673,10 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                     </div>
 
                     <div className="flex justify-end space-x-4">
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setSelectedProposal(null)}
-                      >
+                      <Button variant="outline" onClick={() => setSelectedProposal(null)}>
                         Cancel
                       </Button>
-                      <Button 
+                      <Button
                         onClick={() => handleSubmitAssessment(selectedProposal.id)}
                         disabled={isSubmittingAssessment}
                       >
@@ -640,7 +688,9 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                   <div className="text-center py-12">
                     <Shield className="w-12 h-12 mx-auto text-gray-400 mb-4" />
                     <h3 className="text-lg font-semibold mb-2">Select a Proposal</h3>
-                    <p className="text-gray-600">Choose a proposal from the list to conduct a risk assessment.</p>
+                    <p className="text-gray-600">
+                      Choose a proposal from the list to conduct a risk assessment.
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -659,9 +709,14 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {Object.values(riskAssessments).filter(Boolean).length > 0 ?
-                    Math.round(Object.values(riskAssessments).filter(Boolean).reduce((sum, assessment) => 
-                      sum + assessment.security_score, 0) / Object.values(riskAssessments).filter(Boolean).length) : 0}
+                  {Object.values(riskAssessments).filter(Boolean).length > 0
+                    ? Math.round(
+                        Object.values(riskAssessments)
+                          .filter(Boolean)
+                          .reduce((sum, assessment) => sum + assessment.security_score, 0) /
+                          Object.values(riskAssessments).filter(Boolean).length
+                      )
+                    : 0}
                 </div>
                 <p className="text-sm text-gray-600">Across all assessments</p>
               </CardContent>
@@ -676,7 +731,10 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {proposals.filter(p => p.risk_level === 'High' || p.risk_level === 'Critical').length}
+                  {
+                    proposals.filter(p => p.risk_level === 'High' || p.risk_level === 'Critical')
+                      .length
+                  }
                 </div>
                 <p className="text-sm text-gray-600">Requiring assessment</p>
               </CardContent>
@@ -708,12 +766,14 @@ const RiskAssessmentVisualization = ({ contract, userAddress, isAdmin }) => {
                   const count = proposals.filter(p => p.risk_level === level).length;
                   const percentage = proposals.length > 0 ? (count / proposals.length) * 100 : 0;
                   const color = getRiskLevelColor(level);
-                  
+
                   return (
                     <div key={level} className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">{level} Risk</span>
-                        <span className="text-sm text-gray-600">{count} proposals ({percentage.toFixed(1)}%)</span>
+                        <span className="text-sm text-gray-600">
+                          {count} proposals ({percentage.toFixed(1)}%)
+                        </span>
                       </div>
                       <Progress value={percentage} className="h-2" />
                     </div>

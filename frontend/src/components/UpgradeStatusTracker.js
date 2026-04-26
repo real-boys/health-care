@@ -5,11 +5,11 @@ import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle, 
+import {
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
   GitBranch,
   Calendar,
   Users,
@@ -23,7 +23,7 @@ import {
   Eye,
   Download,
   MessageSquare,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 
 const UpgradeStatusTracker = ({ contract, userAddress }) => {
@@ -49,7 +49,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
       // Load execution records for executed proposals
       const executionData = {};
       const communicationData = {};
-      
+
       for (const proposal of allProposals) {
         if (proposal.status === 'Executed') {
           try {
@@ -77,9 +77,9 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
     }
   };
 
-  const generateTimelineEvents = (proposal) => {
+  const generateTimelineEvents = proposal => {
     const events = [];
-    
+
     // Proposal creation
     events.push({
       id: 'created',
@@ -88,7 +88,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
       title: 'Proposal Created',
       description: `Upgrade proposal "${proposal.title}" was created`,
       icon: FileText,
-      color: 'blue'
+      color: 'blue',
     });
 
     // Risk assessment (if applicable)
@@ -100,7 +100,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
         title: 'Risk Assessment Completed',
         description: `Risk assessment completed for ${proposal.risk_level} risk proposal`,
         icon: Shield,
-        color: 'orange'
+        color: 'orange',
       });
     }
 
@@ -112,7 +112,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
       title: 'Voting Period Started',
       description: `Stakeholder voting began with ${proposal.required_approval_percentage}% approval requirement`,
       icon: Users,
-      color: 'purple'
+      color: 'purple',
     });
 
     // Voting deadline
@@ -123,7 +123,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
       title: 'Voting Deadline',
       description: `Voting period ended. Final results: ${proposal.votes_for} for, ${proposal.votes_against} against`,
       icon: Clock,
-      color: 'gray'
+      color: 'gray',
     });
 
     // Proposal outcome
@@ -135,7 +135,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
         title: 'Proposal Approved',
         description: `Proposal received required approval and was approved for execution`,
         icon: CheckCircle,
-        color: 'green'
+        color: 'green',
       });
     } else if (proposal.status === 'Rejected') {
       events.push({
@@ -145,7 +145,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
         title: 'Proposal Rejected',
         description: `Proposal did not receive sufficient approval and was rejected`,
         icon: XCircle,
-        color: 'red'
+        color: 'red',
       });
     }
 
@@ -159,7 +159,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
         title: 'Upgrade Executed',
         description: `Smart contract upgrade was successfully executed by ${execution.executed_by}`,
         icon: Zap,
-        color: 'green'
+        color: 'green',
       });
 
       if (execution.rollback_available) {
@@ -170,7 +170,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
           title: 'Rollback Window Open',
           description: `Rollback is available until ${new Date(execution.rollback_deadline * 1000).toLocaleDateString()}`,
           icon: Activity,
-          color: 'orange'
+          color: 'orange',
         });
       }
     }
@@ -178,39 +178,53 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
     return events.sort((a, b) => a.timestamp - b.timestamp);
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
-      case 'Draft': return 'gray';
-      case 'Proposed': return 'blue';
-      case 'Voting': return 'purple';
-      case 'Approved': return 'green';
-      case 'Rejected': return 'red';
-      case 'Executed': return 'green';
-      case 'Cancelled': return 'gray';
-      case 'Emergency': return 'orange';
-      default: return 'gray';
+      case 'Draft':
+        return 'gray';
+      case 'Proposed':
+        return 'blue';
+      case 'Voting':
+        return 'purple';
+      case 'Approved':
+        return 'green';
+      case 'Rejected':
+        return 'red';
+      case 'Executed':
+        return 'green';
+      case 'Cancelled':
+        return 'gray';
+      case 'Emergency':
+        return 'orange';
+      default:
+        return 'gray';
     }
   };
 
-  const getUpgradeTypeIcon = (type) => {
+  const getUpgradeTypeIcon = type => {
     const icons = {
-      'Feature': Settings,
-      'Security': Shield,
-      'BugFix': Zap,
-      'Optimization': BarChart3,
-      'Emergency': AlertTriangle,
-      'Governance': Users
+      Feature: Settings,
+      Security: Shield,
+      BugFix: Zap,
+      Optimization: BarChart3,
+      Emergency: AlertTriangle,
+      Governance: Users,
     };
     return icons[type] || GitBranch;
   };
 
-  const getRiskLevelColor = (level) => {
+  const getRiskLevelColor = level => {
     switch (level) {
-      case 'Low': return 'green';
-      case 'Medium': return 'yellow';
-      case 'High': return 'orange';
-      case 'Critical': return 'red';
-      default: return 'gray';
+      case 'Low':
+        return 'green';
+      case 'Medium':
+        return 'yellow';
+      case 'High':
+        return 'orange';
+      case 'Critical':
+        return 'red';
+      default:
+        return 'gray';
     }
   };
 
@@ -222,7 +236,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
     return true;
   });
 
-  const openTimelineDialog = (proposal) => {
+  const openTimelineDialog = proposal => {
     setSelectedProposal(proposal);
     setTimelineEvents(generateTimelineEvents(proposal));
   };
@@ -240,7 +254,9 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Upgrade Status Tracker</h1>
-          <p className="text-gray-600 mt-2">Monitor the status and timeline of smart contract upgrades</p>
+          <p className="text-gray-600 mt-2">
+            Monitor the status and timeline of smart contract upgrades
+          </p>
         </div>
         <div className="flex items-center space-x-4">
           <Badge variant="outline" className="flex items-center space-x-2">
@@ -249,7 +265,13 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
           </Badge>
           <Badge variant="outline" className="flex items-center space-x-2">
             <Activity className="w-4 h-4" />
-            <span>{filteredProposals.filter(p => ['Proposed', 'Voting', 'Approved'].includes(p.status)).length} Active</span>
+            <span>
+              {
+                filteredProposals.filter(p => ['Proposed', 'Voting', 'Approved'].includes(p.status))
+                  .length
+              }{' '}
+              Active
+            </span>
           </Badge>
         </div>
       </div>
@@ -310,42 +332,51 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="text-right text-sm">
                         <div className="flex items-center space-x-1 text-gray-600">
                           <Calendar className="w-4 h-4" />
-                          <span>Created: {new Date(proposal.created * 1000).toLocaleDateString()}</span>
+                          <span>
+                            Created: {new Date(proposal.created * 1000).toLocaleDateString()}
+                          </span>
                         </div>
                         {execution && (
                           <div className="flex items-center space-x-1 text-green-600 mt-1">
                             <CheckCircle className="w-4 h-4" />
-                            <span>Executed: {new Date(execution.execution_timestamp * 1000).toLocaleDateString()}</span>
+                            <span>
+                              Executed:{' '}
+                              {new Date(execution.execution_timestamp * 1000).toLocaleDateString()}
+                            </span>
                           </div>
                         )}
                       </div>
                     </div>
                   </CardHeader>
-                  
+
                   <CardContent className="space-y-4">
                     <p className="text-gray-700 line-clamp-2">{proposal.description}</p>
-                    
+
                     {/* Progress for active proposals */}
                     {['Proposed', 'Voting', 'Approved'].includes(proposal.status) && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">Progress</span>
                           <span className="font-medium">
-                            {proposal.status === 'Voting' ? 
-                              `${((proposal.votes_for / (proposal.votes_for + proposal.votes_against)) * 100).toFixed(1)}% approval` :
-                              proposal.status
-                            }
+                            {proposal.status === 'Voting'
+                              ? `${((proposal.votes_for / (proposal.votes_for + proposal.votes_against)) * 100).toFixed(1)}% approval`
+                              : proposal.status}
                           </span>
                         </div>
-                        <Progress 
-                          value={proposal.status === 'Voting' ? 
-                            (proposal.votes_for / (proposal.votes_for + proposal.votes_against)) * 100 : 
-                            proposal.status === 'Approved' ? 100 : 50
-                          } 
+                        <Progress
+                          value={
+                            proposal.status === 'Voting'
+                              ? (proposal.votes_for /
+                                  (proposal.votes_for + proposal.votes_against)) *
+                                100
+                              : proposal.status === 'Approved'
+                                ? 100
+                                : 50
+                          }
                           className="h-2"
                         />
                       </div>
@@ -357,7 +388,9 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             <CheckCircle className="w-5 h-5 text-green-600" />
-                            <span className="font-medium text-green-800">Successfully Executed</span>
+                            <span className="font-medium text-green-800">
+                              Successfully Executed
+                            </span>
                           </div>
                           <div className="text-sm text-green-700">
                             Gas used: {execution.gas_used.toLocaleString()}
@@ -365,7 +398,8 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
                         </div>
                         {execution.rollback_available && (
                           <div className="mt-2 text-sm text-green-700">
-                            Rollback available until {new Date(execution.rollback_deadline * 1000).toLocaleDateString()}
+                            Rollback available until{' '}
+                            {new Date(execution.rollback_deadline * 1000).toLocaleDateString()}
                           </div>
                         )}
                       </div>
@@ -383,29 +417,20 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
                           Timeline
                         </Button>
                         {comms.length > 0 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                          >
+                          <Button variant="outline" size="sm">
                             <MessageSquare className="w-4 h-4 mr-2" />
                             {comms.length} Updates
                           </Button>
                         )}
                         {execution && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                          >
+                          <Button variant="outline" size="sm">
                             <Download className="w-4 h-4 mr-2" />
                             Export
                           </Button>
                         )}
                       </div>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                      >
+
+                      <Button variant="outline" size="sm">
                         <Eye className="w-4 h-4 mr-2" />
                         View Details
                       </Button>
@@ -427,7 +452,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
                 {proposals.slice(0, 10).map(proposal => {
                   const events = generateTimelineEvents(proposal);
                   const Icon = getUpgradeTypeIcon(proposal.upgrade_type);
-                  
+
                   return (
                     <div key={proposal.id} className="relative">
                       <div className="flex items-start space-x-4">
@@ -510,12 +535,13 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
                         </div>
                       </div>
                     </div>
-                    
+
                     {execution.rollback_available && (
                       <div className="p-3 bg-orange-50 rounded-lg">
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-orange-800">
-                            Rollback window closes: {new Date(execution.rollback_deadline * 1000).toLocaleDateString()}
+                            Rollback window closes:{' '}
+                            {new Date(execution.rollback_deadline * 1000).toLocaleDateString()}
                           </span>
                           <Button variant="outline" size="sm">
                             Initiate Rollback
@@ -582,8 +608,10 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {proposals.length > 0 ? 
-                    ((Object.keys(executions).length / proposals.length) * 100).toFixed(1) : 0}%
+                  {proposals.length > 0
+                    ? ((Object.keys(executions).length / proposals.length) * 100).toFixed(1)
+                    : 0}
+                  %
                 </div>
                 <p className="text-sm text-gray-600">Execution success</p>
               </CardContent>
@@ -596,20 +624,24 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {['Feature', 'Security', 'BugFix', 'Optimization', 'Emergency', 'Governance'].map(type => {
-                  const count = proposals.filter(p => p.upgrade_type === type).length;
-                  const percentage = proposals.length > 0 ? (count / proposals.length) * 100 : 0;
-                  
-                  return (
-                    <div key={type} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{type}</span>
-                        <span className="text-sm text-gray-600">{count} proposals ({percentage.toFixed(1)}%)</span>
+                {['Feature', 'Security', 'BugFix', 'Optimization', 'Emergency', 'Governance'].map(
+                  type => {
+                    const count = proposals.filter(p => p.upgrade_type === type).length;
+                    const percentage = proposals.length > 0 ? (count / proposals.length) * 100 : 0;
+
+                    return (
+                      <div key={type} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">{type}</span>
+                          <span className="text-sm text-gray-600">
+                            {count} proposals ({percentage.toFixed(1)}%)
+                          </span>
+                        </div>
+                        <Progress value={percentage} className="h-2" />
                       </div>
-                      <Progress value={percentage} className="h-2" />
-                    </div>
-                  );
-                })}
+                    );
+                  }
+                )}
               </div>
             </CardContent>
           </Card>
@@ -622,7 +654,7 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
           <DialogHeader>
             <DialogTitle>Upgrade Timeline - {selectedProposal?.title}</DialogTitle>
           </DialogHeader>
-          
+
           {selectedProposal && (
             <div className="space-y-6">
               {/* Proposal Summary */}
@@ -649,7 +681,9 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
                     return (
                       <div key={event.id} className="flex items-start space-x-4 pb-6">
                         <div className="flex-shrink-0">
-                          <div className={`w-10 h-10 rounded-full bg-${event.color}-100 flex items-center justify-center`}>
+                          <div
+                            className={`w-10 h-10 rounded-full bg-${event.color}-100 flex items-center justify-center`}
+                          >
                             <EventIcon className={`w-5 h-5 text-${event.color}-600`} />
                           </div>
                           {index < timelineEvents.length - 1 && (
@@ -672,27 +706,28 @@ const UpgradeStatusTracker = ({ contract, userAddress }) => {
               </div>
 
               {/* Communications */}
-              {communications[selectedProposal.id] && communications[selectedProposal.id].length > 0 && (
-                <div className="space-y-4">
-                  <h4 className="font-semibold">Communications</h4>
-                  <div className="space-y-3">
-                    {communications[selectedProposal.id].map(comm => (
-                      <div key={comm.id} className="p-3 border rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="outline">{comm.message_type}</Badge>
-                            <span className="font-medium">{comm.subject}</span>
+              {communications[selectedProposal.id] &&
+                communications[selectedProposal.id].length > 0 && (
+                  <div className="space-y-4">
+                    <h4 className="font-semibold">Communications</h4>
+                    <div className="space-y-3">
+                      {communications[selectedProposal.id].map(comm => (
+                        <div key={comm.id} className="p-3 border rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="outline">{comm.message_type}</Badge>
+                              <span className="font-medium">{comm.subject}</span>
+                            </div>
+                            <span className="text-sm text-gray-600">
+                              {new Date(comm.timestamp * 1000).toLocaleDateString()}
+                            </span>
                           </div>
-                          <span className="text-sm text-gray-600">
-                            {new Date(comm.timestamp * 1000).toLocaleDateString()}
-                          </span>
+                          <p className="text-sm text-gray-700 mt-2">{comm.content}</p>
                         </div>
-                        <p className="text-sm text-gray-700 mt-2">{comm.content}</p>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           )}
         </DialogContent>

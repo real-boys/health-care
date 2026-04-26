@@ -25,11 +25,11 @@ export const DEFAULT_NETWORKS = [
 ];
 
 export function getNetworkById(networkId) {
-  return DEFAULT_NETWORKS.find((n) => n.id === networkId) || null;
+  return DEFAULT_NETWORKS.find(n => n.id === networkId) || null;
 }
 
 export function getEnabledNetworks() {
-  return DEFAULT_NETWORKS.filter((n) => n.enabled);
+  return DEFAULT_NETWORKS.filter(n => n.enabled);
 }
 
 export function buildExplorerTxUrl(networkId, txHash) {
@@ -38,4 +38,3 @@ export function buildExplorerTxUrl(networkId, txHash) {
   if (n.family === NETWORK_FAMILY.EVM) return `${n.explorerBaseUrl}/tx/${txHash}`;
   return `${n.explorerBaseUrl}/tx/${txHash}`;
 }
-

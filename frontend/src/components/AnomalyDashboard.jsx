@@ -1,7 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Brain, TrendingUp, Clock, User, Search, Filter, Download, CheckCircle, XCircle, Eye } from 'lucide-react';
+import {
+  AlertTriangle,
+  Brain,
+  TrendingUp,
+  Clock,
+  User,
+  Search,
+  Filter,
+  Download,
+  CheckCircle,
+  XCircle,
+  Eye,
+} from 'lucide-react';
 import axios from 'axios';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
 const AnomalyDashboard = () => {
   const [anomalies, setAnomalies] = useState([]);
@@ -13,7 +39,7 @@ const AnomalyDashboard = () => {
     investigated: '',
     false_positive: '',
     start_date: '',
-    end_date: ''
+    end_date: '',
   });
   const [selectedAnomaly, setSelectedAnomaly] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -48,7 +74,7 @@ const AnomalyDashboard = () => {
       // For now, we'll calculate from the anomalies we have
       const response = await axios.get('/api/audit/anomalies', { params: { limit: 1000 } });
       const allAnomalies = response.data.data;
-      
+
       const stats = {
         total: allAnomalies.length,
         critical: allAnomalies.filter(a => a.severity === 'CRITICAL').length,
@@ -57,9 +83,10 @@ const AnomalyDashboard = () => {
         low: allAnomalies.filter(a => a.severity === 'LOW').length,
         investigated: allAnomalies.filter(a => a.investigated).length,
         false_positives: allAnomalies.filter(a => a.false_positive).length,
-        avg_confidence: allAnomalies.reduce((sum, a) => sum + a.confidence_score, 0) / allAnomalies.length || 0
+        avg_confidence:
+          allAnomalies.reduce((sum, a) => sum + a.confidence_score, 0) / allAnomalies.length || 0,
       };
-      
+
       setStats(stats);
     } catch (error) {
       console.error('Error fetching anomaly stats:', error);
@@ -69,7 +96,7 @@ const AnomalyDashboard = () => {
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -83,19 +110,24 @@ const AnomalyDashboard = () => {
       investigated: '',
       false_positive: '',
       start_date: '',
-      end_date: ''
+      end_date: '',
     });
     fetchAnomalies();
   };
 
-  const updateAnomalyInvestigation = async (anomalyId, investigated, investigationNotes, falsePositive) => {
+  const updateAnomalyInvestigation = async (
+    anomalyId,
+    investigated,
+    investigationNotes,
+    falsePositive
+  ) => {
     try {
       await axios.put(`/api/audit/anomalies/${anomalyId}/investigate`, {
         investigated,
         investigation_notes: investigationNotes,
-        false_positive: falsePositive
+        false_positive: falsePositive,
       });
-      
+
       fetchAnomalies();
       fetchAnomalyStats();
       setSelectedAnomaly(null);
@@ -104,24 +136,29 @@ const AnomalyDashboard = () => {
     }
   };
 
-  const getSeverityColor = (severity) => {
+  const getSeverityColor = severity => {
     switch (severity) {
-      case 'CRITICAL': return 'text-red-600 bg-red-50 border-red-200';
-      case 'HIGH': return 'text-orange-600 bg-orange-50 border-orange-200';
-      case 'MEDIUM': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'LOW': return 'text-green-600 bg-green-50 border-green-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      case 'CRITICAL':
+        return 'text-red-600 bg-red-50 border-red-200';
+      case 'HIGH':
+        return 'text-orange-600 bg-orange-50 border-orange-200';
+      case 'MEDIUM':
+        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'LOW':
+        return 'text-green-600 bg-green-50 border-green-200';
+      default:
+        return 'text-gray-600 bg-gray-50 border-gray-200';
     }
   };
 
-  const getConfidenceColor = (score) => {
+  const getConfidenceColor = score => {
     if (score >= 0.8) return 'text-green-600';
     if (score >= 0.6) return 'text-yellow-600';
     if (score >= 0.4) return 'text-orange-600';
     return 'text-red-600';
   };
 
-  const formatDate = (timestamp) => {
+  const formatDate = timestamp => {
     return new Date(timestamp).toLocaleString();
   };
 
@@ -130,8 +167,9 @@ const AnomalyDashboard = () => {
       const params = {
         ...filters,
         format,
-        start_date: filters.start_date || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        end_date: filters.end_date || new Date().toISOString()
+        start_date:
+          filters.start_date || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        end_date: filters.end_date || new Date().toISOString(),
       };
 
       Object.keys(params).forEach(key => {
@@ -141,7 +179,7 @@ const AnomalyDashboard = () => {
       });
 
       const response = await axios.post('/api/audit/export', params, {
-        responseType: format === 'CSV' ? 'blob' : 'json'
+        responseType: format === 'CSV' ? 'blob' : 'json',
       });
 
       if (format === 'CSV') {
@@ -219,7 +257,9 @@ const AnomalyDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Critical/High</p>
-                  <p className="text-2xl font-bold text-red-600 mt-1">{stats.critical + stats.high}</p>
+                  <p className="text-2xl font-bold text-red-600 mt-1">
+                    {stats.critical + stats.high}
+                  </p>
                 </div>
                 <div className="p-3 bg-red-50 rounded-lg">
                   <AlertTriangle className="w-6 h-6 text-red-600" />
@@ -243,7 +283,9 @@ const AnomalyDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Avg Confidence</p>
-                  <p className={`text-2xl font-bold mt-1 ${getConfidenceColor(stats.avg_confidence)}`}>
+                  <p
+                    className={`text-2xl font-bold mt-1 ${getConfidenceColor(stats.avg_confidence)}`}
+                  >
                     {(stats.avg_confidence * 100).toFixed(1)}%
                   </p>
                 </div>
@@ -264,7 +306,7 @@ const AnomalyDashboard = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Severity</label>
                 <select
                   value={filters.severity}
-                  onChange={(e) => handleFilterChange('severity', e.target.value)}
+                  onChange={e => handleFilterChange('severity', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Severities</option>
@@ -275,10 +317,12 @@ const AnomalyDashboard = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Investigation Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Investigation Status
+                </label>
                 <select
                   value={filters.investigated}
-                  onChange={(e) => handleFilterChange('investigated', e.target.value)}
+                  onChange={e => handleFilterChange('investigated', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Status</option>
@@ -287,10 +331,12 @@ const AnomalyDashboard = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">False Positive</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  False Positive
+                </label>
                 <select
                   value={filters.false_positive}
-                  onChange={(e) => handleFilterChange('false_positive', e.target.value)}
+                  onChange={e => handleFilterChange('false_positive', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All</option>
@@ -303,7 +349,7 @@ const AnomalyDashboard = () => {
                 <input
                   type="datetime-local"
                   value={filters.start_date}
-                  onChange={(e) => handleFilterChange('start_date', e.target.value)}
+                  onChange={e => handleFilterChange('start_date', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -312,7 +358,7 @@ const AnomalyDashboard = () => {
                 <input
                   type="datetime-local"
                   value={filters.end_date}
-                  onChange={(e) => handleFilterChange('end_date', e.target.value)}
+                  onChange={e => handleFilterChange('end_date', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -345,7 +391,7 @@ const AnomalyDashboard = () => {
                     { name: 'Critical', value: stats.critical },
                     { name: 'High', value: stats.high },
                     { name: 'Medium', value: stats.medium },
-                    { name: 'Low', value: stats.low }
+                    { name: 'Low', value: stats.low },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -370,9 +416,7 @@ const AnomalyDashboard = () => {
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">Detected Anomalies</h3>
-              <span className="text-sm text-gray-500">
-                {anomalies.length} anomalies found
-              </span>
+              <span className="text-sm text-gray-500">{anomalies.length} anomalies found</span>
             </div>
           </div>
 
@@ -404,14 +448,16 @@ const AnomalyDashboard = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {anomalies.map((anomaly) => (
+                {anomalies.map(anomaly => (
                   <tr key={anomaly.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDate(anomaly.created_at)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{anomaly.pattern_name}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {anomaly.pattern_name}
+                        </div>
                         <div className="text-sm text-gray-500">{anomaly.pattern_description}</div>
                       </div>
                     </td>
@@ -421,7 +467,9 @@ const AnomalyDashboard = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(anomaly.severity)}`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(anomaly.severity)}`}
+                      >
                         {anomaly.severity}
                       </span>
                     </td>
@@ -430,7 +478,9 @@ const AnomalyDashboard = () => {
                         <div className="text-sm font-medium text-gray-900">
                           {(anomaly.confidence_score * 100).toFixed(1)}%
                         </div>
-                        <div className={`ml-2 w-2 h-2 rounded-full ${getConfidenceColor(anomaly.confidence_score).replace('text-', 'bg-')}`}></div>
+                        <div
+                          className={`ml-2 w-2 h-2 rounded-full ${getConfidenceColor(anomaly.confidence_score).replace('text-', 'bg-')}`}
+                        ></div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -486,17 +536,23 @@ const AnomalyDashboard = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <div className={`p-4 border rounded-lg ${getSeverityColor(selectedAnomaly.severity)}`}>
+                  <div
+                    className={`p-4 border rounded-lg ${getSeverityColor(selectedAnomaly.severity)}`}
+                  >
                     <h4 className="font-semibold mb-2">{selectedAnomaly.pattern_name}</h4>
                     <p className="text-sm mb-2">{selectedAnomaly.description}</p>
                     <div className="flex justify-between text-sm">
                       <span>Severity: {selectedAnomaly.severity}</span>
-                      <span>Confidence: {(selectedAnomaly.confidence_score * 100).toFixed(1)}%</span>
+                      <span>
+                        Confidence: {(selectedAnomaly.confidence_score * 100).toFixed(1)}%
+                      </span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Investigation Notes</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Investigation Notes
+                    </label>
                     <textarea
                       id="investigation-notes"
                       rows={4}
@@ -506,11 +562,7 @@ const AnomalyDashboard = () => {
                   </div>
 
                   <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="false-positive"
-                      className="mr-2"
-                    />
+                    <input type="checkbox" id="false-positive" className="mr-2" />
                     <label htmlFor="false-positive" className="text-sm text-gray-700">
                       Mark as false positive
                     </label>

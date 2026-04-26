@@ -13,10 +13,10 @@ export default function NetworkSelector() {
       <div className="relative">
         <select
           value={selectedNetworkId || ''}
-          onChange={(e) => setSelectedNetworkId(e.target.value)}
+          onChange={e => setSelectedNetworkId(e.target.value)}
           className="appearance-none pr-9 pl-3 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          {networks.map((n) => (
+          {networks.map(n => (
             <option key={n.id} value={n.id}>
               {n.displayName}
             </option>
@@ -33,4 +33,3 @@ export default function NetworkSelector() {
     </div>
   );
 }
-

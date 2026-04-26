@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Shield, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
-  Eye, 
+import {
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Eye,
   MessageSquare,
   Filter,
   Search,
@@ -12,7 +12,7 @@ import {
   User,
   Calendar,
   Flag,
-  Download
+  Download,
 } from 'lucide-react';
 import ReviewCard from './ReviewCard';
 
@@ -25,7 +25,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
     status: 'pending',
     rating: 'all',
     category: 'all',
-    dateRange: 'all'
+    dateRange: 'all',
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -41,8 +41,8 @@ const ReviewModerationPanel = ({ currentUser }) => {
     try {
       const token = localStorage.getItem('token');
       const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       };
 
       // Fetch reviews needing moderation
@@ -50,13 +50,13 @@ const ReviewModerationPanel = ({ currentUser }) => {
         moderationStatus: filters.status,
         ...(filters.rating !== 'all' && { rating: filters.rating }),
         ...(filters.category !== 'all' && { category: filters.category }),
-        ...(searchTerm && { search: searchTerm })
+        ...(searchTerm && { search: searchTerm }),
       });
 
       const reviewsResponse = await fetch(`/api/reputation/reviews/moderation?${params}`, {
-        headers
+        headers,
       });
-      
+
       if (reviewsResponse.ok) {
         const reviewsData = await reviewsResponse.json();
         setReviews(reviewsData.reviews || []);
@@ -64,14 +64,13 @@ const ReviewModerationPanel = ({ currentUser }) => {
 
       // Fetch reports
       const reportsResponse = await fetch('/api/reputation/reports', {
-        headers
+        headers,
       });
-      
+
       if (reportsResponse.ok) {
         const reportsData = await reportsResponse.json();
         setReports(reportsData.reports || []);
       }
-
     } catch (error) {
       console.error('Error fetching moderation data:', error);
     } finally {
@@ -85,10 +84,10 @@ const ReviewModerationPanel = ({ currentUser }) => {
       const response = await fetch(`/api/reputation/review/${reviewId}/moderate`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ action, notes, moderatedBy: currentUser.id })
+        body: JSON.stringify({ action, notes, moderatedBy: currentUser.id }),
       });
 
       if (response.ok) {
@@ -108,14 +107,14 @@ const ReviewModerationPanel = ({ currentUser }) => {
       const response = await fetch('/api/reputation/reviews/bulk-moderate', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           reviewIds: selectedReviews,
           action: bulkAction,
-          moderatedBy: currentUser.id
-        })
+          moderatedBy: currentUser.id,
+        }),
       });
 
       if (response.ok) {
@@ -128,32 +127,33 @@ const ReviewModerationPanel = ({ currentUser }) => {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     const colors = {
       pending: 'bg-yellow-100 text-yellow-800',
       approved: 'bg-green-100 text-green-800',
       rejected: 'bg-red-100 text-red-800',
-      flagged: 'bg-orange-100 text-orange-800'
+      flagged: 'bg-orange-100 text-orange-800',
     };
     return colors[status] || colors.pending;
   };
 
-  const getReportCount = (reviewId) => {
+  const getReportCount = reviewId => {
     return reports.filter(report => report.review_id === reviewId).length;
   };
 
-  const getReportReasons = (reviewId) => {
+  const getReportReasons = reviewId => {
     return reports
       .filter(report => report.review_id === reviewId)
       .map(report => report.report_reason);
   };
 
   const filteredReviews = reviews.filter(review => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch =
+      !searchTerm ||
       review.review_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       review.review_text?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       review.reviewer_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     return matchesSearch;
   });
 
@@ -177,7 +177,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
             </h1>
             <p className="text-gray-600 mt-1">Manage and moderate user reviews</p>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm">
               <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full">
@@ -187,14 +187,16 @@ const ReviewModerationPanel = ({ currentUser }) => {
                 {reports.filter(r => r.report_status === 'pending').length} Reports
               </span>
             </div>
-            
+
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
             >
               <Filter className="w-4 h-4" />
               Filters
-              <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`}
+              />
             </button>
           </div>
         </div>
@@ -207,7 +209,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
               type="text"
               placeholder="Search reviews..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -218,7 +220,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   value={filters.status}
-                  onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                  onChange={e => setFilters(prev => ({ ...prev, status: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                 >
                   <option value="pending">Pending</option>
@@ -228,12 +230,12 @@ const ReviewModerationPanel = ({ currentUser }) => {
                   <option value="all">All</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
                 <select
                   value={filters.rating}
-                  onChange={(e) => setFilters(prev => ({ ...prev, rating: e.target.value }))}
+                  onChange={e => setFilters(prev => ({ ...prev, rating: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                 >
                   <option value="all">All Ratings</option>
@@ -244,12 +246,12 @@ const ReviewModerationPanel = ({ currentUser }) => {
                   <option value="1">1 Star</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                 <select
                   value={filters.category}
-                  onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+                  onChange={e => setFilters(prev => ({ ...prev, category: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                 >
                   <option value="all">All Categories</option>
@@ -259,12 +261,12 @@ const ReviewModerationPanel = ({ currentUser }) => {
                   <option value="expertise">Expertise</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
                 <select
                   value={filters.dateRange}
-                  onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
+                  onChange={e => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                 >
                   <option value="all">All Time</option>
@@ -285,11 +287,11 @@ const ReviewModerationPanel = ({ currentUser }) => {
             <span className="text-sm text-blue-800">
               {selectedReviews.length} review{selectedReviews.length !== 1 ? 's' : ''} selected
             </span>
-            
+
             <div className="flex items-center gap-3">
               <select
                 value={bulkAction}
-                onChange={(e) => setBulkAction(e.target.value)}
+                onChange={e => setBulkAction(e.target.value)}
                 className="px-3 py-1 border border-blue-300 rounded-md text-sm bg-white"
               >
                 <option value="">Choose action...</option>
@@ -297,7 +299,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
                 <option value="reject">Reject</option>
                 <option value="flag">Flag</option>
               </select>
-              
+
               <button
                 onClick={handleBulkAction}
                 disabled={!bulkAction}
@@ -305,7 +307,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
               >
                 Apply Action
               </button>
-              
+
               <button
                 onClick={() => setSelectedReviews([])}
                 className="text-blue-600 hover:text-blue-700 text-sm"
@@ -324,7 +326,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
             <h2 className="text-lg font-semibold text-gray-900">
               Reviews ({filteredReviews.length})
             </h2>
-            
+
             <button className="flex items-center gap-2 px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
               <Download className="w-4 h-4" />
               Export
@@ -341,7 +343,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
               {filteredReviews.map(review => {
                 const reportCount = getReportCount(review.id);
                 const reportReasons = getReportReasons(review.id);
-                
+
                 return (
                   <div key={review.id} className="border border-gray-200 rounded-lg p-4">
                     {/* Review Header */}
@@ -350,7 +352,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
                         <input
                           type="checkbox"
                           checked={selectedReviews.includes(review.id)}
-                          onChange={(e) => {
+                          onChange={e => {
                             if (e.target.checked) {
                               setSelectedReviews(prev => [...prev, review.id]);
                             } else {
@@ -359,9 +361,11 @@ const ReviewModerationPanel = ({ currentUser }) => {
                           }}
                           className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                         />
-                        
+
                         <div className="flex items-center gap-2">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(review.moderation_status)}`}>
+                          <span
+                            className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(review.moderation_status)}`}
+                          >
                             {review.moderation_status.replace('_', ' ')}
                           </span>
                           {reportCount > 0 && (
@@ -372,7 +376,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setSelectedReview(review)}
@@ -380,7 +384,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
                         >
                           <Eye className="w-4 h-4 text-gray-600" />
                         </button>
-                        
+
                         <div className="flex items-center gap-1 text-sm text-gray-500">
                           <Calendar className="w-4 h-4" />
                           {new Date(review.created_at).toLocaleDateString()}
@@ -390,12 +394,8 @@ const ReviewModerationPanel = ({ currentUser }) => {
 
                     {/* Review Preview */}
                     <div className="mb-3">
-                      <h4 className="font-medium text-gray-900 mb-1">
-                        {review.review_title}
-                      </h4>
-                      <p className="text-sm text-gray-600 line-clamp-2">
-                        {review.review_text}
-                      </p>
+                      <h4 className="font-medium text-gray-900 mb-1">{review.review_title}</h4>
+                      <p className="text-sm text-gray-600 line-clamp-2">{review.review_text}</p>
                     </div>
 
                     {/* Report Reasons */}
@@ -404,7 +404,10 @@ const ReviewModerationPanel = ({ currentUser }) => {
                         <p className="text-sm font-medium text-gray-700 mb-1">Report Reasons:</p>
                         <div className="flex flex-wrap gap-1">
                           {reportReasons.map((reason, index) => (
-                            <span key={index} className="px-2 py-1 bg-red-50 text-red-700 text-xs rounded">
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-red-50 text-red-700 text-xs rounded"
+                            >
                               {reason.replace('_', ' ')}
                             </span>
                           ))}
@@ -421,7 +424,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
                         <CheckCircle className="w-4 h-4" />
                         Approve
                       </button>
-                      
+
                       <button
                         onClick={() => handleModerationAction(review.id, 'reject')}
                         className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
@@ -429,7 +432,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
                         <XCircle className="w-4 h-4" />
                         Reject
                       </button>
-                      
+
                       <button
                         onClick={() => handleModerationAction(review.id, 'flag')}
                         className="flex items-center gap-1 px-3 py-1 bg-orange-600 text-white text-sm rounded hover:bg-orange-700"
@@ -461,14 +464,10 @@ const ReviewModerationPanel = ({ currentUser }) => {
                 </button>
               </div>
             </div>
-            
+
             <div className="p-6">
-              <ReviewCard
-                review={selectedReview}
-                currentUser={currentUser}
-                showActions={false}
-              />
-              
+              <ReviewCard review={selectedReview} currentUser={currentUser} showActions={false} />
+
               {/* Moderation Notes */}
               <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-medium text-gray-900 mb-3">Moderation Actions</h3>
@@ -478,7 +477,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md resize-none"
                     rows={3}
                   />
-                  
+
                   <div className="flex justify-end gap-2">
                     <button
                       onClick={() => setSelectedReview(null)}
@@ -486,7 +485,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
                     >
                       Cancel
                     </button>
-                    
+
                     <button
                       onClick={() => handleModerationAction(selectedReview.id, 'approve')}
                       className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
@@ -494,7 +493,7 @@ const ReviewModerationPanel = ({ currentUser }) => {
                       <CheckCircle className="w-4 h-4" />
                       Approve
                     </button>
-                    
+
                     <button
                       onClick={() => handleModerationAction(selectedReview.id, 'reject')}
                       className="flex items-center gap-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"

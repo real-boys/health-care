@@ -28,7 +28,7 @@ const VirtualLobby = ({ doctorName, onJoinConsultation }) => {
 
   return (
     <div className="virtual-lobby flex flex-col items-center justify-center min-h-[500px] p-8 max-w-2xl mx-auto">
-      <motion.div 
+      <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         className="w-full bg-white rounded-[2.5rem] p-12 shadow-2xl shadow-blue-600/5 border border-slate-100 text-center relative overflow-hidden"
@@ -48,21 +48,27 @@ const VirtualLobby = ({ doctorName, onJoinConsultation }) => {
             </div>
           </div>
 
-          <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Virtual Waiting Room</h1>
+          <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">
+            Virtual Waiting Room
+          </h1>
           <p className="text-slate-500 mb-10 max-w-md mx-auto">
-            You're in line for your consultation with <span className="text-blue-600 font-bold">{doctorName}</span>.
+            You're in line for your consultation with{' '}
+            <span className="text-blue-600 font-bold">{doctorName}</span>.
           </p>
 
           <div className="grid grid-cols-2 gap-6 mb-10">
             <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-              <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Queue Position</div>
+              <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                Queue Position
+              </div>
               <div className="text-3xl font-black text-slate-900 flex items-center justify-center gap-2">
-                <Users className="w-6 h-6 text-blue-600" />
-                #{queuePosition}
+                <Users className="w-6 h-6 text-blue-600" />#{queuePosition}
               </div>
             </div>
             <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-              <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Est. Wait Time</div>
+              <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+                Est. Wait Time
+              </div>
               <div className="text-3xl font-black text-slate-900 flex items-center justify-center gap-2">
                 <Clock className="w-6 h-6 text-blue-600" />
                 {estimatedWait} <span className="text-sm font-medium">min</span>
@@ -72,7 +78,7 @@ const VirtualLobby = ({ doctorName, onJoinConsultation }) => {
 
           <AnimatePresence mode="wait">
             {!isReady ? (
-              <motion.div 
+              <motion.div
                 key="waiting"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -110,7 +116,8 @@ const VirtualLobby = ({ doctorName, onJoinConsultation }) => {
           <Info className="w-4 h-4" />
         </div>
         <p className="text-xs text-slate-500 text-left">
-          Please stay on this page. We'll automatically notify you when it's your turn. Make sure your camera and microphone permissions are enabled.
+          Please stay on this page. We'll automatically notify you when it's your turn. Make sure
+          your camera and microphone permissions are enabled.
         </p>
       </div>
     </div>

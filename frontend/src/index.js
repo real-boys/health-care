@@ -14,4 +14,3 @@ root.render(
     </NetworkProvider>
   </React.StrictMode>
 );
-

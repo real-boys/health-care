@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNotifications } from './NotificationSystem';
-import { Settings, Bell, Mail, MessageSquare, Smartphone, Monitor, Clock, Save, X } from 'lucide-react';
+import {
+  Settings,
+  Bell,
+  Mail,
+  MessageSquare,
+  Smartphone,
+  Monitor,
+  Clock,
+  Save,
+  X,
+} from 'lucide-react';
 
 const NotificationSettingsPage = () => {
   const [preferences, setPreferences] = useState({});
@@ -18,8 +28,8 @@ const NotificationSettingsPage = () => {
       const token = localStorage.getItem('token');
       const response = await fetch('/api/notifications/preferences', {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
@@ -40,10 +50,10 @@ const NotificationSettingsPage = () => {
       const response = await fetch('/api/notifications/preferences', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ preferences })
+        body: JSON.stringify({ preferences }),
       });
 
       if (response.ok) {
@@ -63,8 +73,8 @@ const NotificationSettingsPage = () => {
       ...prev,
       [type]: {
         ...prev[type],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
@@ -77,7 +87,7 @@ const NotificationSettingsPage = () => {
         in_app_enabled: true,
         frequency: 'immediate',
         quiet_hours_start: '22:00',
-        quiet_hours_end: '07:00'
+        quiet_hours_end: '07:00',
       },
       payment: {
         email_enabled: true,
@@ -86,7 +96,7 @@ const NotificationSettingsPage = () => {
         in_app_enabled: true,
         frequency: 'immediate',
         quiet_hours_start: '22:00',
-        quiet_hours_end: '07:00'
+        quiet_hours_end: '07:00',
       },
       appointment: {
         email_enabled: true,
@@ -95,7 +105,7 @@ const NotificationSettingsPage = () => {
         in_app_enabled: true,
         frequency: 'immediate',
         quiet_hours_start: null,
-        quiet_hours_end: null
+        quiet_hours_end: null,
       },
       system: {
         email_enabled: true,
@@ -104,7 +114,7 @@ const NotificationSettingsPage = () => {
         in_app_enabled: true,
         frequency: 'immediate',
         quiet_hours_start: null,
-        quiet_hours_end: null
+        quiet_hours_end: null,
       },
       medical_record: {
         email_enabled: true,
@@ -113,55 +123,55 @@ const NotificationSettingsPage = () => {
         in_app_enabled: true,
         frequency: 'daily',
         quiet_hours_start: '22:00',
-        quiet_hours_end: '07:00'
-      }
+        quiet_hours_end: '07:00',
+      },
     };
     setPreferences(defaults);
   };
 
   const notificationTypes = [
-    { 
-      key: 'claim', 
-      label: 'Claims', 
+    {
+      key: 'claim',
+      label: 'Claims',
       description: 'Updates about your insurance claims',
       icon: <Monitor className="h-5 w-5" />,
-      color: 'blue'
+      color: 'blue',
     },
-    { 
-      key: 'payment', 
-      label: 'Payments', 
+    {
+      key: 'payment',
+      label: 'Payments',
       description: 'Payment reminders and confirmations',
       icon: <Mail className="h-5 w-5" />,
-      color: 'green'
+      color: 'green',
     },
-    { 
-      key: 'appointment', 
-      label: 'Appointments', 
+    {
+      key: 'appointment',
+      label: 'Appointments',
       description: 'Appointment reminders and updates',
       icon: <Clock className="h-5 w-5" />,
-      color: 'purple'
+      color: 'purple',
     },
-    { 
-      key: 'system', 
-      label: 'System', 
+    {
+      key: 'system',
+      label: 'System',
       description: 'System updates and maintenance',
       icon: <Settings className="h-5 w-5" />,
-      color: 'gray'
+      color: 'gray',
     },
-    { 
-      key: 'medical_record', 
-      label: 'Medical Records', 
+    {
+      key: 'medical_record',
+      label: 'Medical Records',
       description: 'Updates to your medical records',
       icon: <Bell className="h-5 w-5" />,
-      color: 'orange'
-    }
+      color: 'orange',
+    },
   ];
 
   const deliveryMethods = [
     { key: 'email', label: 'Email', icon: <Mail className="h-4 w-4" /> },
     { key: 'sms', label: 'SMS', icon: <MessageSquare className="h-4 w-4" /> },
     { key: 'push', label: 'Push', icon: <Smartphone className="h-4 w-4" /> },
-    { key: 'in_app', label: 'In-App', icon: <Bell className="h-4 w-4" /> }
+    { key: 'in_app', label: 'In-App', icon: <Bell className="h-4 w-4" /> },
   ];
 
   if (loading) {
@@ -227,7 +237,7 @@ const NotificationSettingsPage = () => {
         {/* Tabs */}
         <div className="mb-8">
           <nav className="flex space-x-8">
-            {['general', 'delivery', 'schedule'].map((tab) => (
+            {['general', 'delivery', 'schedule'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -256,30 +266,41 @@ const NotificationSettingsPage = () => {
 
               <div className="p-6">
                 <div className="space-y-6">
-                  {notificationTypes.map((type) => (
+                  {notificationTypes.map(type => (
                     <div key={type.key} className="border-b border-gray-200 pb-6 last:border-0">
                       <div className="flex items-start space-x-4">
-                        <div className={`p-2 bg-${type.color}-100 rounded-lg`}>
-                          {type.icon}
-                        </div>
+                        <div className={`p-2 bg-${type.color}-100 rounded-lg`}>{type.icon}</div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">
                             <h3 className="text-lg font-medium text-gray-900">{type.label}</h3>
                             <div className="flex items-center space-x-2">
-                              <span className={`text-xs px-2 py-1 rounded-full bg-${type.color}-100 text-${type.color}-800`}>
+                              <span
+                                className={`text-xs px-2 py-1 rounded-full bg-${type.color}-100 text-${type.color}-800`}
+                              >
                                 {type.key}
                               </span>
                             </div>
                           </div>
                           <p className="text-sm text-gray-600 mb-4">{type.description}</p>
-                          
+
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {deliveryMethods.map((method) => (
-                              <label key={method.key} className="flex items-center space-x-2 cursor-pointer">
+                            {deliveryMethods.map(method => (
+                              <label
+                                key={method.key}
+                                className="flex items-center space-x-2 cursor-pointer"
+                              >
                                 <input
                                   type="checkbox"
-                                  checked={preferences[type.key]?.[`${method.key}_enabled`] || false}
-                                  onChange={(e) => updatePreference(type.key, `${method.key}_enabled`, e.target.checked)}
+                                  checked={
+                                    preferences[type.key]?.[`${method.key}_enabled`] || false
+                                  }
+                                  onChange={e =>
+                                    updatePreference(
+                                      type.key,
+                                      `${method.key}_enabled`,
+                                      e.target.checked
+                                    )
+                                  }
                                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                 />
                                 <span className="flex items-center text-sm text-gray-700">
@@ -312,21 +333,30 @@ const NotificationSettingsPage = () => {
 
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {deliveryMethods.map((method) => (
+                  {deliveryMethods.map(method => (
                     <div key={method.key} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center mb-3">
                         {method.icon}
                         <h3 className="ml-2 text-lg font-medium text-gray-900">{method.label}</h3>
                       </div>
-                      
+
                       <div className="space-y-3">
-                        {notificationTypes.map((type) => (
-                          <label key={`${type.key}-${method.key}`} className="flex items-center justify-between cursor-pointer">
+                        {notificationTypes.map(type => (
+                          <label
+                            key={`${type.key}-${method.key}`}
+                            className="flex items-center justify-between cursor-pointer"
+                          >
                             <span className="text-sm text-gray-700">{type.label}</span>
                             <input
                               type="checkbox"
                               checked={preferences[type.key]?.[`${method.key}_enabled`] || false}
-                              onChange={(e) => updatePreference(type.key, `${method.key}_enabled`, e.target.checked)}
+                              onChange={e =>
+                                updatePreference(
+                                  type.key,
+                                  `${method.key}_enabled`,
+                                  e.target.checked
+                                )
+                              }
                               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                             />
                           </label>
@@ -353,7 +383,7 @@ const NotificationSettingsPage = () => {
 
               <div className="p-6">
                 <div className="space-y-6">
-                  {notificationTypes.map((type) => (
+                  {notificationTypes.map(type => (
                     <div key={type.key} className="border-b border-gray-200 pb-6 last:border-0">
                       <div className="flex items-center mb-4">
                         <div className={`p-2 bg-${type.color}-100 rounded-lg mr-3`}>
@@ -369,7 +399,7 @@ const NotificationSettingsPage = () => {
                           </label>
                           <select
                             value={preferences[type.key]?.frequency || 'immediate'}
-                            onChange={(e) => updatePreference(type.key, 'frequency', e.target.value)}
+                            onChange={e => updatePreference(type.key, 'frequency', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
                             <option value="immediate">Immediate</option>
@@ -389,7 +419,9 @@ const NotificationSettingsPage = () => {
                               <input
                                 type="time"
                                 value={preferences[type.key]?.quiet_hours_start || ''}
-                                onChange={(e) => updatePreference(type.key, 'quiet_hours_start', e.target.value)}
+                                onChange={e =>
+                                  updatePreference(type.key, 'quiet_hours_start', e.target.value)
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                               />
                             </div>
@@ -398,7 +430,9 @@ const NotificationSettingsPage = () => {
                               <input
                                 type="time"
                                 value={preferences[type.key]?.quiet_hours_end || ''}
-                                onChange={(e) => updatePreference(type.key, 'quiet_hours_end', e.target.value)}
+                                onChange={e =>
+                                  updatePreference(type.key, 'quiet_hours_end', e.target.value)
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                               />
                             </div>

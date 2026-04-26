@@ -9,7 +9,7 @@ const ReviewCard = ({
   onReport,
   onReply,
   showActions = true,
-  className = ''
+  className = '',
 }) => {
   const [isVoting, setIsVoting] = useState(false);
   const [isReporting, setIsReporting] = useState(false);
@@ -23,12 +23,12 @@ const ReviewCard = ({
     expertise: 'Expertise',
     bedside_manner: 'Bedside Manner',
     follow_up_care: 'Follow-up Care',
-    overall_experience: 'Overall Experience'
+    overall_experience: 'Overall Experience',
   };
 
-  const handleVote = async (voteType) => {
+  const handleVote = async voteType => {
     if (isVoting) return;
-    
+
     setIsVoting(true);
     try {
       await onVote(review.id, voteType);
@@ -39,9 +39,9 @@ const ReviewCard = ({
     }
   };
 
-  const handleReport = async (reason) => {
+  const handleReport = async reason => {
     if (isReporting) return;
-    
+
     setIsReporting(true);
     try {
       await onReport(review.id, reason);
@@ -52,12 +52,12 @@ const ReviewCard = ({
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -69,7 +69,9 @@ const ReviewCard = ({
   const displayText = showFullText ? review.review_text : truncateText(review.review_text);
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow ${className}`}>
+    <div
+      className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow ${className}`}
+    >
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
@@ -83,13 +85,11 @@ const ReviewCard = ({
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <Calendar className="w-4 h-4" />
               {formatDate(review.created_at)}
-              {review.service_date && (
-                <span>• Service: {formatDate(review.service_date)}</span>
-              )}
+              {review.service_date && <span>• Service: {formatDate(review.service_date)}</span>}
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
             {categories[review.review_category]}
@@ -104,26 +104,17 @@ const ReviewCard = ({
 
       {/* Rating */}
       <div className="mb-4">
-        <StarRating
-          value={review.rating}
-          size="sm"
-          readonly
-          showValue={false}
-        />
+        <StarRating value={review.rating} size="sm" readonly showValue={false} />
       </div>
 
       {/* Review Title */}
       {review.review_title && (
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          {review.review_title}
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{review.review_title}</h3>
       )}
 
       {/* Review Text */}
       <div className="text-gray-700 mb-4">
-        <p className="leading-relaxed">
-          {displayText}
-        </p>
+        <p className="leading-relaxed">{displayText}</p>
         {review.review_text.length > 200 && (
           <button
             onClick={() => setShowFullText(!showFullText)}
@@ -155,22 +146,18 @@ const ReviewCard = ({
             onClick={() => handleVote('helpful')}
             disabled={isVoting}
             className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm transition-colors ${
-              isVoting
-                ? 'opacity-50 cursor-not-allowed'
-                : 'hover:bg-gray-100 text-gray-700'
+              isVoting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'
             }`}
           >
             <ThumbsUp className="w-4 h-4" />
             Helpful
           </button>
-          
+
           <button
             onClick={() => handleVote('not_helpful')}
             disabled={isVoting}
             className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm transition-colors ${
-              isVoting
-                ? 'opacity-50 cursor-not-allowed'
-                : 'hover:bg-gray-100 text-gray-700'
+              isVoting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'
             }`}
           >
             <ThumbsDown className="w-4 h-4" />
@@ -180,16 +167,16 @@ const ReviewCard = ({
           <div className="relative">
             <button
               onClick={() => {
-                const reason = prompt('Report reason (spam, fake_review, inappropriate_content, conflict_of_interest, personal_info, harassment, other):');
+                const reason = prompt(
+                  'Report reason (spam, fake_review, inappropriate_content, conflict_of_interest, personal_info, harassment, other):'
+                );
                 if (reason) {
                   handleReport(reason);
                 }
               }}
               disabled={isReporting}
               className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm transition-colors ${
-                isReporting
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-red-50 text-red-600'
+                isReporting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-50 text-red-600'
               }`}
             >
               <Flag className="w-4 h-4" />

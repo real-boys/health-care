@@ -39,7 +39,7 @@ export default function BridgeManager() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceNetworkId, destNetworkId]);
 
-  const createCrossChainTx = async (bridgeProvider) => {
+  const createCrossChainTx = async bridgeProvider => {
     setCreating(true);
     setError(null);
     setCreatedId(null);
@@ -83,10 +83,10 @@ export default function BridgeManager() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Source network</label>
               <select
                 value={sourceNetworkId}
-                onChange={(e) => setSourceNetworkId(e.target.value)}
+                onChange={e => setSourceNetworkId(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                {networks.map((n) => (
+                {networks.map(n => (
                   <option key={n.id} value={n.id}>
                     {n.displayName}
                   </option>
@@ -95,13 +95,15 @@ export default function BridgeManager() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Destination network</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Destination network
+              </label>
               <select
                 value={destNetworkId}
-                onChange={(e) => setDestNetworkId(e.target.value)}
+                onChange={e => setDestNetworkId(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                {networks.map((n) => (
+                {networks.map(n => (
                   <option key={n.id} value={n.id}>
                     {n.displayName}
                   </option>
@@ -115,7 +117,7 @@ export default function BridgeManager() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Asset</label>
               <select
                 value={assetIn}
-                onChange={(e) => setAssetIn(e.target.value)}
+                onChange={e => setAssetIn(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="USDC">USDC</option>
@@ -127,7 +129,7 @@ export default function BridgeManager() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
               <input
                 value={amountIn}
-                onChange={(e) => setAmountIn(e.target.value)}
+                onChange={e => setAmountIn(e.target.value)}
                 type="number"
                 min="0"
                 step="any"
@@ -166,7 +168,7 @@ export default function BridgeManager() {
 
             {bridgeOptions && (
               <div className="space-y-3">
-                {(bridgeOptions.options || []).map((opt) => (
+                {(bridgeOptions.options || []).map(opt => (
                   <div key={opt.id} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex items-start justify-between gap-4">
                       <div>
@@ -174,7 +176,7 @@ export default function BridgeManager() {
                         <div className="text-sm text-gray-600">{opt.description}</div>
                         {opt.warnings?.length ? (
                           <ul className="mt-2 text-xs text-gray-500 list-disc ml-5">
-                            {opt.warnings.map((w) => (
+                            {opt.warnings.map(w => (
                               <li key={w}>{w}</li>
                             ))}
                           </ul>
@@ -209,7 +211,8 @@ export default function BridgeManager() {
                   <div className="p-4 rounded-lg bg-green-50 border border-green-200 text-sm text-green-800">
                     Cross-chain tx record created: <span className="font-mono">{createdId}</span>
                     <div className="mt-2 text-green-700">
-                      Next: complete the bridge externally, then track source/destination hashes in the Tx Tracker.
+                      Next: complete the bridge externally, then track source/destination hashes in
+                      the Tx Tracker.
                     </div>
                   </div>
                 )}
@@ -235,4 +238,3 @@ export default function BridgeManager() {
     </div>
   );
 }
-

@@ -27,7 +27,7 @@ import {
   Edit,
   Plus,
   Star,
-  Award
+  Award,
 } from 'lucide-react';
 import ReputationDashboard from './ReputationDashboard';
 import StarRating from './StarRating';
@@ -61,63 +61,81 @@ const PatientDashboard = ({ user, token }) => {
       }
     });
 
-    newSocket.on('new-medical-record', (data) => {
-      setNotifications(prev => [...prev, {
-        id: Date.now(),
-        type: 'medical_record',
-        message: data.message,
-        timestamp: new Date()
-      }]);
+    newSocket.on('new-medical-record', data => {
+      setNotifications(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: 'medical_record',
+          message: data.message,
+          timestamp: new Date(),
+        },
+      ]);
       fetchMedicalRecords();
     });
 
-    newSocket.on('new-claim', (data) => {
-      setNotifications(prev => [...prev, {
-        id: Date.now(),
-        type: 'claim',
-        message: data.message,
-        timestamp: new Date()
-      }]);
+    newSocket.on('new-claim', data => {
+      setNotifications(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: 'claim',
+          message: data.message,
+          timestamp: new Date(),
+        },
+      ]);
       fetchClaims();
     });
 
-    newSocket.on('claim-status-update', (data) => {
-      setNotifications(prev => [...prev, {
-        id: Date.now(),
-        type: 'claim',
-        message: data.message,
-        timestamp: new Date()
-      }]);
+    newSocket.on('claim-status-update', data => {
+      setNotifications(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: 'claim',
+          message: data.message,
+          timestamp: new Date(),
+        },
+      ]);
       fetchClaims();
     });
 
-    newSocket.on('new-appointment', (data) => {
-      setNotifications(prev => [...prev, {
-        id: Date.now(),
-        type: 'appointment',
-        message: data.message,
-        timestamp: new Date()
-      }]);
+    newSocket.on('new-appointment', data => {
+      setNotifications(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: 'appointment',
+          message: data.message,
+          timestamp: new Date(),
+        },
+      ]);
       fetchAppointments();
     });
 
-    newSocket.on('appointment-updated', (data) => {
-      setNotifications(prev => [...prev, {
-        id: Date.now(),
-        type: 'appointment',
-        message: data.message,
-        timestamp: new Date()
-      }]);
+    newSocket.on('appointment-updated', data => {
+      setNotifications(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: 'appointment',
+          message: data.message,
+          timestamp: new Date(),
+        },
+      ]);
       fetchAppointments();
     });
 
-    newSocket.on('new-payment', (data) => {
-      setNotifications(prev => [...prev, {
-        id: Date.now(),
-        type: 'payment',
-        message: data.message,
-        timestamp: new Date()
-      }]);
+    newSocket.on('new-payment', data => {
+      setNotifications(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: 'payment',
+          message: data.message,
+          timestamp: new Date(),
+        },
+      ]);
       fetchPayments();
     });
 
@@ -140,17 +158,18 @@ const PatientDashboard = ({ user, token }) => {
     try {
       setLoading(true);
       const config = {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       };
 
-      const [dashboardRes, recordsRes, claimsRes, appointmentsRes, paymentsRes, reputationRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/patients/dashboard/${user.id}`, config),
-        axios.get(`${API_BASE_URL}/medical-records/patient/${user.id}`, config),
-        axios.get(`${API_BASE_URL}/claims/patient/${user.id}`, config),
-        axios.get(`${API_BASE_URL}/appointments/upcoming/${user.id}`, config),
-        axios.get(`${API_BASE_URL}/payments/patient/${user.id}`, config),
-        axios.get(`${API_BASE_URL}/reputation/profile/${user.id}?profileType=patient`, config)
-      ]);
+      const [dashboardRes, recordsRes, claimsRes, appointmentsRes, paymentsRes, reputationRes] =
+        await Promise.all([
+          axios.get(`${API_BASE_URL}/patients/dashboard/${user.id}`, config),
+          axios.get(`${API_BASE_URL}/medical-records/patient/${user.id}`, config),
+          axios.get(`${API_BASE_URL}/claims/patient/${user.id}`, config),
+          axios.get(`${API_BASE_URL}/appointments/upcoming/${user.id}`, config),
+          axios.get(`${API_BASE_URL}/payments/patient/${user.id}`, config),
+          axios.get(`${API_BASE_URL}/reputation/profile/${user.id}?profileType=patient`, config),
+        ]);
 
       setDashboardData(dashboardRes.data);
       setMedicalRecords(recordsRes.data.records || []);
@@ -168,7 +187,7 @@ const PatientDashboard = ({ user, token }) => {
   const fetchMedicalRecords = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/medical-records/patient/${user.id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setMedicalRecords(response.data.records || []);
     } catch (err) {
@@ -179,7 +198,7 @@ const PatientDashboard = ({ user, token }) => {
   const fetchClaims = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/claims/patient/${user.id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setClaims(response.data.claims || []);
     } catch (err) {
@@ -190,7 +209,7 @@ const PatientDashboard = ({ user, token }) => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/appointments/upcoming/${user.id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setAppointments(response.data || []);
     } catch (err) {
@@ -200,9 +219,12 @@ const PatientDashboard = ({ user, token }) => {
 
   const fetchReputationData = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/reputation/profile/${user.id}?profileType=patient`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.get(
+        `${API_BASE_URL}/reputation/profile/${user.id}?profileType=patient`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setReputationData(response.data);
     } catch (err) {
       console.error('Error fetching reputation data:', err);
@@ -212,7 +234,7 @@ const PatientDashboard = ({ user, token }) => {
   const fetchPayments = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/payments/patient/${user.id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setPayments(response.data.payments || []);
     } catch (err) {
@@ -220,7 +242,7 @@ const PatientDashboard = ({ user, token }) => {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     const colors = {
       approved: 'text-green-600 bg-green-100',
       pending: 'text-yellow-600 bg-yellow-100',
@@ -230,33 +252,33 @@ const PatientDashboard = ({ user, token }) => {
       completed: 'text-green-600 bg-green-100',
       scheduled: 'text-blue-600 bg-blue-100',
       confirmed: 'text-green-600 bg-green-100',
-      cancelled: 'text-red-600 bg-red-100'
+      cancelled: 'text-red-600 bg-red-100',
     };
     return colors[status] || 'text-gray-600 bg-gray-100';
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
-  const formatDateTime = (dateString) => {
+  const formatDateTime = dateString => {
     return new Date(dateString).toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount || 0);
   };
 
@@ -313,7 +335,9 @@ const PatientDashboard = ({ user, token }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Medical Records</p>
-                <p className="text-2xl font-bold text-gray-900">{dashboardData?.total_medical_records || 0}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {dashboardData?.total_medical_records || 0}
+                </p>
               </div>
               <FileText className="h-8 w-8 text-blue-600" />
             </div>
@@ -323,7 +347,9 @@ const PatientDashboard = ({ user, token }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Insurance Claims</p>
-                <p className="text-2xl font-bold text-gray-900">{dashboardData?.total_claims || 0}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {dashboardData?.total_claims || 0}
+                </p>
                 <p className="text-xs text-green-600">
                   {dashboardData?.approved_claims || 0} approved
                 </p>
@@ -336,7 +362,9 @@ const PatientDashboard = ({ user, token }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Premium Payments</p>
-                <p className="text-2xl font-bold text-gray-900">{dashboardData?.total_payments || 0}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {dashboardData?.total_payments || 0}
+                </p>
                 <p className="text-xs text-gray-500">
                   {formatCurrency(dashboardData?.total_premiums_paid || 0)} total
                 </p>
@@ -349,7 +377,9 @@ const PatientDashboard = ({ user, token }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Upcoming</p>
-                <p className="text-2xl font-bold text-gray-900">{dashboardData?.upcoming_appointments || 0}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {dashboardData?.upcoming_appointments || 0}
+                </p>
                 <p className="text-xs text-blue-600">appointments</p>
               </div>
               <Calendar className="h-8 w-8 text-orange-600" />
@@ -360,19 +390,21 @@ const PatientDashboard = ({ user, token }) => {
         <div className="bg-white rounded-lg shadow">
           <div className="border-b border-gray-200">
             <nav className="flex space-x-8 px-6" aria-label="Tabs">
-              {['overview', 'records', 'claims', 'appointments', 'payments', 'reputation'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm capitalize ${
-                    activeTab === tab
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
+              {['overview', 'records', 'claims', 'appointments', 'payments', 'reputation'].map(
+                tab => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm capitalize ${
+                      activeTab === tab
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                )
+              )}
             </nav>
           </div>
 
@@ -392,17 +424,23 @@ const PatientDashboard = ({ user, token }) => {
                     <div className="flex items-center space-x-2">
                       <Mail className="h-5 w-5 text-gray-400" />
                       <span className="text-sm text-gray-600">Email:</span>
-                      <span className="text-sm font-medium text-gray-900">{dashboardData?.email}</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {dashboardData?.email}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Phone className="h-5 w-5 text-gray-400" />
                       <span className="text-sm text-gray-600">Phone:</span>
-                      <span className="text-sm font-medium text-gray-900">{dashboardData?.phone}</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {dashboardData?.phone}
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Shield className="h-5 w-5 text-gray-400" />
                       <span className="text-sm text-gray-600">Insurance:</span>
-                      <span className="text-sm font-medium text-gray-900">{dashboardData?.insurance_provider}</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {dashboardData?.insurance_provider}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -410,13 +448,18 @@ const PatientDashboard = ({ user, token }) => {
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
                   <div className="space-y-3">
-                    {medicalRecords.slice(0, 3).map((record) => (
-                      <div key={record.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    {medicalRecords.slice(0, 3).map(record => (
+                      <div
+                        key={record.id}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      >
                         <div className="flex items-center space-x-3">
                           <FileText className="h-5 w-5 text-blue-600" />
                           <div>
                             <p className="text-sm font-medium text-gray-900">{record.title}</p>
-                            <p className="text-xs text-gray-500">{formatDate(record.date_of_service)}</p>
+                            <p className="text-xs text-gray-500">
+                              {formatDate(record.date_of_service)}
+                            </p>
                           </div>
                         </div>
                         <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -435,9 +478,15 @@ const PatientDashboard = ({ user, token }) => {
                         <div>
                           <p className="text-sm font-medium text-gray-900">Reputation Score</p>
                           <div className="flex items-center space-x-2 mt-1">
-                            <StarRating value={reputationData?.overall_score || 0} readonly showValue={false} size="sm" />
+                            <StarRating
+                              value={reputationData?.overall_score || 0}
+                              readonly
+                              showValue={false}
+                              size="sm"
+                            />
                             <span className="text-sm text-gray-600">
-                              {reputationData?.overall_score?.toFixed(1) || '0.0'} ({reputationData?.total_ratings || 0} ratings)
+                              {reputationData?.overall_score?.toFixed(1) || '0.0'} (
+                              {reputationData?.total_ratings || 0} ratings)
                             </span>
                           </div>
                         </div>
@@ -450,12 +499,12 @@ const PatientDashboard = ({ user, token }) => {
                         <span>View Details</span>
                       </button>
                     </div>
-                    
+
                     {reputationData?.badges && reputationData.badges.length > 0 && (
                       <div className="mt-4">
                         <p className="text-sm font-medium text-gray-900 mb-2">Recent Badges</p>
                         <div className="flex space-x-2">
-                          {reputationData.badges.slice(0, 3).map((badge) => (
+                          {reputationData.badges.slice(0, 3).map(badge => (
                             <div key={badge.id} className="text-2xl" title={badge.badge_name}>
                               {badge.badge_icon}
                             </div>
@@ -481,26 +530,40 @@ const PatientDashboard = ({ user, token }) => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Type
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Title
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Provider
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {medicalRecords.map((record) => (
+                      {medicalRecords.map(record => (
                         <tr key={record.id}>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {formatDate(record.date_of_service)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(record.record_type)}`}>
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(record.record_type)}`}
+                            >
                               {record.record_type}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900">{record.title}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.provider_name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {record.provider_name}
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex space-x-2">
                               <button className="text-blue-600 hover:text-blue-900">
@@ -529,22 +592,32 @@ const PatientDashboard = ({ user, token }) => {
                   </button>
                 </div>
                 <div className="space-y-4">
-                  {claims.map((claim) => (
+                  {claims.map(claim => (
                     <div key={claim.id} className="border rounded-lg p-4">
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="flex items-center space-x-2">
-                            <h4 className="text-sm font-medium text-gray-900">Claim #{claim.claim_number}</h4>
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(claim.status)}`}>
+                            <h4 className="text-sm font-medium text-gray-900">
+                              Claim #{claim.claim_number}
+                            </h4>
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(claim.status)}`}
+                            >
                               {claim.status}
                             </span>
                           </div>
                           <p className="text-sm text-gray-600 mt-1">{claim.provider_name}</p>
-                          <p className="text-xs text-gray-500 mt-1">Service Date: {formatDate(claim.service_date)}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Service Date: {formatDate(claim.service_date)}
+                          </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-semibold text-gray-900">{formatCurrency(claim.total_amount)}</p>
-                          <p className="text-xs text-gray-500">Insurance: {formatCurrency(claim.insurance_amount)}</p>
+                          <p className="text-lg font-semibold text-gray-900">
+                            {formatCurrency(claim.total_amount)}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Insurance: {formatCurrency(claim.insurance_amount)}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -563,13 +636,17 @@ const PatientDashboard = ({ user, token }) => {
                   </button>
                 </div>
                 <div className="space-y-4">
-                  {appointments.map((appointment) => (
+                  {appointments.map(appointment => (
                     <div key={appointment.id} className="border rounded-lg p-4">
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="flex items-center space-x-2">
-                            <h4 className="text-sm font-medium text-gray-900">{appointment.appointment_type}</h4>
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(appointment.status)}`}>
+                            <h4 className="text-sm font-medium text-gray-900">
+                              {appointment.appointment_type}
+                            </h4>
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(appointment.status)}`}
+                            >
                               {appointment.status}
                             </span>
                             {appointment.virtual && (
@@ -579,9 +656,14 @@ const PatientDashboard = ({ user, token }) => {
                             )}
                           </div>
                           <p className="text-sm text-gray-600 mt-1">{appointment.provider_name}</p>
-                          <p className="text-xs text-gray-500 mt-1">{formatDateTime(appointment.appointment_date)}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {formatDateTime(appointment.appointment_date)}
+                          </p>
                           {appointment.meeting_link && (
-                            <a href={appointment.meeting_link} className="text-xs text-blue-600 hover:text-blue-800 mt-1 inline-block">
+                            <a
+                              href={appointment.meeting_link}
+                              className="text-xs text-blue-600 hover:text-blue-800 mt-1 inline-block"
+                            >
                               Join Meeting
                             </a>
                           )}
@@ -611,15 +693,25 @@ const PatientDashboard = ({ user, token }) => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Amount
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Method
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Provider
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {payments.map((payment) => (
+                      {payments.map(payment => (
                         <tr key={payment.id}>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {formatDate(payment.payment_date)}
@@ -631,7 +723,9 @@ const PatientDashboard = ({ user, token }) => {
                             {payment.payment_method}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(payment.payment_status)}`}>
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(payment.payment_status)}`}
+                            >
                               {payment.payment_status}
                             </span>
                           </td>
@@ -647,9 +741,9 @@ const PatientDashboard = ({ user, token }) => {
             )}
 
             {activeTab === 'reputation' && (
-              <ReputationDashboard 
-                userId={dashboardData?.id} 
-                profileType="patient" 
+              <ReputationDashboard
+                userId={dashboardData?.id}
+                profileType="patient"
                 currentUser={dashboardData}
               />
             )}

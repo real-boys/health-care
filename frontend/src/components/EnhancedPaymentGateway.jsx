@@ -1,8 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import {
-  CreditCard, Wallet, Bitcoin, DollarSign, Shield, CheckCircle, AlertCircle,
-  Clock, TrendingUp, Download, RefreshCw, Eye, Edit3, X, Plus,
-  ChevronDown, ChevronUp, Search, Filter, Calendar, ArrowUpDown
+  CreditCard,
+  Wallet,
+  Bitcoin,
+  DollarSign,
+  Shield,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  TrendingUp,
+  Download,
+  RefreshCw,
+  Eye,
+  Edit3,
+  X,
+  Plus,
+  ChevronDown,
+  ChevronUp,
+  Search,
+  Filter,
+  Calendar,
+  ArrowUpDown,
 } from 'lucide-react';
 
 const EnhancedPaymentGateway = () => {
@@ -17,18 +35,18 @@ const EnhancedPaymentGateway = () => {
     status: '',
     method: '',
     startDate: '',
-    endDate: ''
+    endDate: '',
   });
   const [paymentForm, setPaymentForm] = useState({
     amount: '',
     method: 'stripe',
     currency: 'USD',
-    description: ''
+    description: '',
   });
   const [refundForm, setRefundForm] = useState({
     paymentId: '',
     reason: '',
-    amount: ''
+    amount: '',
   });
 
   useEffect(() => {
@@ -60,14 +78,14 @@ const EnhancedPaymentGateway = () => {
     }
   };
 
-  const handlePaymentSubmit = async (e) => {
+  const handlePaymentSubmit = async e => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       let response;
       const { amount, method, currency, description } = paymentForm;
-      
+
       switch (method) {
         case 'stripe':
           response = await fetch('/api/payments/stripe/create-intent', {
@@ -76,11 +94,11 @@ const EnhancedPaymentGateway = () => {
             body: JSON.stringify({
               amount: parseFloat(amount),
               currency: currency.toLowerCase(),
-              metadata: { description }
-            })
+              metadata: { description },
+            }),
           });
           break;
-          
+
         case 'paypal':
           response = await fetch('/api/payments/paypal/create', {
             method: 'POST',
@@ -90,11 +108,11 @@ const EnhancedPaymentGateway = () => {
               currency,
               description,
               patientId: 'patient123',
-              policyId: 'policy123'
-            })
+              policyId: 'policy123',
+            }),
           });
           break;
-          
+
         case 'crypto-btc':
         case 'crypto-eth':
           response = await fetch('/api/payments/crypto/create', {
@@ -104,27 +122,27 @@ const EnhancedPaymentGateway = () => {
               amount: parseFloat(amount),
               cryptocurrency: method.split('-')[1].toUpperCase(),
               patientId: 'patient123',
-              policyId: 'policy123'
-            })
+              policyId: 'policy123',
+            }),
           });
           break;
-          
+
         default:
           alert('Payment method not supported');
           return;
       }
-      
+
       const data = await response.json();
-      
+
       if (method === 'stripe') {
         // Handle Stripe payment confirmation
-        const { error, paymentIntent } = await new Promise((resolve) => {
+        const { error, paymentIntent } = await new Promise(resolve => {
           if (window.Stripe) {
             const stripe = window.Stripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
             stripe.confirmCardPayment(data.clientSecret).then(resolve);
           }
         });
-        
+
         if (error) {
           alert(error.message);
         } else {
@@ -134,8 +152,8 @@ const EnhancedPaymentGateway = () => {
             body: JSON.stringify({
               paymentIntentId: paymentIntent.id,
               patientId: 'patient123',
-              policyId: 'policy123'
-            })
+              policyId: 'policy123',
+            }),
           });
           alert('Payment successful!');
           setShowPaymentForm(false);
@@ -155,22 +173,22 @@ const EnhancedPaymentGateway = () => {
     }
   };
 
-  const handleRefundSubmit = async (e) => {
+  const handleRefundSubmit = async e => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const response = await fetch(`/api/payments/refund/${refundForm.paymentId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           reason: refundForm.reason,
-          amount: parseFloat(refundForm.amount)
-        })
+          amount: parseFloat(refundForm.amount),
+        }),
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         alert('Refund processed successfully!');
         setShowRefundForm(false);
@@ -197,23 +215,32 @@ const EnhancedPaymentGateway = () => {
     }
   };
 
-  const getPaymentIcon = (method) => {
+  const getPaymentIcon = method => {
     switch (method) {
-      case 'stripe': return <CreditCard className="w-5 h-5" />;
-      case 'paypal': return <Wallet className="w-5 h-5" />;
+      case 'stripe':
+        return <CreditCard className="w-5 h-5" />;
+      case 'paypal':
+        return <Wallet className="w-5 h-5" />;
       case 'crypto-btc':
-      case 'crypto-eth': return <Bitcoin className="w-5 h-5" />;
-      default: return <DollarSign className="w-5 h-5" />;
+      case 'crypto-eth':
+        return <Bitcoin className="w-5 h-5" />;
+      default:
+        return <DollarSign className="w-5 h-5" />;
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
-      case 'completed': return 'text-green-600 bg-green-100';
-      case 'pending': return 'text-yellow-600 bg-yellow-100';
-      case 'failed': return 'text-red-600 bg-red-100';
-      case 'refunded': return 'text-gray-600 bg-gray-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'completed':
+        return 'text-green-600 bg-green-100';
+      case 'pending':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'failed':
+        return 'text-red-600 bg-red-100';
+      case 'refunded':
+        return 'text-gray-600 bg-gray-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
     }
   };
 
@@ -232,7 +259,7 @@ const EnhancedPaymentGateway = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
@@ -245,7 +272,7 @@ const EnhancedPaymentGateway = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
@@ -258,7 +285,7 @@ const EnhancedPaymentGateway = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
@@ -276,15 +303,20 @@ const EnhancedPaymentGateway = () => {
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Payment Methods</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {paymentMethods.map((method) => (
-            <div key={method.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+          {paymentMethods.map(method => (
+            <div
+              key={method.id}
+              className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+            >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center">
                   {getPaymentIcon(method.id)}
                   <span className="ml-2 font-medium">{method.name}</span>
                 </div>
                 {method.supported && (
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Available</span>
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                    Available
+                  </span>
                 )}
               </div>
               <div className="text-sm text-gray-600">
@@ -319,11 +351,11 @@ const EnhancedPaymentGateway = () => {
             </button>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <select
             value={filters.status}
-            onChange={(e) => setFilters({...filters, status: e.target.value})}
+            onChange={e => setFilters({ ...filters, status: e.target.value })}
             className="px-3 py-2 border border-gray-300 rounded"
           >
             <option value="">All Status</option>
@@ -332,10 +364,10 @@ const EnhancedPaymentGateway = () => {
             <option value="failed">Failed</option>
             <option value="refunded">Refunded</option>
           </select>
-          
+
           <select
             value={filters.method}
-            onChange={(e) => setFilters({...filters, method: e.target.value})}
+            onChange={e => setFilters({ ...filters, method: e.target.value })}
             className="px-3 py-2 border border-gray-300 rounded"
           >
             <option value="">All Methods</option>
@@ -343,23 +375,23 @@ const EnhancedPaymentGateway = () => {
             <option value="paypal">PayPal</option>
             <option value="crypto">Cryptocurrency</option>
           </select>
-          
+
           <input
             type="date"
             value={filters.startDate}
-            onChange={(e) => setFilters({...filters, startDate: e.target.value})}
+            onChange={e => setFilters({ ...filters, startDate: e.target.value })}
             className="px-3 py-2 border border-gray-300 rounded"
           />
-          
+
           <input
             type="date"
             value={filters.endDate}
-            onChange={(e) => setFilters({...filters, endDate: e.target.value})}
+            onChange={e => setFilters({ ...filters, endDate: e.target.value })}
             className="px-3 py-2 border border-gray-300 rounded"
           />
         </div>
       </div>
-      
+
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -401,7 +433,7 @@ const EnhancedPaymentGateway = () => {
                 </td>
               </tr>
             ) : (
-              transactions.map((transaction) => (
+              transactions.map(transaction => (
                 <tr key={transaction.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {transaction.transaction_id}
@@ -419,7 +451,9 @@ const EnhancedPaymentGateway = () => {
                     ${parseFloat(transaction.payment_amount).toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(transaction.payment_status)}`}>
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(transaction.payment_status)}`}
+                    >
                       {transaction.payment_status}
                     </span>
                   </td>
@@ -437,7 +471,7 @@ const EnhancedPaymentGateway = () => {
                             setRefundForm({
                               paymentId: transaction.id,
                               reason: '',
-                              amount: transaction.payment_amount
+                              amount: transaction.payment_amount,
                             });
                             setShowRefundForm(true);
                           }}
@@ -463,7 +497,7 @@ const EnhancedPaymentGateway = () => {
         <Shield className="w-5 h-5 mr-2" />
         Security & Trust
       </h3>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h4 className="font-medium mb-3">Security Features</h4>
@@ -486,7 +520,7 @@ const EnhancedPaymentGateway = () => {
             </div>
           </div>
         </div>
-        
+
         <div>
           <h4 className="font-medium mb-3">Compliance</h4>
           <div className="space-y-2">
@@ -517,13 +551,15 @@ const EnhancedPaymentGateway = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Payment Management</h1>
-          <p className="text-gray-600 mt-2">Manage payments, transactions, and refunds across multiple payment gateways</p>
+          <p className="text-gray-600 mt-2">
+            Manage payments, transactions, and refunds across multiple payment gateways
+          </p>
         </div>
 
         <div className="mb-6">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8">
-              {['overview', 'transactions', 'security'].map((tab) => (
+              {['overview', 'transactions', 'security'].map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -557,7 +593,7 @@ const EnhancedPaymentGateway = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
+
               <form onSubmit={handlePaymentSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
@@ -566,16 +602,18 @@ const EnhancedPaymentGateway = () => {
                     step="0.01"
                     required
                     value={paymentForm.amount}
-                    onChange={(e) => setPaymentForm({...paymentForm, amount: e.target.value})}
+                    onChange={e => setPaymentForm({ ...paymentForm, amount: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Payment Method
+                  </label>
                   <select
                     value={paymentForm.method}
-                    onChange={(e) => setPaymentForm({...paymentForm, method: e.target.value})}
+                    onChange={e => setPaymentForm({ ...paymentForm, method: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
                   >
                     <option value="stripe">Credit/Debit Card</option>
@@ -584,18 +622,20 @@ const EnhancedPaymentGateway = () => {
                     <option value="crypto-eth">Ethereum</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
                   <input
                     type="text"
                     value={paymentForm.description}
-                    onChange={(e) => setPaymentForm({...paymentForm, description: e.target.value})}
+                    onChange={e => setPaymentForm({ ...paymentForm, description: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
                     placeholder="Premium payment"
                   />
                 </div>
-                
+
                 <div className="flex space-x-2">
                   <button
                     type="submit"
@@ -630,32 +670,34 @@ const EnhancedPaymentGateway = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
+
               <form onSubmit={handleRefundSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Refund Amount</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Refund Amount
+                  </label>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={refundForm.amount}
-                    onChange={(e) => setRefundForm({...refundForm, amount: e.target.value})}
+                    onChange={e => setRefundForm({ ...refundForm, amount: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
                   <textarea
                     required
                     value={refundForm.reason}
-                    onChange={(e) => setRefundForm({...refundForm, reason: e.target.value})}
+                    onChange={e => setRefundForm({ ...refundForm, reason: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
                     rows="3"
                     placeholder="Reason for refund..."
                   />
                 </div>
-                
+
                 <div className="flex space-x-2">
                   <button
                     type="submit"
@@ -690,7 +732,7 @@ const EnhancedPaymentGateway = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -699,20 +741,26 @@ const EnhancedPaymentGateway = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Payment Date</p>
-                    <p className="font-medium">{new Date(selectedPayment.payment_date).toLocaleDateString()}</p>
+                    <p className="font-medium">
+                      {new Date(selectedPayment.payment_date).toLocaleDateString()}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Amount</p>
-                    <p className="font-medium">${parseFloat(selectedPayment.payment_amount).toFixed(2)}</p>
+                    <p className="font-medium">
+                      ${parseFloat(selectedPayment.payment_amount).toFixed(2)}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Status</p>
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(selectedPayment.payment_status)}`}>
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(selectedPayment.payment_status)}`}
+                    >
                       {selectedPayment.payment_status}
                     </span>
                   </div>
                 </div>
-                
+
                 <div>
                   <p className="text-sm text-gray-600 mb-2">Security Information</p>
                   <div className="bg-gray-50 p-4 rounded">

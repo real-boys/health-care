@@ -14,7 +14,9 @@ export default function AssetConversionDisplay({ from, to, amount, fromNetwork, 
       const params = new URLSearchParams({ amount: String(amount) });
       if (fromNetwork) params.set('fromNetwork', fromNetwork);
       if (toNetwork) params.set('toNetwork', toNetwork);
-      const resp = await fetch(`/api/payments/convert/${encodeURIComponent(from)}/${encodeURIComponent(to)}?${params}`);
+      const resp = await fetch(
+        `/api/payments/convert/${encodeURIComponent(from)}/${encodeURIComponent(to)}?${params}`
+      );
       const json = await resp.json();
       if (!resp.ok) throw new Error(json?.error || 'Failed to convert');
       setData(json);
@@ -66,4 +68,3 @@ export default function AssetConversionDisplay({ from, to, amount, fromNetwork, 
     </div>
   );
 }
-

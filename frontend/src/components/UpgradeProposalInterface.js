@@ -8,20 +8,20 @@ import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Progress } from './ui/progress';
-import { 
-  Upload, 
-  FileText, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  Users, 
+import {
+  Upload,
+  FileText,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Users,
   Shield,
   Zap,
   Settings,
   GitBranch,
   Calendar,
   MessageSquare,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 
 const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) => {
@@ -34,7 +34,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
     rollbackPlan: '',
     testResults: '',
     newContractHash: '',
-    emergency: false
+    emergency: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,14 +49,14 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
     { value: 'BugFix', label: 'Bug Fix', icon: Zap, color: 'orange' },
     { value: 'Optimization', label: 'Performance Optimization', icon: BarChart3, color: 'green' },
     { value: 'Emergency', label: 'Emergency Fix', icon: AlertTriangle, color: 'red' },
-    { value: 'Governance', label: 'Governance Change', icon: Users, color: 'purple' }
+    { value: 'Governance', label: 'Governance Change', icon: Users, color: 'purple' },
   ];
 
   const riskLevels = [
     { value: 'Low', label: 'Low Risk', color: 'green', requiredApproval: 51 },
     { value: 'Medium', label: 'Medium Risk', color: 'yellow', requiredApproval: 66 },
     { value: 'High', label: 'High Risk', color: 'orange', requiredApproval: 75 },
-    { value: 'Critical', label: 'Critical Risk', color: 'red', requiredApproval: 90 }
+    { value: 'Critical', label: 'Critical Risk', color: 'red', requiredApproval: 90 },
   ];
 
   useEffect(() => {
@@ -84,12 +84,13 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
 
   const validateForm = () => {
     const errors = {};
-    
+
     if (!formData.title.trim()) errors.title = 'Title is required';
     if (!formData.description.trim()) errors.description = 'Description is required';
     if (!formData.upgradeType) errors.upgradeType = 'Upgrade type is required';
     if (!formData.riskLevel) errors.riskLevel = 'Risk level is required';
-    if (!formData.implementationPlan.trim()) errors.implementationPlan = 'Implementation plan is required';
+    if (!formData.implementationPlan.trim())
+      errors.implementationPlan = 'Implementation plan is required';
     if (!formData.rollbackPlan.trim()) errors.rollbackPlan = 'Rollback plan is required';
     if (!formData.newContractHash.trim()) errors.newContractHash = 'Contract hash is required';
     if (!formData.testResults.trim()) errors.testResults = 'Test results are required';
@@ -126,10 +127,12 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
         await new Promise(resolve => setTimeout(resolve, 100));
       }
 
-      const mockIpfsHash = `Qm${Array.from({length: 44}, () => 
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[
-          Math.floor(Math.random() * 62)
-        ]
+      const mockIpfsHash = `Qm${Array.from(
+        { length: 44 },
+        () =>
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[
+            Math.floor(Math.random() * 62)
+          ]
       ).join('')}`;
 
       handleInputChange(fileType, mockIpfsHash);
@@ -138,9 +141,9 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     if (!stakeholderInfo || !stakeholderInfo.is_active) {
@@ -165,7 +168,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
       );
 
       onProposalCreated && onProposalCreated(proposalId);
-      
+
       // Reset form
       setFormData({
         title: '',
@@ -176,7 +179,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
         rollbackPlan: '',
         testResults: '',
         newContractHash: '',
-        emergency: false
+        emergency: false,
       });
 
       alert(`Proposal created successfully! ID: ${proposalId}`);
@@ -188,12 +191,12 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
     }
   };
 
-  const getUpgradeTypeIcon = (type) => {
+  const getUpgradeTypeIcon = type => {
     const upgradeType = upgradeTypes.find(t => t.value === type);
     return upgradeType ? upgradeType.icon : Settings;
   };
 
-  const getRiskLevelColor = (level) => {
+  const getRiskLevelColor = level => {
     const risk = riskLevels.find(r => r.value === level);
     return risk ? risk.color : 'gray';
   };
@@ -203,7 +206,9 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Smart Contract Upgrade Proposals</h1>
-          <p className="text-gray-600 mt-2">Submit and manage upgrade proposals for the healthcare contract</p>
+          <p className="text-gray-600 mt-2">
+            Submit and manage upgrade proposals for the healthcare contract
+          </p>
         </div>
         {stakeholderInfo && (
           <div className="flex items-center space-x-4">
@@ -256,7 +261,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                       <label className="text-sm font-medium">Title *</label>
                       <Input
                         value={formData.title}
-                        onChange={(e) => handleInputChange('title', e.target.value)}
+                        onChange={e => handleInputChange('title', e.target.value)}
                         placeholder="Enter proposal title"
                         className={validationErrors.title ? 'border-red-500' : ''}
                       />
@@ -267,8 +272,13 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
 
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Upgrade Type *</label>
-                      <Select value={formData.upgradeType} onValueChange={(value) => handleInputChange('upgradeType', value)}>
-                        <SelectTrigger className={validationErrors.upgradeType ? 'border-red-500' : ''}>
+                      <Select
+                        value={formData.upgradeType}
+                        onValueChange={value => handleInputChange('upgradeType', value)}
+                      >
+                        <SelectTrigger
+                          className={validationErrors.upgradeType ? 'border-red-500' : ''}
+                        >
                           <SelectValue placeholder="Select upgrade type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -292,8 +302,13 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
 
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Risk Level *</label>
-                      <Select value={formData.riskLevel} onValueChange={(value) => handleInputChange('riskLevel', value)}>
-                        <SelectTrigger className={validationErrors.riskLevel ? 'border-red-500' : ''}>
+                      <Select
+                        value={formData.riskLevel}
+                        onValueChange={value => handleInputChange('riskLevel', value)}
+                      >
+                        <SelectTrigger
+                          className={validationErrors.riskLevel ? 'border-red-500' : ''}
+                        >
                           <SelectValue placeholder="Select risk level" />
                         </SelectTrigger>
                         <SelectContent>
@@ -318,7 +333,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                       <label className="text-sm font-medium">New Contract Hash *</label>
                       <Input
                         value={formData.newContractHash}
-                        onChange={(e) => handleInputChange('newContractHash', e.target.value)}
+                        onChange={e => handleInputChange('newContractHash', e.target.value)}
                         placeholder="0x..."
                         className={validationErrors.newContractHash ? 'border-red-500' : ''}
                       />
@@ -332,7 +347,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                     <label className="text-sm font-medium">Description *</label>
                     <Textarea
                       value={formData.description}
-                      onChange={(e) => handleInputChange('description', e.target.value)}
+                      onChange={e => handleInputChange('description', e.target.value)}
                       placeholder="Describe the upgrade and its purpose"
                       rows={4}
                       className={validationErrors.description ? 'border-red-500' : ''}
@@ -346,7 +361,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                     <label className="text-sm font-medium">Implementation Plan *</label>
                     <Textarea
                       value={formData.implementationPlan}
-                      onChange={(e) => handleInputChange('implementationPlan', e.target.value)}
+                      onChange={e => handleInputChange('implementationPlan', e.target.value)}
                       placeholder="Detailed implementation steps and timeline"
                       rows={4}
                       className={validationErrors.implementationPlan ? 'border-red-500' : ''}
@@ -360,7 +375,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                     <label className="text-sm font-medium">Rollback Plan *</label>
                     <Textarea
                       value={formData.rollbackPlan}
-                      onChange={(e) => handleInputChange('rollbackPlan', e.target.value)}
+                      onChange={e => handleInputChange('rollbackPlan', e.target.value)}
                       placeholder="Steps to rollback if upgrade fails"
                       rows={3}
                       className={validationErrors.rollbackPlan ? 'border-red-500' : ''}
@@ -376,7 +391,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                       <div className="flex items-center space-x-2">
                         <Input
                           value={formData.testResults}
-                          onChange={(e) => handleInputChange('testResults', e.target.value)}
+                          onChange={e => handleInputChange('testResults', e.target.value)}
                           placeholder="IPFS hash or test results"
                           className={validationErrors.testResults ? 'border-red-500' : ''}
                         />
@@ -391,7 +406,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                           id="test-results-file"
                           type="file"
                           className="hidden"
-                          onChange={(e) => handleFileUpload(e, 'testResults')}
+                          onChange={e => handleFileUpload(e, 'testResults')}
                           accept=".pdf,.txt,.json"
                         />
                       </div>
@@ -408,7 +423,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                         <input
                           type="checkbox"
                           checked={formData.emergency}
-                          onChange={(e) => handleInputChange('emergency', e.target.checked)}
+                          onChange={e => handleInputChange('emergency', e.target.checked)}
                           className="rounded"
                         />
                         <span>Emergency Upgrade</span>
@@ -441,7 +456,9 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                   <div className="text-center">
                     <GitBranch className="w-12 h-12 mx-auto text-gray-400 mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No Active Proposals</h3>
-                    <p className="text-gray-600">There are currently no active upgrade proposals.</p>
+                    <p className="text-gray-600">
+                      There are currently no active upgrade proposals.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -449,7 +466,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
               activeProposals.map(proposal => {
                 const Icon = getUpgradeTypeIcon(proposal.upgrade_type);
                 const riskColor = getRiskLevelColor(proposal.risk_level);
-                
+
                 return (
                   <Card key={proposal.id}>
                     <CardHeader>
@@ -461,7 +478,9 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                             <div className="flex items-center space-x-2 mt-1">
                               <Badge variant="outline">{proposal.upgrade_type}</Badge>
                               <Badge variant={`outline-${riskColor}`}>{proposal.risk_level}</Badge>
-                              <Badge variant={proposal.status === 'Voting' ? 'default' : 'secondary'}>
+                              <Badge
+                                variant={proposal.status === 'Voting' ? 'default' : 'secondary'}
+                              >
                                 {proposal.status}
                               </Badge>
                             </div>
@@ -470,7 +489,9 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                         <div className="text-right text-sm text-gray-600">
                           <div className="flex items-center space-x-1">
                             <Calendar className="w-4 h-4" />
-                            <span>{new Date(proposal.voting_deadline * 1000).toLocaleDateString()}</span>
+                            <span>
+                              {new Date(proposal.voting_deadline * 1000).toLocaleDateString()}
+                            </span>
                           </div>
                           <div className="flex items-center space-x-1 mt-1">
                             <Users className="w-4 h-4" />
@@ -481,7 +502,7 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                     </CardHeader>
                     <CardContent>
                       <p className="text-gray-700 mb-4 line-clamp-2">{proposal.description}</p>
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-1 text-green-600">
@@ -515,12 +536,17 @@ const UpgradeProposalInterface = ({ contract, userAddress, onProposalCreated }) 
                 {upgradeTypes.map(type => {
                   const Icon = type.icon;
                   return (
-                    <div key={type.value} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div
+                      key={type.value}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
                       <div className="flex items-center space-x-3">
                         <Icon className="w-5 h-5" />
                         <div>
                           <h4 className="font-semibold">{type.label}</h4>
-                          <p className="text-sm text-gray-600">Template for {type.label.toLowerCase()} proposals</p>
+                          <p className="text-sm text-gray-600">
+                            Template for {type.label.toLowerCase()} proposals
+                          </p>
                         </div>
                       </div>
                       <Button variant="outline" size="sm">

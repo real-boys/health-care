@@ -1,7 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, AlertTriangle, TrendingUp, Users, Activity, Download, Calendar, Filter, ChevronUp, ChevronDown } from 'lucide-react';
+import {
+  Shield,
+  AlertTriangle,
+  TrendingUp,
+  Users,
+  Activity,
+  Download,
+  Calendar,
+  Filter,
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-react';
 import axios from 'axios';
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 const ComplianceDashboard = () => {
   const [metrics, setMetrics] = useState(null);
@@ -23,7 +48,7 @@ const ComplianceDashboard = () => {
       const [metricsRes, violationsRes, anomaliesRes] = await Promise.all([
         axios.get(`/api/audit/metrics?timeframe=${timeframe}`),
         axios.get('/api/audit/violations', { params: { limit: 10 } }),
-        axios.get('/api/audit/anomalies', { params: { limit: 10 } })
+        axios.get('/api/audit/anomalies', { params: { limit: 10 } }),
       ]);
 
       setMetrics(metricsRes.data.data);
@@ -38,7 +63,7 @@ const ComplianceDashboard = () => {
     }
   };
 
-  const generateReport = async (reportType) => {
+  const generateReport = async reportType => {
     try {
       const endDate = new Date().toISOString();
       const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
@@ -47,10 +72,12 @@ const ComplianceDashboard = () => {
         report_type: reportType,
         start_date: startDate,
         end_date: endDate,
-        format: 'JSON'
+        format: 'JSON',
       });
 
-      const blob = new Blob([JSON.stringify(response.data.data, null, 2)], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify(response.data.data, null, 2)], {
+        type: 'application/json',
+      });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -66,24 +93,29 @@ const ComplianceDashboard = () => {
     if (!metrics?.metrics) return 0;
     const { total_operations, failed_operations, high_risk_operations } = metrics.metrics;
     if (total_operations === 0) return 100;
-    
+
     const successRate = ((total_operations - failed_operations) / total_operations) * 100;
     const riskPenalty = (high_risk_operations / total_operations) * 20;
-    
+
     return Math.max(0, Math.min(100, successRate - riskPenalty));
   };
 
-  const getSeverityColor = (severity) => {
+  const getSeverityColor = severity => {
     switch (severity) {
-      case 'CRITICAL': return 'text-red-600 bg-red-50';
-      case 'HIGH': return 'text-orange-600 bg-orange-50';
-      case 'MEDIUM': return 'text-yellow-600 bg-yellow-50';
-      case 'LOW': return 'text-green-600 bg-green-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'CRITICAL':
+        return 'text-red-600 bg-red-50';
+      case 'HIGH':
+        return 'text-orange-600 bg-orange-50';
+      case 'MEDIUM':
+        return 'text-yellow-600 bg-yellow-50';
+      case 'LOW':
+        return 'text-green-600 bg-green-50';
+      default:
+        return 'text-gray-600 bg-gray-50';
     }
   };
 
-  const getRiskLevelColor = (score) => {
+  const getRiskLevelColor = score => {
     if (score >= 90) return 'text-red-600';
     if (score >= 70) return 'text-orange-600';
     if (score >= 40) return 'text-yellow-600';
@@ -116,7 +148,7 @@ const ComplianceDashboard = () => {
             <div className="flex items-center space-x-4">
               <select
                 value={timeframe}
-                onChange={(e) => setTimeframe(e.target.value)}
+                onChange={e => setTimeframe(e.target.value)}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="1h">Last Hour</option>
@@ -200,10 +232,16 @@ const ComplianceDashboard = () => {
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Operations Breakdown</h3>
               <button
-                onClick={() => setExpandedSection(expandedSection === 'operations' ? '' : 'operations')}
+                onClick={() =>
+                  setExpandedSection(expandedSection === 'operations' ? '' : 'operations')
+                }
                 className="text-gray-400 hover:text-gray-600"
               >
-                {expandedSection === 'operations' ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                {expandedSection === 'operations' ? (
+                  <ChevronUp className="w-5 h-5" />
+                ) : (
+                  <ChevronDown className="w-5 h-5" />
+                )}
               </button>
             </div>
             <ResponsiveContainer width="100%" height={300}>
@@ -225,7 +263,11 @@ const ComplianceDashboard = () => {
                 onClick={() => setExpandedSection(expandedSection === 'risk' ? '' : 'risk')}
                 className="text-gray-400 hover:text-gray-600"
               >
-                {expandedSection === 'risk' ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                {expandedSection === 'risk' ? (
+                  <ChevronUp className="w-5 h-5" />
+                ) : (
+                  <ChevronDown className="w-5 h-5" />
+                )}
               </button>
             </div>
             <ResponsiveContainer width="100%" height={300}>
@@ -234,8 +276,14 @@ const ComplianceDashboard = () => {
                   data={[
                     { name: 'Low Risk (0-39)', value: 0 }, // Would calculate from actual data
                     { name: 'Medium Risk (40-69)', value: 0 },
-                    { name: 'High Risk (70-89)', value: metrics?.metrics?.high_risk_operations || 0 },
-                    { name: 'Critical (90-100)', value: metrics?.metrics?.critical_operations || 0 }
+                    {
+                      name: 'High Risk (70-89)',
+                      value: metrics?.metrics?.high_risk_operations || 0,
+                    },
+                    {
+                      name: 'Critical (90-100)',
+                      value: metrics?.metrics?.critical_operations || 0,
+                    },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -269,7 +317,7 @@ const ComplianceDashboard = () => {
               </button>
             </div>
             <div className="space-y-3">
-              {violations.slice(0, 5).map((violation) => (
+              {violations.slice(0, 5).map(violation => (
                 <div key={violation.id} className="border-l-4 border-red-500 pl-4 py-2">
                   <div className="flex justify-between items-start">
                     <div>
@@ -278,7 +326,9 @@ const ComplianceDashboard = () => {
                         {new Date(violation.created_at).toLocaleString()}
                       </p>
                     </div>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(violation.severity)}`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(violation.severity)}`}
+                    >
                       {violation.severity}
                     </span>
                   </div>
@@ -302,7 +352,7 @@ const ComplianceDashboard = () => {
               </button>
             </div>
             <div className="space-y-3">
-              {anomalies.slice(0, 5).map((anomaly) => (
+              {anomalies.slice(0, 5).map(anomaly => (
                 <div key={anomaly.id} className="border-l-4 border-yellow-500 pl-4 py-2">
                   <div className="flex justify-between items-start">
                     <div>
@@ -311,7 +361,9 @@ const ComplianceDashboard = () => {
                         Confidence: {(anomaly.confidence_score * 100).toFixed(1)}%
                       </p>
                     </div>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(anomaly.severity)}`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(anomaly.severity)}`}
+                    >
                       {anomaly.severity}
                     </span>
                   </div>
@@ -369,7 +421,9 @@ const ComplianceDashboard = () => {
                       {user.total_operations}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`text-sm font-medium ${getRiskLevelColor(user.avg_risk_score)}`}>
+                      <span
+                        className={`text-sm font-medium ${getRiskLevelColor(user.avg_risk_score)}`}
+                      >
                         {user.avg_risk_score?.toFixed(1) || 0}
                       </span>
                     </td>

@@ -1,13 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import {
-  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid,
-  Tooltip, Legend, ResponsiveContainer, AreaChart, Area, RadarChart, Radar,
-  PolarGrid, PolarAngleAxis, PolarRadiusAxis, Treemap
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Treemap,
 } from 'recharts';
 import {
-  TrendingUp, Download, Calendar, Filter, RefreshCw, BarChart3, PieChartIcon,
-  Activity, Users, DollarSign, FileText, Clock, CheckCircle, AlertCircle,
-  Settings, Save, Share2, Eye, Edit3, ChevronDown, ChevronUp, Plus, X
+  TrendingUp,
+  Download,
+  Calendar,
+  Filter,
+  RefreshCw,
+  BarChart3,
+  PieChartIcon,
+  Activity,
+  Users,
+  DollarSign,
+  FileText,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Settings,
+  Save,
+  Share2,
+  Eye,
+  Edit3,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  X,
 } from 'lucide-react';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
@@ -24,7 +62,7 @@ const AdvancedAnalyticsDashboard = () => {
     dataSource: '',
     metrics: [],
     dimensions: [],
-    filters: {}
+    filters: {},
   });
   const [scheduledReports, setScheduledReports] = useState([]);
   const [showReportBuilder, setShowReportBuilder] = useState(false);
@@ -43,14 +81,14 @@ const AdvancedAnalyticsDashboard = () => {
         fetchChartData('claims-timeline'),
         fetchChartData('payment-methods'),
         fetchChartData('provider-performance'),
-        fetchChartData('patient-outcomes')
+        fetchChartData('patient-outcomes'),
       ]);
-      
+
       setChartData({
         claims: claimsData,
         payments: paymentsData,
         providers: providerData,
-        patients: patientData
+        patients: patientData,
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -59,8 +97,10 @@ const AdvancedAnalyticsDashboard = () => {
     }
   };
 
-  const fetchChartData = async (chartType) => {
-    const response = await fetch(`/api/analytics/charts/${chartType}?startDate=${getStartDate()}&endDate=${getEndDate()}&filters=${JSON.stringify(filters)}`);
+  const fetchChartData = async chartType => {
+    const response = await fetch(
+      `/api/analytics/charts/${chartType}?startDate=${getStartDate()}&endDate=${getEndDate()}&filters=${JSON.stringify(filters)}`
+    );
     return response.json();
   };
 
@@ -78,10 +118,17 @@ const AdvancedAnalyticsDashboard = () => {
     const date = new Date();
     const value = parseInt(timeRange);
     switch (timeRange.slice(-1)) {
-      case 'd': date.setDate(date.getDate() - value); break;
-      case 'w': date.setDate(date.getDate() - (value * 7)); break;
-      case 'm': date.setMonth(date.getMonth() - value); break;
-      default: date.setDate(date.getDate() - 30);
+      case 'd':
+        date.setDate(date.getDate() - value);
+        break;
+      case 'w':
+        date.setDate(date.getDate() - value * 7);
+        break;
+      case 'm':
+        date.setMonth(date.getMonth() - value);
+        break;
+      default:
+        date.setDate(date.getDate() - 30);
     }
     return date.toISOString().split('T')[0];
   };
@@ -98,10 +145,10 @@ const AdvancedAnalyticsDashboard = () => {
         body: JSON.stringify({
           reportType,
           data,
-          filename: `${reportType}_export_${new Date().toISOString().split('T')[0]}.${format}`
-        })
+          filename: `${reportType}_export_${new Date().toISOString().split('T')[0]}.${format}`,
+        }),
       });
-      
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -119,9 +166,9 @@ const AdvancedAnalyticsDashboard = () => {
       const response = await fetch('/api/analytics/reports/custom', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(customReport)
+        body: JSON.stringify(customReport),
       });
-      
+
       const data = await response.json();
       // Handle custom report data
       console.log('Custom report created:', data);
@@ -131,14 +178,14 @@ const AdvancedAnalyticsDashboard = () => {
     }
   };
 
-  const handleScheduleReport = async (reportConfig) => {
+  const handleScheduleReport = async reportConfig => {
     try {
       const response = await fetch('/api/analytics/reports/schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(reportConfig)
+        body: JSON.stringify(reportConfig),
       });
-      
+
       const data = await response.json();
       setScheduledReports([...scheduledReports, data.scheduledReport]);
     } catch (error) {
@@ -164,7 +211,8 @@ const AdvancedAnalyticsDashboard = () => {
           <p className="text-2xl font-bold text-gray-900">{value}</p>
           {change && (
             <p className={`text-sm ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {change >= 0 ? '+' : ''}{change}%
+              {change >= 0 ? '+' : ''}
+              {change}%
             </p>
           )}
         </div>
@@ -209,7 +257,9 @@ const AdvancedAnalyticsDashboard = () => {
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={({ payment_method, percent }) => `${payment_method} ${(percent * 100).toFixed(0)}%`}
+            label={({ payment_method, percent }) =>
+              `${payment_method} ${(percent * 100).toFixed(0)}%`
+            }
             outerRadius={80}
             fill="#8884d8"
             dataKey="total_amount"
@@ -291,7 +341,7 @@ const AdvancedAnalyticsDashboard = () => {
           {showReportBuilder ? <ChevronUp /> : <ChevronDown />}
         </button>
       </div>
-      
+
       {showReportBuilder && (
         <div className="space-y-4">
           <div>
@@ -299,18 +349,18 @@ const AdvancedAnalyticsDashboard = () => {
             <input
               type="text"
               value={customReport.name}
-              onChange={(e) => setCustomReport({...customReport, name: e.target.value})}
+              onChange={e => setCustomReport({ ...customReport, name: e.target.value })}
               className="w-full p-2 border border-gray-300 rounded"
               placeholder="Enter report name"
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Data Source</label>
               <select
                 value={customReport.dataSource}
-                onChange={(e) => setCustomReport({...customReport, dataSource: e.target.value})}
+                onChange={e => setCustomReport({ ...customReport, dataSource: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
               >
                 <option value="">Select data source</option>
@@ -320,7 +370,7 @@ const AdvancedAnalyticsDashboard = () => {
                 <option value="patients">Patients</option>
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Metrics</label>
               <div className="space-y-2">
@@ -329,11 +379,17 @@ const AdvancedAnalyticsDashboard = () => {
                     <input
                       type="checkbox"
                       checked={customReport.metrics.includes(metric)}
-                      onChange={(e) => {
+                      onChange={e => {
                         if (e.target.checked) {
-                          setCustomReport({...customReport, metrics: [...customReport.metrics, metric]});
+                          setCustomReport({
+                            ...customReport,
+                            metrics: [...customReport.metrics, metric],
+                          });
                         } else {
-                          setCustomReport({...customReport, metrics: customReport.metrics.filter(m => m !== metric)});
+                          setCustomReport({
+                            ...customReport,
+                            metrics: customReport.metrics.filter(m => m !== metric),
+                          });
                         }
                       }}
                       className="mr-2"
@@ -344,7 +400,7 @@ const AdvancedAnalyticsDashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="flex space-x-2">
             <button
               onClick={handleCreateCustomReport}
@@ -368,7 +424,7 @@ const AdvancedAnalyticsDashboard = () => {
 
   const renderDrilldownModal = () => {
     if (!drilldownData) return null;
-    
+
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6 max-w-4xl max-h-[80vh] overflow-y-auto w-full">
@@ -381,7 +437,7 @@ const AdvancedAnalyticsDashboard = () => {
               <X className="w-5 h-5" />
             </button>
           </div>
-          
+
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -393,13 +449,16 @@ const AdvancedAnalyticsDashboard = () => {
                 <p className="font-medium">{drilldownData.entityId}</p>
               </div>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
                     {Object.keys(drilldownData.data[0] || {}).map(key => (
-                      <th key={key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        key={key}
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
                         {key}
                       </th>
                     ))}
@@ -432,7 +491,7 @@ const AdvancedAnalyticsDashboard = () => {
           <div className="flex items-center space-x-4">
             <select
               value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value)}
+              onChange={e => setTimeRange(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg"
             >
               <option value="7d">Last 7 days</option>
@@ -459,7 +518,7 @@ const AdvancedAnalyticsDashboard = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {renderProviderPerformanceChart()}
-          
+
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-4 flex items-center">
               <BarChart3 className="w-5 h-5 mr-2" />
@@ -481,13 +540,15 @@ const AdvancedAnalyticsDashboard = () => {
                 Export Dashboard (PDF)
               </button>
               <button
-                onClick={() => handleScheduleReport({
-                  reportName: 'Weekly Analytics Report',
-                  reportType: 'dashboard',
-                  schedule: 'weekly at 09:00',
-                  recipients: ['admin@healthcare.com'],
-                  parameters: { timeRange: '7d' }
-                })}
+                onClick={() =>
+                  handleScheduleReport({
+                    reportName: 'Weekly Analytics Report',
+                    reportType: 'dashboard',
+                    schedule: 'weekly at 09:00',
+                    recipients: ['admin@healthcare.com'],
+                    parameters: { timeRange: '7d' },
+                  })
+                }
                 className="w-full px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 flex items-center justify-center"
               >
                 <Clock className="w-4 h-4 mr-2" />
