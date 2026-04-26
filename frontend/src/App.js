@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { 
   ShieldAlert, Users, Database, LayoutDashboard, Search, Command, 
-  Trophy, FileText, Sparkles, Activity
+  Trophy, FileText, Sparkles, Activity, Upload
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,9 @@ import FraudDetectionPage from './pages/FraudDetectionPage';
 import GamificationPage from './pages/GamificationPage';
 import CMSPage from './pages/CMSPage';
 import RecommendationsPage from './pages/RecommendationsPage';
+import RealtimeDashboard from './components/RealtimeDashboard';
+import AdvancedSearch from './components/AdvancedSearch';
+import DocumentUpload from './components/DocumentUpload';
 import useAppStore from './store/useAppStore';
 import StateDebugger from './components/StateDebugger';
 
@@ -94,6 +97,13 @@ const Layout = ({ children }) => {
                 <div className="pt-6 mb-4">
                    <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">Anti-Fraud Engine</p>
                    <SidebarItem to="/fraud" icon={<ShieldAlert size={20} />} label="Fraud Intelligence" badge="NEW" />
+                </div>
+
+                <div className="pt-6 mb-4">
+                   <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">Tools</p>
+                   <SidebarItem to="/realtime-dashboard" icon={<Activity size={20} />} label="Real-time Dashboard" />
+                   <SidebarItem to="/search" icon={<Search size={20} />} label="Advanced Search" />
+                   <SidebarItem to="/file-upload" icon={<Upload size={20} />} label="File Upload" />
                 </div>
 
                 <div className="pt-6 mb-4">
@@ -188,6 +198,17 @@ function App() {
           <Route path="/gamification" element={<GamificationPage />} />
           <Route path="/cms" element={<CMSPage />} />
           <Route path="/recommendations" element={<RecommendationsPage />} />
+          <Route path="/realtime-dashboard" element={<RealtimeDashboard />} />
+          <Route path="/search" element={<AdvancedSearch />} />
+          <Route path="/file-upload" element={
+            <div className="p-8">
+              <h1 className="text-2xl font-bold text-white mb-6">File Upload & Management</h1>
+              <DocumentUpload
+                onUploadSuccess={(files) => console.log('Uploaded:', files)}
+                onUploadError={(err) => console.error('Upload error:', err)}
+              />
+            </div>
+          } />
         </Routes>
       </Layout>
       <StateDebugger />

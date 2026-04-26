@@ -279,6 +279,10 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/notification-preferences', notificationPreferencesRoutes);
 app.use('/api/notifications-enhanced', enhancedNotificationRoutes);
 
+// File storage routes
+const fileStorageRoutes = require('./routes/fileStorage');
+app.use('/api/file-storage', fileStorageRoutes);
+
 // Static file serving for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

@@ -1,6 +1,17 @@
 import React, { useRef, useState, useCallback } from 'react';
 import './DocumentUpload.css';
 
+const ALLOWED_TYPES = [
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+  'application/pdf', 'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/plain', 'text/csv'
+];
+
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
+
 const DocumentUpload = ({ onUploadSuccess, onUploadError, folderId = null }) => {
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -29,10 +40,20 @@ const DocumentUpload = ({ onUploadSuccess, onUploadError, folderId = null }) => 
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const files = Array.from(e.dataTransfer.files);
+      const files = Array.from(e.dataTransfer.files).filter(f => {
+        if (!ALLOWED_TYPES.includes(f.type)) {
+          if (onUploadError) onUploadError(`File type not allowed: ${f.name}`);
+          return false;
+        }
+        if (f.size > MAX_FILE_SIZE) {
+          if (onUploadError) onUploadError(`File too large (max 100MB): ${f.name}`);
+          return false;
+        }
+        return true;
+      });
       setSelectedFiles(files);
     }
-  }, []);
+  }, [onUploadError]);
 
   const handleFileSelect = useCallback((e) => {
     if (e.target.files && e.target.files[0]) {
@@ -43,7 +64,7 @@ const DocumentUpload = ({ onUploadSuccess, onUploadError, folderId = null }) => 
 
   const uploadFile = async (file) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('files', file);
     formData.append('documentType', metadata.documentType);
     formData.append('description', metadata.description);
     formData.append('tags', JSON.stringify(metadata.tags));
@@ -76,7 +97,7 @@ const DocumentUpload = ({ onUploadSuccess, onUploadError, folderId = null }) => 
         reject(new Error('Upload request failed'));
       });
 
-      xhr.open('POST', '/api/documents/upload');
+      xhr.open('POST', '/api/file-storage/upload');
       const authToken = localStorage.getItem('authToken');
       if (authToken) {
         xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
