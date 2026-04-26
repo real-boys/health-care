@@ -1,0 +1,64 @@
+---
+# Consul Helm Values Configuration
+replicaCount: 3
+ui:
+  enabled: true
+  service:
+    type: LoadBalancer
+
+server:
+  replicas: 3
+  bootstrapExpect: 3
+  disruptionBudget:
+    enabled: true
+    maxUnavailable: 0
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+client:
+  enabled: true
+  grpc: true
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "200m"
+
+dns:
+  enabled: true
+
+connectInject:
+  enabled: true
+  default: false
+
+syncCatalog:
+  enabled: true
+  default: true
+  k8sPrefix: "k8s-"
+
+metrics:
+  enabled: true
+  provider: "prometheus"
+
+tls:
+  enabled: true
+  verify: true
+  httpsOnly: true
+
+acl:
+  manageSystemACLs: true
+  bootstrapToken:
+    secretName: "consul-bootstrap-token"
+    secretKey: "token"
+
+persistence:
+  enabled: true
+  size: 20Gi
+  storageClass: fast

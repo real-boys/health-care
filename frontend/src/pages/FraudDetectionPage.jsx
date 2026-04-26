@@ -20,6 +20,10 @@ import AlertsPanel from '../components/AlertsPanel';
 import PatternVisualizer from '../components/PatternVisualizer';
 import ModelPerformance from '../components/ModelPerformance';
 import FeedbackSystem from '../components/FeedbackSystem';
+import { exportToCSV, triggerPrint } from '../utils/ExportUtils';
+import { AnimatedButton, LoadingSpinner } from '../components/common/AnimatedComponents';
+import { Printer, Download, Share2 } from 'lucide-react';
+import { useABTesting } from '../context/ABTestingContext';
 
 export const FraudDetectionPage = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -36,6 +40,9 @@ export const FraudDetectionPage = () => {
     heatmapData: null,
     modelStats: null,
   });
+
+  const { getVariant } = useABTesting();
+  const exportVariant = getVariant('export_button_color', ['indigo', 'emerald']);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,14 +137,30 @@ export const FraudDetectionPage = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <button className="glass-card w-11 h-11 flex-center rounded-xl text-slate-400 hover:text-white transition-colors">
-                  <Bell size={20} />
-                </button>
-                <button className="glass-card w-11 h-11 flex-center rounded-xl text-slate-400 hover:text-white transition-colors">
-                  <Settings size={20} />
-                </button>
-              </div>
+               <div className="flex items-center gap-2 no-print">
+                  <AnimatedButton 
+                    onClick={() => exportToCSV(stats.alerts, 'fraud-alerts.csv')}
+                    className={`flex-center gap-2 text-white shadow-lg ${exportVariant === 'emerald' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-indigo-600 hover:bg-indigo-500'}`}
+                  >
+                     <Download size={18} />
+                     <span>Export CSV</span>
+                  </AnimatedButton>
+                  
+                  <AnimatedButton 
+                    onClick={triggerPrint}
+                    className="bg-slate-800 text-white flex-center gap-2 hover:bg-slate-700 shadow-lg"
+                  >
+                     <Printer size={18} />
+                     <span>Print Report</span>
+                  </AnimatedButton>
+
+                  <button className="glass-card w-11 h-11 flex-center rounded-xl text-slate-400 hover:text-white transition-colors">
+                     <Bell size={20} />
+                  </button>
+                  <button className="glass-card w-11 h-11 flex-center rounded-xl text-slate-400 hover:text-white transition-colors">
+                     <Settings size={20} />
+                  </button>
+               </div>
             </motion.div>
           </div>
 
@@ -175,22 +198,20 @@ export const FraudDetectionPage = () => {
       <main className="max-w-7xl mx-auto px-8 lg:px-16 -mt-8 pb-32">
         <AnimatePresence mode="wait">
           {loading ? (
-            <motion.div
-              key="loader"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="glass-card rounded-3xl p-24 flex-center flex-col gap-6 min-h-[500px]"
-            >
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin"></div>
-                <ShieldAlert className="absolute-center text-indigo-400/40" size={24} />
-              </div>
-              <div className="text-center space-y-2">
-                <p className="text-xl font-bold glow-text-indigo">Initializing Neural Core</p>
-                <p className="text-sm text-slate-500">Synthesizing behavioral patterns...</p>
-              </div>
-            </motion.div>
+             <motion.div 
+               key="loader"
+               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+               className="glass-card rounded-3xl p-24 flex-center flex-col gap-6 min-h-[500px]"
+             >
+                <div className="relative">
+                   <LoadingSpinner size="lg" />
+                   <ShieldAlert className="absolute-center text-indigo-400/40" size={24} />
+                </div>
+                <div className="text-center space-y-2">
+                   <p className="text-xl font-bold glow-text-indigo">Initializing Neural Core</p>
+                   <p className="text-sm text-slate-500">Synthesizing behavioral patterns...</p>
+                </div>
+             </motion.div>
           ) : (
             <motion.div
               key={activeTab}

@@ -3,11 +3,28 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>HealthCare Multi-network</title>
+    <meta name="theme-color" content="#6366f1" />
+    <meta name="description" content="AEGIS Health Systems - Advanced healthcare insurance platform" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="apple-touch-icon" href="/favicon-192x192.png" />
+    <title>AEGIS Health Systems</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function (reg) {
+              console.log('[PWA] Service worker registered:', reg.scope);
+            })
+            .catch(function (err) {
+              console.warn('[PWA] Service worker registration failed:', err);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
 

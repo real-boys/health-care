@@ -1,0 +1,356 @@
+---
+# Istio Gateway
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: healthcare-gateway
+  namespace: healthcare
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: healthcare-tls
+    hosts:
+    - "*"
+
+---
+# Virtual Service for API Gateway
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: api-gateway-vs
+  namespace: healthcare
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - healthcare-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: api-gateway
+        port:
+          number: 5000
+      weight: 100
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+
+---
+# Virtual Service for Auth Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: auth-service-vs
+  namespace: healthcare
+spec:
+  hosts:
+  - auth-service
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: auth-service
+        port:
+          number: 3001
+      weight: 100
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+
+---
+# Virtual Service for Patient Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: patient-service-vs
+  namespace: healthcare
+spec:
+  hosts:
+  - patient-service
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: patient-service
+        port:
+          number: 3002
+      weight: 100
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+
+---
+# Virtual Service for Claims Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: claims-service-vs
+  namespace: healthcare
+spec:
+  hosts:
+  - claims-service
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: claims-service
+        port:
+          number: 3003
+      weight: 100
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+
+---
+# Virtual Service for Payment Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: payment-service-vs
+  namespace: healthcare
+spec:
+  hosts:
+  - payment-service
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: payment-service
+        port:
+          number: 3005
+      weight: 100
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+
+---
+# Virtual Service for Notification Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: notification-service-vs
+  namespace: healthcare
+spec:
+  hosts:
+  - notification-service
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: notification-service
+        port:
+          number: 3004
+      weight: 100
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+
+---
+# Destination Rule for Auth Service
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: auth-service-dr
+  namespace: healthcare
+spec:
+  host: auth-service
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 100
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 2
+      tcp:
+        maxConnections: 100
+    loadBalancer:
+      simple: ROUND_ROBIN
+      consistentHash:
+        httpCookie:
+          name: "session"
+          ttl: 3600s
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+
+---
+# Destination Rule for Patient Service
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: patient-service-dr
+  namespace: healthcare
+spec:
+  host: patient-service
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 100
+        http2MaxRequests: 100
+      tcp:
+        maxConnections: 100
+    loadBalancer:
+      simple: ROUND_ROBIN
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+
+---
+# Destination Rule for Claims Service
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: claims-service-dr
+  namespace: healthcare
+spec:
+  host: claims-service
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 100
+        http2MaxRequests: 100
+      tcp:
+        maxConnections: 100
+    loadBalancer:
+      simple: ROUND_ROBIN
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+
+---
+# Destination Rule for Payment Service
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: payment-service-dr
+  namespace: healthcare
+spec:
+  host: payment-service
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 100
+        http2MaxRequests: 100
+      tcp:
+        maxConnections: 100
+    loadBalancer:
+      simple: ROUND_ROBIN
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+
+---
+# Destination Rule for Notification Service
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: notification-service-dr
+  namespace: healthcare
+spec:
+  host: notification-service
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 100
+        http2MaxRequests: 100
+      tcp:
+        maxConnections: 100
+    loadBalancer:
+      simple: ROUND_ROBIN
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+
+---
+# Request Authentication
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: healthcare-auth
+  namespace: healthcare
+spec:
+  jwtRules:
+  - issuer: "https://auth-service/auth/jwt"
+    jwksUri: "https://auth-service/auth/jwks"
+    audiences: "healthcare-api"
+
+---
+# Authorization Policy - Allow API Gateway to Services
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-api-gateway
+  namespace: healthcare
+spec:
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/healthcare/sa/healthcare-service"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        ports: ["3001", "3002", "3003", "3004", "3005"]
+
+---
+# Rate Limiting - Istio Request Authentication
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: healthcare
+spec:
+  mtls:
+    mode: STRICT

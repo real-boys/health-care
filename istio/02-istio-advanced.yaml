@@ -1,0 +1,97 @@
+---
+# Service Entry for External Services
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: external-payment-gateways
+  namespace: healthcare
+spec:
+  hosts:
+  - stripe.com
+  - api.paypal.com
+  - api.twilio.com
+  ports:
+  - number: 443
+    name: https
+    protocol: HTTPS
+  location: MESH_EXTERNAL
+  resolution: DNS
+
+---
+# Egress Gateway for External Services
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: istio-egressgateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: egressgateway
+  servers:
+  - port:
+      number: 443
+      name: https-external
+      protocol: HTTPS
+    hosts:
+    - "stripe.com"
+    - "api.paypal.com"
+    - "api.twilio.com"
+
+---
+# Virtual Service for Egress
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: external-services-vs
+  namespace: healthcare
+spec:
+  hosts:
+  - stripe.com
+  - api.paypal.com
+  - api.twilio.com
+  gateways:
+  - istio-egressgateway
+  http:
+  - match:
+    - gateways:
+      - istio-egressgateway
+    route:
+    - destination:
+        host: stripe.com
+        port:
+          number: 443
+
+---
+# Telemetry for Metrics Collection
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: healthcare-telemetry
+  namespace: healthcare
+spec:
+  metrics:
+  - providers:
+    - name: prometheus
+    dimensions:
+    - request_path
+    - response_code
+    - destination_service
+    - source_workload
+    overrides:
+    - match:
+        mode: CLIENT
+      dimensions:
+      - request_path
+      - response_code
+
+---
+# ProxyConfig for sidecar settings
+apiVersion: networking.istio.io/v1beta1
+kind: ProxyConfig
+metadata:
+  name: healthcare-proxy-config
+  namespace: healthcare
+spec:
+  concurrency: 2
+  environmentVariables:
+    ISTIO_AGENT_MAX_WORKERS: "4"

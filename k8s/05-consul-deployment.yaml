@@ -1,0 +1,218 @@
+---
+# Consul Server StatefulSet for Kubernetes
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: consul
+  namespace: consul
+  labels:
+    app: consul
+spec:
+  serviceName: consul
+  replicas: 3
+  selector:
+    matchLabels:
+      app: consul
+  template:
+    metadata:
+      labels:
+        app: consul
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - consul
+            topologyKey: kubernetes.io/hostname
+      serviceAccountName: consul
+      containers:
+      - name: consul
+        image: consul:latest
+        args:
+        - "agent"
+        - "-server"
+        - "-ui"
+        - "-bootstrap-expect=3"
+        - "-client=0.0.0.0"
+        - "-bind=0.0.0.0"
+        - "-advertise=$(POD_IP)"
+        - "-retry-join=consul-0.consul.consul.svc.cluster.local"
+        - "-retry-join=consul-1.consul.consul.svc.cluster.local"
+        - "-retry-join=consul-2.consul.consul.svc.cluster.local"
+        - "-datacenter=dc1"
+        - "-domain=consul"
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: CONSUL_BIND_INTERFACE
+          value: "eth0"
+        ports:
+        - name: server
+          containerPort: 8300
+          protocol: TCP
+        - name: serf-lan
+          containerPort: 8301
+          protocol: TCP
+        - name: serf-wan
+          containerPort: 8302
+          protocol: TCP
+        - name: cli
+          containerPort: 8400
+          protocol: TCP
+        - name: http
+          containerPort: 8500
+          protocol: TCP
+        - name: grpc
+          containerPort: 8502
+          protocol: TCP
+        - name: dns
+          containerPort: 8600
+          protocol: UDP
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        livenessProbe:
+          httpGet:
+            path: /v1/status/leader
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /v1/status/peers
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        volumeMounts:
+        - name: consul-data
+          mountPath: /consul/data
+      securityContext:
+        fsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 100
+  volumeClaimTemplates:
+  - metadata:
+      name: consul-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast
+      resources:
+        requests:
+          storage: 10Gi
+
+---
+# Consul Service (Headless)
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul
+  namespace: consul
+  labels:
+    app: consul
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+  - name: server
+    port: 8300
+    targetPort: 8300
+    protocol: TCP
+  - name: serf-lan
+    port: 8301
+    targetPort: 8301
+    protocol: TCP
+  - name: serf-wan
+    port: 8302
+    targetPort: 8302
+    protocol: TCP
+  - name: cli
+    port: 8400
+    targetPort: 8400
+    protocol: TCP
+  - name: http
+    port: 8500
+    targetPort: 8500
+    protocol: TCP
+  - name: grpc
+    port: 8502
+    targetPort: 8502
+    protocol: TCP
+  - name: dns
+    port: 8600
+    targetPort: 8600
+    protocol: UDP
+  selector:
+    app: consul
+
+---
+# Consul UI Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul-ui
+  namespace: consul
+  labels:
+    app: consul
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8500
+    protocol: TCP
+  selector:
+    app: consul
+
+---
+# Consul ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: consul
+  namespace: consul
+
+---
+# Consul ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: consul
+rules:
+- apiGroups: [""]
+  resources: ["services", "endpoints", "pods", "nodes"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "statefulsets"]
+  verbs: ["get", "list", "watch"]
+
+---
+# Consul ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: consul
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: consul
+subjects:
+- kind: ServiceAccount
+  name: consul
+  namespace: consul

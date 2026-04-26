@@ -137,3 +137,64 @@ body {
   gap: 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
+
+/* Micro-interactions */
+.tap-effect {
+  transition: transform 0.1s ease;
+}
+
+.tap-effect:active {
+  transform: scale(0.95);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 15px var(--accent-primary);
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .glass-card {
+    background: white !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    color: black !important;
+    break-inside: avoid;
+  }
+
+  header, footer, nav, aside, .sidebar, .navbar {
+    display: none !important;
+  }
+
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+  }
+
+  .dashboard-grid {
+    display: block !important;
+  }
+
+  .dashboard-grid > * {
+    margin-bottom: 2rem !important;
+  }
+}
+
