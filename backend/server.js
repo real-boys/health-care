@@ -217,6 +217,10 @@ const TelemedicineService = require('./services/telemedicineService');
 const telemedicineService = new TelemedicineService(io);
 telemedicineService.initialize();
 
+// Chat Socket.io handler
+const { initChatSocket } = require('./services/chatSocketHandler');
+initChatSocket(io);
+
 // Real-time data broadcaster initialization
 const RealtimeDataBroadcaster = require('./services/realtimeDataBroadcaster');
 const realtimeDataBroadcaster = new RealtimeDataBroadcaster(io);
@@ -245,6 +249,10 @@ const monitoringService = getMonitoringService(io);
 global.monitoringService = monitoringService;
 
 
+
+// Chat routes
+const chatRoutes = require('./routes/chat');
+app.use('/api/chat', chatRoutes);
 
 // Dashboard routes
 const dashboardRoutes = require('./routes/dashboard');
