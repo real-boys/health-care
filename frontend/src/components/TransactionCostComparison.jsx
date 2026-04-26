@@ -43,8 +43,8 @@ export default function TransactionCostComparison() {
 
   const comparisons = useMemo(() => {
     const fees = feesData?.fees || [];
-    return fees.map((f) => {
-      const network = enabled.find((n) => n.id === f.networkId);
+    return fees.map(f => {
+      const network = enabled.find(n => n.id === f.networkId);
       if (f.family === 'evm') {
         const gasUnits = EVM_GAS_PROFILES[action] || 21000;
         const gasPriceWei = toNumber(f.feeData?.gasPrice || f.feeData?.maxFeePerGas || 0);
@@ -54,12 +54,14 @@ export default function TransactionCostComparison() {
           displayName: network?.displayName || f.networkId,
           nativeSymbol: network?.nativeSymbol || 'ETH',
           estimatedCost: costEth,
-          estimateLabel: costEth != null ? `${costEth.toFixed(6)} ${network?.nativeSymbol || 'ETH'}` : 'N/A',
+          estimateLabel:
+            costEth != null ? `${costEth.toFixed(6)} ${network?.nativeSymbol || 'ETH'}` : 'N/A',
           details: `Gas profile: ${gasUnits.toLocaleString()} units`,
         };
       }
 
-      const feeChargedMode = toNumber(f.feeData?.fee_charged?.mode) || toNumber(f.feeData?.max_fee?.mode) || null;
+      const feeChargedMode =
+        toNumber(f.feeData?.fee_charged?.mode) || toNumber(f.feeData?.max_fee?.mode) || null;
       const stroops = feeChargedMode;
       const xlm = stroops != null ? stroops / 1e7 : null;
       return {
@@ -74,7 +76,7 @@ export default function TransactionCostComparison() {
   }, [feesData, action, enabled]);
 
   const cheapest = useMemo(() => {
-    const valid = comparisons.filter((c) => c.estimatedCost != null);
+    const valid = comparisons.filter(c => c.estimatedCost != null);
     if (!valid.length) return null;
     return valid.reduce((min, c) => (c.estimatedCost < min.estimatedCost ? c : min), valid[0]);
   }, [comparisons]);
@@ -83,7 +85,9 @@ export default function TransactionCostComparison() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Transaction Cost Comparison</h1>
-        <p className="text-gray-600 mt-2">Compare estimated network cost across Stellar and EVM networks.</p>
+        <p className="text-gray-600 mt-2">
+          Compare estimated network cost across Stellar and EVM networks.
+        </p>
       </div>
 
       <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
@@ -92,7 +96,7 @@ export default function TransactionCostComparison() {
             <label className="text-sm text-gray-700">Action</label>
             <select
               value={action}
-              onChange={(e) => setAction(e.target.value)}
+              onChange={e => setAction(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
             >
               <option value="transfer">Transfer</option>
@@ -120,7 +124,7 @@ export default function TransactionCostComparison() {
         )}
 
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          {comparisons.map((c) => (
+          {comparisons.map(c => (
             <div key={c.networkId} className="border border-gray-200 rounded-lg p-4">
               <div className="font-medium text-gray-900">{c.displayName}</div>
               <div className="text-sm text-gray-500 mt-1">{c.details}</div>
@@ -132,4 +136,3 @@ export default function TransactionCostComparison() {
     </div>
   );
 }
-

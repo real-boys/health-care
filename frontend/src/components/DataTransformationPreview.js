@@ -14,7 +14,7 @@ import {
   Code,
   FileText,
   Database,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 const DataTransformationPreview = () => {
@@ -42,11 +42,23 @@ PV1|1|I|ER^^^1^1||||123456^SMITH^JOHN^A^^MD||||||||ADM|A0`;
       target: 'FHIR',
       rules: [
         { source: 'PID.3', target: 'Patient.identifier[0].value', transformation: 'Extract MRN' },
-        { source: 'PID.5.1', target: 'Patient.name[0].family', transformation: 'Extract last name' },
-        { source: 'PID.5.2', target: 'Patient.name[0].given[0]', transformation: 'Extract first name' },
-        { source: 'PID.7', target: 'Patient.birthDate', transformation: 'Format YYYYMMDD to ISO date' },
-        { source: 'PID.8', target: 'Patient.gender', transformation: 'Map M->male, F->female' }
-      ]
+        {
+          source: 'PID.5.1',
+          target: 'Patient.name[0].family',
+          transformation: 'Extract last name',
+        },
+        {
+          source: 'PID.5.2',
+          target: 'Patient.name[0].given[0]',
+          transformation: 'Extract first name',
+        },
+        {
+          source: 'PID.7',
+          target: 'Patient.birthDate',
+          transformation: 'Format YYYYMMDD to ISO date',
+        },
+        { source: 'PID.8', target: 'Patient.gender', transformation: 'Map M->male, F->female' },
+      ],
     },
     {
       id: 2,
@@ -56,10 +68,14 @@ PV1|1|I|ER^^^1^1||||123456^SMITH^JOHN^A^^MD||||||||ADM|A0`;
       target: 'FHIR',
       rules: [
         { source: 'PV1.2', target: 'Encounter.class.code', transformation: 'Map patient class' },
-        { source: 'PV1.3', target: 'Encounter.location[0].location.display', transformation: 'Extract location' },
-        { source: 'MSH.7', target: 'Encounter.period.start', transformation: 'Format timestamp' }
-      ]
-    }
+        {
+          source: 'PV1.3',
+          target: 'Encounter.location[0].location.display',
+          transformation: 'Extract location',
+        },
+        { source: 'MSH.7', target: 'Encounter.period.start', transformation: 'Format timestamp' },
+      ],
+    },
   ];
 
   useEffect(() => {
@@ -98,22 +114,24 @@ PV1|1|I|ER^^^1^1||||123456^SMITH^JOHN^A^^MD||||||||ADM|A0`;
               identifier: [
                 {
                   type: {
-                    coding: [{
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                      code: 'MR',
-                      display: 'Medical Record Number'
-                    }]
+                    coding: [
+                      {
+                        system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                        code: 'MR',
+                        display: 'Medical Record Number',
+                      },
+                    ],
                   },
                   value: '12345',
-                  system: 'urn:oid:2.16.840.1.113883.4.1'
-                }
+                  system: 'urn:oid:2.16.840.1.113883.4.1',
+                },
               ],
               name: [
                 {
                   use: 'official',
                   family: 'DOE',
-                  given: ['JOHN', 'A']
-                }
+                  given: ['JOHN', 'A'],
+                },
               ],
               gender: 'male',
               birthDate: '1970-01-01',
@@ -123,17 +141,17 @@ PV1|1|I|ER^^^1^1||||123456^SMITH^JOHN^A^^MD||||||||ADM|A0`;
                   line: ['123 MAIN ST'],
                   city: 'ANYTOWN',
                   state: 'NY',
-                  postalCode: '12345'
-                }
+                  postalCode: '12345',
+                },
               ],
               telecom: [
                 {
                   system: 'phone',
                   value: '(555)555-1234',
-                  use: 'home'
-                }
-              ]
-            }
+                  use: 'home',
+                },
+              ],
+            },
           },
           {
             fullUrl: 'urn:uuid:encounter-1',
@@ -144,25 +162,25 @@ PV1|1|I|ER^^^1^1||||123456^SMITH^JOHN^A^^MD||||||||ADM|A0`;
               class: {
                 system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode',
                 code: 'IMP',
-                display: 'inpatient encounter'
+                display: 'inpatient encounter',
               },
               subject: {
                 reference: 'Patient/patient-1',
-                display: 'DOE, JOHN A'
+                display: 'DOE, JOHN A',
               },
               period: {
-                start: '2024-01-15T12:00:00Z'
+                start: '2024-01-15T12:00:00Z',
               },
               location: [
                 {
                   location: {
-                    display: 'ER Room 1'
-                  }
-                }
-              ]
-            }
-          }
-        ]
+                    display: 'ER Room 1',
+                  },
+                },
+              ],
+            },
+          },
+        ],
       };
 
       const result = {
@@ -175,15 +193,15 @@ PV1|1|I|ER^^^1^1||||123456^SMITH^JOHN^A^^MD||||||||ADM|A0`;
           sourceFormat: 'HL7 v2.x',
           targetFormat: 'FHIR R4',
           resourceCount: transformedData.entry.length,
-          rulesApplied: selectedMapping.rules.length
-        }
+          rulesApplied: selectedMapping.rules.length,
+        },
       };
 
       setPreviewResult(result);
     } catch (error) {
       setPreviewResult({
         success: false,
-        error: error.message
+        error: error.message,
       });
     } finally {
       setLoading(false);
@@ -214,7 +232,7 @@ PV1|1|I|ER^^^1^1||||123456^SMITH^JOHN^A^^MD||||||||ADM|A0`;
       originalData: previewResult.originalData,
       transformedData: previewResult.transformedData,
       metadata: previewResult.metadata,
-      exportedAt: new Date().toISOString()
+      exportedAt: new Date().toISOString(),
     };
 
     const dataStr = JSON.stringify(exportData, null, 2);
@@ -229,7 +247,7 @@ PV1|1|I|ER^^^1^1||||123456^SMITH^JOHN^A^^MD||||||||ADM|A0`;
     URL.revokeObjectURL(url);
   };
 
-  const handleLoadSampleData = (type) => {
+  const handleLoadSampleData = type => {
     switch (type) {
       case 'hl7-adt':
         setSourceData(sampleHL7Message);
@@ -241,19 +259,25 @@ OBR|1|123457|98765|CBC^COMPLETE BLOOD COUNT||20240115110000|||||||||98765^JOHNSO
 OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
         break;
       case 'json':
-        setSourceData(JSON.stringify({
-          patient: {
-            id: '12345',
-            name: 'JOHN DOE',
-            birthDate: '1970-01-01',
-            gender: 'M'
-          },
-          encounter: {
-            id: 'ENC001',
-            type: 'inpatient',
-            location: 'ER'
-          }
-        }, null, 2));
+        setSourceData(
+          JSON.stringify(
+            {
+              patient: {
+                id: '12345',
+                name: 'JOHN DOE',
+                birthDate: '1970-01-01',
+                gender: 'M',
+              },
+              encounter: {
+                id: 'ENC001',
+                type: 'inpatient',
+                location: 'ER',
+              },
+            },
+            null,
+            2
+          )
+        );
         break;
     }
   };
@@ -281,7 +305,9 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Data Transformation Preview</h1>
-              <p className="mt-2 text-gray-600">Preview and validate data transformations before deployment</p>
+              <p className="mt-2 text-gray-600">
+                Preview and validate data transformations before deployment
+              </p>
             </div>
             <div className="flex gap-3">
               <button
@@ -313,7 +339,7 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                 <Database className="w-5 h-5 text-blue-600" />
                 Transformation Mapping
               </h3>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -321,8 +347,10 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                   </label>
                   <select
                     value={selectedMapping?.id || ''}
-                    onChange={(e) => {
-                      const mapping = transformationRules.find(r => r.id === parseInt(e.target.value));
+                    onChange={e => {
+                      const mapping = transformationRules.find(
+                        r => r.id === parseInt(e.target.value)
+                      );
                       setSelectedMapping(mapping);
                     }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -352,7 +380,7 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                   </label>
                   <select
                     value={targetFormat}
-                    onChange={(e) => setTargetFormat(e.target.value)}
+                    onChange={e => setTargetFormat(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="fhir">FHIR R4</option>
@@ -370,7 +398,7 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                 <Upload className="w-5 h-5 text-green-600" />
                 Sample Data
               </h3>
-              
+
               <div className="space-y-2">
                 <button
                   onClick={() => handleLoadSampleData('hl7-adt')}
@@ -403,9 +431,11 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                   <Zap className="w-5 h-5 text-purple-600" />
                   Applied Rules
                 </h3>
-                
+
                 <div className="space-y-2">
-                  {selectedMapping.rules.map((rule, index) => renderTransformationRule(rule, index))}
+                  {selectedMapping.rules.map((rule, index) =>
+                    renderTransformationRule(rule, index)
+                  )}
                 </div>
               </div>
             )}
@@ -429,14 +459,14 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                   </button>
                 </div>
               </div>
-              
+
               <textarea
                 value={sourceData}
-                onChange={(e) => setSourceData(e.target.value)}
+                onChange={e => setSourceData(e.target.value)}
                 className="w-full h-64 p-3 font-mono text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter source data (HL7 message, JSON, etc.)..."
               />
-              
+
               <div className="mt-4 flex gap-3">
                 <button
                   onClick={handlePreviewTransformation}
@@ -464,7 +494,7 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                 <RefreshCw className="w-5 h-5 text-green-600" />
                 Transformed Data
               </h3>
-              
+
               {previewResult ? (
                 previewResult.success ? (
                   <div className="space-y-4">
@@ -472,10 +502,13 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <CheckCircle className="w-5 h-5 text-green-600" />
-                        <span className="font-medium text-green-800">Transformation Successful</span>
+                        <span className="font-medium text-green-800">
+                          Transformation Successful
+                        </span>
                       </div>
                       <div className="text-sm text-green-700">
-                        {previewResult.metadata.resourceCount} resources created using {previewResult.metadata.rulesApplied} transformation rules
+                        {previewResult.metadata.resourceCount} resources created using{' '}
+                        {previewResult.metadata.rulesApplied} transformation rules
                       </div>
                     </div>
 
@@ -483,19 +516,27 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <span className="text-gray-500">Source Format:</span>
-                        <span className="ml-2 font-medium">{previewResult.metadata.sourceFormat}</span>
+                        <span className="ml-2 font-medium">
+                          {previewResult.metadata.sourceFormat}
+                        </span>
                       </div>
                       <div>
                         <span className="text-gray-500">Target Format:</span>
-                        <span className="ml-2 font-medium">{previewResult.metadata.targetFormat}</span>
+                        <span className="ml-2 font-medium">
+                          {previewResult.metadata.targetFormat}
+                        </span>
                       </div>
                       <div>
                         <span className="text-gray-500">Resources:</span>
-                        <span className="ml-2 font-medium">{previewResult.metadata.resourceCount}</span>
+                        <span className="ml-2 font-medium">
+                          {previewResult.metadata.resourceCount}
+                        </span>
                       </div>
                       <div>
                         <span className="text-gray-500">Rules Applied:</span>
-                        <span className="ml-2 font-medium">{previewResult.metadata.rulesApplied}</span>
+                        <span className="ml-2 font-medium">
+                          {previewResult.metadata.rulesApplied}
+                        </span>
                       </div>
                     </div>
 
@@ -511,9 +552,13 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
 
                     {/* Applied Rules Summary */}
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Applied Transformation Rules</h4>
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        Applied Transformation Rules
+                      </h4>
                       <div className="space-y-2">
-                        {previewResult.appliedRules.map((rule, index) => renderTransformationRule(rule, index))}
+                        {previewResult.appliedRules.map((rule, index) =>
+                          renderTransformationRule(rule, index)
+                        )}
                       </div>
                     </div>
                   </div>
@@ -523,9 +568,7 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                       <AlertCircle className="w-5 h-5 text-red-600" />
                       <span className="font-medium text-red-800">Transformation Failed</span>
                     </div>
-                    <div className="text-sm text-red-700">
-                      {previewResult.error}
-                    </div>
+                    <div className="text-sm text-red-700">{previewResult.error}</div>
                   </div>
                 )
               ) : (
@@ -543,7 +586,7 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                   <Settings className="w-5 h-5 text-gray-600" />
                   Advanced Settings
                 </h3>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -551,12 +594,12 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                     </label>
                     <textarea
                       value={customRules}
-                      onChange={(e) => setCustomRules(e.target.value)}
+                      onChange={e => setCustomRules(e.target.value)}
                       className="w-full h-32 p-3 font-mono text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter custom transformation rules in JSON format..."
                     />
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -568,7 +611,7 @@ OBX|1|NM|WBC^WHITE BLOOD COUNT||6.8|K/uL|4.5-11.0||||F|||20240115110000`);
                         <option value="none">None</option>
                       </select>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Error Handling

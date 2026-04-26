@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  AlertTriangle, 
-  Phone, 
-  Clock, 
-  User, 
+import {
+  AlertTriangle,
+  Phone,
+  Clock,
+  User,
   Activity,
   Shield,
   QrCode,
@@ -13,7 +13,7 @@ import {
   Eye,
   EyeOff,
   Copy,
-  Smartphone
+  Smartphone,
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -81,13 +81,13 @@ const EmergencyAccess = ({ account }) => {
       const response = await axios.post('/api/emergency-access/generate-code', {
         patientId,
         providerId,
-        reason
+        reason,
       });
 
       setAccessCode(response.data.code);
       setSuccess('Emergency access code generated successfully!');
       setActiveView('display');
-      
+
       // Start countdown for code expiry
       const expiryTime = new Date(response.data.expiresAt);
       const now = new Date();
@@ -96,7 +96,6 @@ const EmergencyAccess = ({ account }) => {
 
       // Generate QR code
       generateQRCode(response.data.accessId);
-      
     } catch (error) {
       setError(error.response?.data?.error || 'Failed to generate access code');
     } finally {
@@ -104,11 +103,11 @@ const EmergencyAccess = ({ account }) => {
     }
   };
 
-  const generateQRCode = async (accessId) => {
+  const generateQRCode = async accessId => {
     try {
       const response = await axios.post('/api/emergency-access/generate-qr', {
         patientId,
-        accessId
+        accessId,
       });
       setQrCode(response.data.qrCode);
       setEmergencyUrl(response.data.emergencyUrl);
@@ -129,17 +128,16 @@ const EmergencyAccess = ({ account }) => {
     try {
       const response = await axios.post('/api/emergency-access/verify-code', {
         code: accessCode,
-        providerId
+        providerId,
       });
 
       setPatientData(response.data.patient);
       setSuccess('Emergency access granted!');
       setActiveView('patient');
-      
+
       // Refresh logs and stats
       fetchAccessLogs();
       fetchStats();
-      
     } catch (error) {
       setError(error.response?.data?.error || 'Failed to verify access code');
     } finally {
@@ -147,13 +145,13 @@ const EmergencyAccess = ({ account }) => {
     }
   };
 
-  const copyToClipboard = (text) => {
+  const copyToClipboard = text => {
     navigator.clipboard.writeText(text);
     setSuccess('Copied to clipboard!');
     setTimeout(() => setSuccess(''), 2000);
   };
 
-  const formatTime = (seconds) => {
+  const formatTime = seconds => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
@@ -194,7 +192,7 @@ const EmergencyAccess = ({ account }) => {
           <input
             type="text"
             value={patientId}
-            onChange={(e) => setPatientId(e.target.value)}
+            onChange={e => setPatientId(e.target.value)}
             placeholder="Enter patient ID (e.g., patient-123)"
             className="form-input"
           />
@@ -205,7 +203,7 @@ const EmergencyAccess = ({ account }) => {
           <input
             type="text"
             value={providerId}
-            onChange={(e) => setProviderId(e.target.value)}
+            onChange={e => setProviderId(e.target.value)}
             placeholder="Enter provider ID"
             className="form-input"
           />
@@ -215,18 +213,14 @@ const EmergencyAccess = ({ account }) => {
           <label>Emergency Reason</label>
           <textarea
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            onChange={e => setReason(e.target.value)}
             placeholder="Describe the emergency situation"
             className="form-textarea"
             rows={3}
           />
         </div>
 
-        <button
-          onClick={generateAccessCode}
-          disabled={loading}
-          className="btn-emergency"
-        >
+        <button onClick={generateAccessCode} disabled={loading} className="btn-emergency">
           {loading ? 'Generating...' : 'Generate Emergency Code'}
         </button>
       </div>
@@ -234,11 +228,7 @@ const EmergencyAccess = ({ account }) => {
       <div className="offline-section">
         <h3>Offline Access</h3>
         <p>Access critical patient information without verification (emergency only)</p>
-        <button
-          onClick={getOfflineData}
-          disabled={loading}
-          className="btn-offline"
-        >
+        <button onClick={getOfflineData} disabled={loading} className="btn-offline">
           <Smartphone className="w-4 h-4 mr-2" />
           Get Offline Emergency Data
         </button>
@@ -257,30 +247,21 @@ const EmergencyAccess = ({ account }) => {
             {formatTime(countdown)}
           </span>
         </div>
-        
+
         <div className="code-container">
           <div className="code-value">
             {showCode ? accessCode : '••••••••'}
-            <button
-              onClick={() => setShowCode(!showCode)}
-              className="btn-toggle"
-            >
+            <button onClick={() => setShowCode(!showCode)} className="btn-toggle">
               {showCode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-          
+
           <div className="code-actions">
-            <button
-              onClick={() => copyToClipboard(accessCode)}
-              className="btn-copy"
-            >
+            <button onClick={() => copyToClipboard(accessCode)} className="btn-copy">
               <Copy className="w-4 h-4 mr-2" />
               Copy Code
             </button>
-            <button
-              onClick={() => copyToClipboard(emergencyUrl)}
-              className="btn-copy"
-            >
+            <button onClick={() => copyToClipboard(emergencyUrl)} className="btn-copy">
               <Copy className="w-4 h-4 mr-2" />
               Copy Link
             </button>
@@ -315,15 +296,11 @@ const EmergencyAccess = ({ account }) => {
           <input
             type="text"
             value={accessCode}
-            onChange={(e) => setAccessCode(e.target.value)}
+            onChange={e => setAccessCode(e.target.value)}
             placeholder="Enter access code to verify"
             className="form-input"
           />
-          <button
-            onClick={verifyAccessCode}
-            disabled={loading}
-            className="btn-verify"
-          >
+          <button onClick={verifyAccessCode} disabled={loading} className="btn-verify">
             {loading ? 'Verifying...' : 'Access Patient Data'}
           </button>
         </div>
@@ -346,11 +323,15 @@ const EmergencyAccess = ({ account }) => {
             <div className="info-grid">
               <div className="info-item">
                 <User className="w-4 h-4" />
-                <span><strong>Name:</strong> {patientData.name}</span>
+                <span>
+                  <strong>Name:</strong> {patientData.name}
+                </span>
               </div>
               <div className="info-item">
                 <Activity className="w-4 h-4" />
-                <span><strong>Blood Type:</strong> {patientData.bloodType}</span>
+                <span>
+                  <strong>Blood Type:</strong> {patientData.bloodType}
+                </span>
               </div>
             </div>
           </div>
@@ -362,11 +343,13 @@ const EmergencyAccess = ({ account }) => {
                 <h5>Allergies</h5>
                 <div className="allergy-list">
                   {patientData.allergies?.map((allergy, index) => (
-                    <span key={index} className="allergy-tag">{allergy}</span>
+                    <span key={index} className="allergy-tag">
+                      {allergy}
+                    </span>
                   ))}
                 </div>
               </div>
-              
+
               <div className="medications">
                 <h5>Current Medications</h5>
                 <ul>
@@ -375,7 +358,7 @@ const EmergencyAccess = ({ account }) => {
                   ))}
                 </ul>
               </div>
-              
+
               <div className="conditions">
                 <h5>Medical Conditions</h5>
                 <ul>
@@ -407,9 +390,15 @@ const EmergencyAccess = ({ account }) => {
             <div className="info-section">
               <h4>Insurance Information</h4>
               <div className="insurance-info">
-                <p><strong>Provider:</strong> {patientData.insurance.provider}</p>
-                <p><strong>Policy Number:</strong> {patientData.insurance.policyNumber}</p>
-                <p><strong>Group Number:</strong> {patientData.insurance.groupNumber}</p>
+                <p>
+                  <strong>Provider:</strong> {patientData.insurance.provider}
+                </p>
+                <p>
+                  <strong>Policy Number:</strong> {patientData.insurance.policyNumber}
+                </p>
+                <p>
+                  <strong>Group Number:</strong> {patientData.insurance.groupNumber}
+                </p>
               </div>
             </div>
           )}
@@ -421,7 +410,7 @@ const EmergencyAccess = ({ account }) => {
   const MonitoringView = () => (
     <div className="emergency-monitoring">
       <h3>Emergency Access Monitoring</h3>
-      
+
       {stats && (
         <div className="stats-grid">
           <div className="stat-card">
@@ -463,7 +452,9 @@ const EmergencyAccess = ({ account }) => {
                   <td>{log.patientId}</td>
                   <td>{log.providerId.slice(0, 8)}...</td>
                   <td>{log.reason}</td>
-                  <td><CheckCircle className="w-4 h-4 text-green-500" /></td>
+                  <td>
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                  </td>
                 </tr>
               ))}
             </tbody>

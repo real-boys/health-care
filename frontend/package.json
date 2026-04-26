@@ -36,16 +36,23 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
     "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
     "chai": "^4.2.0",
     "eslint": "^8.45.0",
     "eslint-config-react-app": "^7.0.1",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "lint": "eslint src --ext .js,.jsx",
+    "format:check": "prettier --check src",
+    "format": "prettier --write src",
     "compile": "hardhat compile",
     "deploy": "hardhat run scripts/deploy.js --network localhost"
   },

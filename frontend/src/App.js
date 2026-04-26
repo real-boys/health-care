@@ -125,18 +125,19 @@ const Layout = ({ children }) => {
                 </div>
              </div>
           </div>
-       </aside>
+        </div>
+      </aside>
 
-       {/* Sub-surface background effect */}
-       <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-[10%] left-[20%] w-[40rem] h-[40rem] bg-indigo-900/10 blur-[120px] rounded-full"></div>
-          <div className="absolute bottom-[20%] right-[10%] w-[30rem] h-[30rem] bg-purple-900/10 blur-[100px] rounded-full"></div>
-       </div>
+      {/* Sub-surface background effect */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[10%] left-[20%] w-[40rem] h-[40rem] bg-indigo-900/10 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-[20%] right-[10%] w-[30rem] h-[30rem] bg-purple-900/10 blur-[100px] rounded-full"></div>
+      </div>
 
-       {/* Main Viewport */}
-       <main className="flex-1 min-h-screen relative z-10 max-w-full overflow-hidden">
-          {children}
-       </main>
+      {/* Main Viewport */}
+      <main className="flex-1 min-h-screen relative z-10 max-w-full overflow-hidden">
+        {children}
+      </main>
     </div>
   );
 };

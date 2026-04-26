@@ -8,11 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Alert, AlertDescription } from './ui/alert';
-import { 
-  MessageSquare, 
-  Send, 
-  Bell, 
-  Users, 
+import {
+  MessageSquare,
+  Send,
+  Bell,
+  Users,
   Calendar,
   Clock,
   CheckCircle,
@@ -29,7 +29,7 @@ import {
   Trash2,
   ExternalLink,
   User,
-  Settings
+  Settings,
 } from 'lucide-react';
 
 const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator }) => {
@@ -46,7 +46,7 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
     message_type: 'ANNOUNCEMENT',
     subject: '',
     content: '',
-    recipients: []
+    recipients: [],
   });
   const [isSending, setIsSending] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -60,7 +60,7 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
     try {
       const [allProposals, allStakeholders] = await Promise.all([
         contract.get_active_proposals(),
-        contract.get_all_stakeholders()
+        contract.get_all_stakeholders(),
       ]);
 
       setProposals(allProposals);
@@ -71,7 +71,9 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
       for (const proposal of allProposals) {
         try {
           const proposalComms = await contract.get_communications(proposal.id);
-          allCommunications.push(...proposalComms.map(comm => ({ ...comm, proposal_title: proposal.title })));
+          allCommunications.push(
+            ...proposalComms.map(comm => ({ ...comm, proposal_title: proposal.title }))
+          );
         } catch (error) {
           console.error(`Failed to load communications for proposal ${proposal.id}:`, error);
         }
@@ -102,15 +104,16 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
 
     const hasPermission = isAdmin || proposal.proposed_by === userAddress;
     if (!hasPermission) {
-      alert('You don\'t have permission to send communications for this proposal');
+      alert("You don't have permission to send communications for this proposal");
       return;
     }
 
     setIsSending(true);
     try {
-      const recipientAddresses = composeForm.recipients.length > 0 ? 
-        composeForm.recipients : 
-        stakeholders.map(s => s.address);
+      const recipientAddresses =
+        composeForm.recipients.length > 0
+          ? composeForm.recipients
+          : stakeholders.map(s => s.address);
 
       await contract.send_communication(
         parseInt(composeForm.proposal_id),
@@ -128,9 +131,9 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
         message_type: 'ANNOUNCEMENT',
         subject: '',
         content: '',
-        recipients: []
+        recipients: [],
       });
-      
+
       await loadCommunicationData();
     } catch (error) {
       console.error('Failed to send communication:', error);
@@ -140,29 +143,35 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
     }
   };
 
-  const getMessageTypeIcon = (type) => {
+  const getMessageTypeIcon = type => {
     const icons = {
-      'ANNOUNCEMENT': Bell,
-      'WARNING': AlertTriangle,
-      'UPDATE': Info,
-      'QUESTION': MessageSquare,
-      'URGENT': AlertTriangle
+      ANNOUNCEMENT: Bell,
+      WARNING: AlertTriangle,
+      UPDATE: Info,
+      QUESTION: MessageSquare,
+      URGENT: AlertTriangle,
     };
     return icons[type] || MessageSquare;
   };
 
-  const getMessageTypeColor = (type) => {
+  const getMessageTypeColor = type => {
     switch (type) {
-      case 'ANNOUNCEMENT': return 'blue';
-      case 'WARNING': return 'orange';
-      case 'UPDATE': return 'green';
-      case 'QUESTION': return 'purple';
-      case 'URGENT': return 'red';
-      default: return 'gray';
+      case 'ANNOUNCEMENT':
+        return 'blue';
+      case 'WARNING':
+        return 'orange';
+      case 'UPDATE':
+        return 'green';
+      case 'QUESTION':
+        return 'purple';
+      case 'URGENT':
+        return 'red';
+      default:
+        return 'gray';
     }
   };
 
-  const formatTimestamp = (timestamp) => {
+  const formatTimestamp = timestamp => {
     const date = new Date(timestamp * 1000);
     const now = new Date();
     const diffMs = now - date;
@@ -179,24 +188,26 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
   };
 
   const filteredCommunications = communications.filter(comm => {
-    const matchesFilter = filter === 'all' || 
-                         (filter === 'unread' && !comm.read_receipts.includes(userAddress)) ||
-                         (filter === 'sent' && comm.sender === userAddress) ||
-                         (filter === 'received' && comm.sender !== userAddress);
-    
-    const matchesSearch = searchTerm === '' || 
-                         comm.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         comm.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         comm.proposal_title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter =
+      filter === 'all' ||
+      (filter === 'unread' && !comm.read_receipts.includes(userAddress)) ||
+      (filter === 'sent' && comm.sender === userAddress) ||
+      (filter === 'received' && comm.sender !== userAddress);
+
+    const matchesSearch =
+      searchTerm === '' ||
+      comm.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comm.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comm.proposal_title.toLowerCase().includes(searchTerm.toLowerCase());
 
     return matchesFilter && matchesSearch;
   });
 
-  const markAsRead = async (communicationId) => {
+  const markAsRead = async communicationId => {
     try {
       // In a real implementation, this would call the contract to mark as read
-      const updatedCommunications = communications.map(comm => 
-        comm.id === communicationId 
+      const updatedCommunications = communications.map(comm =>
+        comm.id === communicationId
           ? { ...comm, read_receipts: [...comm.read_receipts, userAddress] }
           : comm
       );
@@ -206,26 +217,26 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
     }
   };
 
-  const openCommunicationDialog = (communication) => {
+  const openCommunicationDialog = communication => {
     setSelectedCommunication(communication);
     if (!communication.read_receipts.includes(userAddress)) {
       markAsRead(communication.id);
     }
   };
 
-  const addRecipient = (stakeholderAddress) => {
+  const addRecipient = stakeholderAddress => {
     if (!composeForm.recipients.includes(stakeholderAddress)) {
       setComposeForm(prev => ({
         ...prev,
-        recipients: [...prev.recipients, stakeholderAddress]
+        recipients: [...prev.recipients, stakeholderAddress],
       }));
     }
   };
 
-  const removeRecipient = (stakeholderAddress) => {
+  const removeRecipient = stakeholderAddress => {
     setComposeForm(prev => ({
       ...prev,
-      recipients: prev.recipients.filter(addr => addr !== stakeholderAddress)
+      recipients: prev.recipients.filter(addr => addr !== stakeholderAddress),
     }));
   };
 
@@ -271,7 +282,7 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
               <Input
                 placeholder="Search messages..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -297,7 +308,9 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
                     <MessageSquare className="w-12 h-12 mx-auto text-gray-400 mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No Messages</h3>
                     <p className="text-gray-600">
-                      {searchTerm || filter !== 'all' ? 'No messages match your search criteria.' : 'No messages in your inbox.'}
+                      {searchTerm || filter !== 'all'
+                        ? 'No messages match your search criteria.'
+                        : 'No messages in your inbox.'}
                     </p>
                   </div>
                 </CardContent>
@@ -310,8 +323,8 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
                 const isFromMe = communication.sender === userAddress;
 
                 return (
-                  <Card 
-                    key={communication.id} 
+                  <Card
+                    key={communication.id}
                     className={`cursor-pointer transition-colors hover:bg-gray-50 ${!isRead ? 'border-blue-500 bg-blue-50' : ''}`}
                     onClick={() => openCommunicationDialog(communication)}
                   >
@@ -325,10 +338,14 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
                             <div className="flex items-center space-x-2 mb-1">
                               <h4 className="font-semibold truncate">{communication.subject}</h4>
                               {!isRead && (
-                                <Badge variant="default" className="text-xs">New</Badge>
+                                <Badge variant="default" className="text-xs">
+                                  New
+                                </Badge>
                               )}
                               {isFromMe && (
-                                <Badge variant="outline" className="text-xs">Sent</Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  Sent
+                                </Badge>
                               )}
                             </div>
                             <p className="text-sm text-gray-600 mb-2 line-clamp-2">
@@ -342,8 +359,9 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
                               <span className="flex items-center space-x-1">
                                 <User className="w-3 h-3" />
                                 <span>
-                                  {communication.sender === userAddress ? 'You' : 
-                                   `${communication.sender.slice(0, 6)}...${communication.sender.slice(-4)}`}
+                                  {communication.sender === userAddress
+                                    ? 'You'
+                                    : `${communication.sender.slice(0, 6)}...${communication.sender.slice(-4)}`}
                                 </span>
                               </span>
                               <span className="flex items-center space-x-1">
@@ -425,30 +443,34 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Proposal *</label>
-                  <Select 
-                    value={composeForm.proposal_id} 
-                    onValueChange={(value) => setComposeForm(prev => ({ ...prev, proposal_id: value }))}
+                  <Select
+                    value={composeForm.proposal_id}
+                    onValueChange={value =>
+                      setComposeForm(prev => ({ ...prev, proposal_id: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a proposal" />
                     </SelectTrigger>
                     <SelectContent>
-                      {proposals.filter(proposal => 
-                        isAdmin || proposal.proposed_by === userAddress
-                      ).map(proposal => (
-                        <SelectItem key={proposal.id} value={proposal.id.toString()}>
-                          {proposal.title}
-                        </SelectItem>
-                      ))}
+                      {proposals
+                        .filter(proposal => isAdmin || proposal.proposed_by === userAddress)
+                        .map(proposal => (
+                          <SelectItem key={proposal.id} value={proposal.id.toString()}>
+                            {proposal.title}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Message Type *</label>
-                  <Select 
-                    value={composeForm.message_type} 
-                    onValueChange={(value) => setComposeForm(prev => ({ ...prev, message_type: value }))}
+                  <Select
+                    value={composeForm.message_type}
+                    onValueChange={value =>
+                      setComposeForm(prev => ({ ...prev, message_type: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -468,7 +490,7 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
                 <label className="text-sm font-medium">Subject *</label>
                 <Input
                   value={composeForm.subject}
-                  onChange={(e) => setComposeForm(prev => ({ ...prev, subject: e.target.value }))}
+                  onChange={e => setComposeForm(prev => ({ ...prev, subject: e.target.value }))}
                   placeholder="Enter message subject"
                 />
               </div>
@@ -477,32 +499,26 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
                 <label className="text-sm font-medium">Message *</label>
                 <Textarea
                   value={composeForm.content}
-                  onChange={(e) => setComposeForm(prev => ({ ...prev, content: e.target.value }))}
+                  onChange={e => setComposeForm(prev => ({ ...prev, content: e.target.value }))}
                   placeholder="Write your message here..."
                   rows={6}
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Recipients (Optional - leave empty to send to all stakeholders)</label>
+                <label className="text-sm font-medium">
+                  Recipients (Optional - leave empty to send to all stakeholders)
+                </label>
                 <div className="space-y-2">
                   {composeForm.recipients.map((address, index) => (
                     <div key={index} className="flex items-center space-x-2">
-                      <Input
-                        value={address}
-                        readOnly
-                        className="flex-1"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeRecipient(address)}
-                      >
+                      <Input value={address} readOnly className="flex-1" />
+                      <Button variant="outline" size="sm" onClick={() => removeRecipient(address)}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   ))}
-                  
+
                   <Select onValueChange={addRecipient}>
                     <SelectTrigger>
                       <SelectValue placeholder="Add specific stakeholders" />
@@ -512,8 +528,8 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
                         .filter(s => !composeForm.recipients.includes(s.address))
                         .map(stakeholder => (
                           <SelectItem key={stakeholder.address} value={stakeholder.address}>
-                            {stakeholder.address.slice(0, 6)}...{stakeholder.address.slice(-4)} 
-                            ({stakeholder.voting_power} voting power)
+                            {stakeholder.address.slice(0, 6)}...{stakeholder.address.slice(-4)}(
+                            {stakeholder.voting_power} voting power)
                           </SelectItem>
                         ))}
                     </SelectContent>
@@ -522,21 +538,28 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
               </div>
 
               <div className="flex justify-end space-x-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setComposeForm({
-                    proposal_id: '',
-                    message_type: 'ANNOUNCEMENT',
-                    subject: '',
-                    content: '',
-                    recipients: []
-                  })}
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setComposeForm({
+                      proposal_id: '',
+                      message_type: 'ANNOUNCEMENT',
+                      subject: '',
+                      content: '',
+                      recipients: [],
+                    })
+                  }
                 >
                   Clear
                 </Button>
-                <Button 
+                <Button
                   onClick={handleSendMessage}
-                  disabled={isSending || !composeForm.proposal_id || !composeForm.subject || !composeForm.content}
+                  disabled={
+                    isSending ||
+                    !composeForm.proposal_id ||
+                    !composeForm.subject ||
+                    !composeForm.content
+                  }
                 >
                   {isSending ? 'Sending...' : 'Send Message'}
                 </Button>
@@ -584,12 +607,17 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {communications.length > 0 ? 
-                    Math.round(
-                      communications.reduce((sum, comm) => 
-                        sum + (comm.read_receipts.includes(userAddress) ? 1 : 0), 0
-                    ) / communications.length * 100
-                    ) : 0}%
+                  {communications.length > 0
+                    ? Math.round(
+                        (communications.reduce(
+                          (sum, comm) => sum + (comm.read_receipts.includes(userAddress) ? 1 : 0),
+                          0
+                        ) /
+                          communications.length) *
+                          100
+                      )
+                    : 0}
+                  %
                 </div>
                 <p className="text-sm text-gray-600">Messages read</p>
               </CardContent>
@@ -617,17 +645,20 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
               <div className="space-y-4">
                 {['ANNOUNCEMENT', 'WARNING', 'UPDATE', 'QUESTION', 'URGENT'].map(type => {
                   const count = communications.filter(c => c.message_type === type).length;
-                  const percentage = communications.length > 0 ? (count / communications.length) * 100 : 0;
-                  
+                  const percentage =
+                    communications.length > 0 ? (count / communications.length) * 100 : 0;
+
                   return (
                     <div key={type} className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">{type}</span>
-                        <span className="text-sm text-gray-600">{count} messages ({percentage.toFixed(1)}%)</span>
+                        <span className="text-sm text-gray-600">
+                          {count} messages ({percentage.toFixed(1)}%)
+                        </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
@@ -646,15 +677,17 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
           <DialogHeader>
             <DialogTitle>{selectedCommunication?.subject}</DialogTitle>
           </DialogHeader>
-          
+
           {selectedCommunication && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline">{selectedCommunication.message_type}</Badge>
                   <span className="text-sm text-gray-600">
-                    From: {selectedCommunication.sender === userAddress ? 'You' : 
-                     `${selectedCommunication.sender.slice(0, 6)}...${selectedCommunication.sender.slice(-4)}`}
+                    From:{' '}
+                    {selectedCommunication.sender === userAddress
+                      ? 'You'
+                      : `${selectedCommunication.sender.slice(0, 6)}...${selectedCommunication.sender.slice(-4)}`}
                   </span>
                 </div>
                 <span className="text-sm text-gray-600">
@@ -663,12 +696,16 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
               </div>
 
               <div className="p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-semibold mb-2">Proposal: {selectedCommunication.proposal_title}</h4>
+                <h4 className="font-semibold mb-2">
+                  Proposal: {selectedCommunication.proposal_title}
+                </h4>
                 <p className="text-gray-700 whitespace-pre-wrap">{selectedCommunication.content}</p>
               </div>
 
               <div className="space-y-2">
-                <h4 className="font-semibold">Recipients ({selectedCommunication.recipients.length})</h4>
+                <h4 className="font-semibold">
+                  Recipients ({selectedCommunication.recipients.length})
+                </h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedCommunication.recipients.map((recipient, index) => (
                     <Badge key={index} variant="outline" className="text-xs">
@@ -683,7 +720,8 @@ const CommunicationTools = ({ contract, userAddress, isAdmin, isProposalCreator 
 
               <div className="flex justify-between items-center pt-4 border-t">
                 <div className="text-sm text-gray-600">
-                  {selectedCommunication.read_receipts.length} of {selectedCommunication.recipients.length} have read this message
+                  {selectedCommunication.read_receipts.length} of{' '}
+                  {selectedCommunication.recipients.length} have read this message
                 </div>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm">

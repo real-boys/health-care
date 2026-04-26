@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
 import { io } from 'socket.io-client';
-import { Bell, X, Check, Settings, AlertTriangle, Info, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+  Bell,
+  X,
+  Check,
+  Settings,
+  AlertTriangle,
+  Info,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
 
 // Notification Context
 const NotificationContext = createContext();
@@ -26,7 +35,7 @@ export const NotificationProvider = ({ children, userId }) => {
 
     // Initialize socket connection
     const newSocket = io(process.env.REACT_APP_SERVER_URL || 'http://localhost:5000', {
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
     });
 
     newSocket.on('connect', () => {
@@ -34,15 +43,15 @@ export const NotificationProvider = ({ children, userId }) => {
       newSocket.emit('join-patient-room', userId);
     });
 
-    newSocket.on('notification', (notification) => {
+    newSocket.on('notification', notification => {
       setNotifications(prev => [notification, ...prev]);
       setUnreadCount(prev => prev + 1);
-      
+
       // Show browser notification if permitted
       if (Notification.permission === 'granted') {
         new Notification(notification.title, {
           body: notification.message,
-          icon: '/favicon.ico'
+          icon: '/favicon.ico',
         });
       }
     });
@@ -76,8 +85,8 @@ export const NotificationProvider = ({ children, userId }) => {
       const token = localStorage.getItem('token');
       const response = await fetch('/api/notifications', {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
@@ -92,23 +101,23 @@ export const NotificationProvider = ({ children, userId }) => {
     }
   };
 
-  const markAsRead = async (notificationId) => {
+  const markAsRead = async notificationId => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`/api/notifications/${notificationId}/read`, {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
 
       if (response.ok) {
-        setNotifications(prev => 
-          prev.map(n => n.notification_id === notificationId ? { ...n, status: 'read' } : n)
+        setNotifications(prev =>
+          prev.map(n => (n.notification_id === notificationId ? { ...n, status: 'read' } : n))
         );
         setUnreadCount(prev => Math.max(0, prev - 1));
-        
+
         // Notify socket server
         socket?.emit('mark-notification-read', { notificationId, userId });
       }
@@ -123,9 +132,9 @@ export const NotificationProvider = ({ children, userId }) => {
       const response = await fetch('/api/notifications/mark-all-read', {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
 
       if (response.ok) {
@@ -144,14 +153,10 @@ export const NotificationProvider = ({ children, userId }) => {
     setIsOpen,
     markAsRead,
     markAllAsRead,
-    loading
+    loading,
   };
 
-  return (
-    <NotificationContext.Provider value={value}>
-      {children}
-    </NotificationContext.Provider>
-  );
+  return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 };
 
 // Notification Bell Component
@@ -177,21 +182,14 @@ export const NotificationBell = () => {
 
 // Notification Dropdown Component
 export const NotificationDropdown = () => {
-  const { 
-    notifications, 
-    unreadCount, 
-    isOpen, 
-    setIsOpen, 
-    markAsRead, 
-    markAllAsRead, 
-    loading 
-  } = useNotifications();
+  const { notifications, unreadCount, isOpen, setIsOpen, markAsRead, markAllAsRead, loading } =
+    useNotifications();
 
   if (!isOpen) return null;
 
   const getNotificationIcon = (type, priority) => {
-    const iconClass = "h-5 w-5";
-    
+    const iconClass = 'h-5 w-5';
+
     switch (priority) {
       case 'urgent':
         return <AlertTriangle className={`${iconClass} text-red-500`} />;
@@ -211,7 +209,7 @@ export const NotificationDropdown = () => {
     }
   };
 
-  const formatTime = (timestamp) => {
+  const formatTime = timestamp => {
     const date = new Date(timestamp);
     const now = new Date();
     const diffInMinutes = Math.floor((now - date) / (1000 * 60));
@@ -229,17 +227,11 @@ export const NotificationDropdown = () => {
           <h3 className="text-lg font-semibold">Notifications</h3>
           <div className="flex items-center space-x-2">
             {unreadCount > 0 && (
-              <button
-                onClick={markAllAsRead}
-                className="text-sm text-blue-600 hover:text-blue-800"
-              >
+              <button onClick={markAllAsRead} className="text-sm text-blue-600 hover:text-blue-800">
                 Mark all as read
               </button>
             )}
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-gray-600"
-            >
+            <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -248,15 +240,11 @@ export const NotificationDropdown = () => {
 
       <div className="overflow-y-auto max-h-80">
         {loading ? (
-          <div className="p-4 text-center text-gray-500">
-            Loading notifications...
-          </div>
+          <div className="p-4 text-center text-gray-500">Loading notifications...</div>
         ) : notifications.length === 0 ? (
-          <div className="p-4 text-center text-gray-500">
-            No notifications yet
-          </div>
+          <div className="p-4 text-center text-gray-500">No notifications yet</div>
         ) : (
-          notifications.map((notification) => (
+          notifications.map(notification => (
             <div
               key={notification.notification_id}
               className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
@@ -281,16 +269,19 @@ export const NotificationDropdown = () => {
                       {formatTime(notification.created_at)}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {notification.message}
-                  </p>
+                  <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
                   <div className="flex items-center justify-between mt-2">
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      notification.type === 'claim' ? 'bg-blue-100 text-blue-800' :
-                      notification.type === 'payment' ? 'bg-green-100 text-green-800' :
-                      notification.type === 'appointment' ? 'bg-purple-100 text-purple-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        notification.type === 'claim'
+                          ? 'bg-blue-100 text-blue-800'
+                          : notification.type === 'payment'
+                            ? 'bg-green-100 text-green-800'
+                            : notification.type === 'appointment'
+                              ? 'bg-purple-100 text-purple-800'
+                              : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
                       {notification.type}
                     </span>
                     {notification.status !== 'read' && (
@@ -334,8 +325,8 @@ export const NotificationSettings = () => {
       const token = localStorage.getItem('token');
       const response = await fetch('/api/notifications/preferences', {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
@@ -356,10 +347,10 @@ export const NotificationSettings = () => {
       const response = await fetch('/api/notifications/preferences', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ preferences })
+        body: JSON.stringify({ preferences }),
       });
 
       if (response.ok) {
@@ -379,8 +370,8 @@ export const NotificationSettings = () => {
       ...prev,
       [type]: {
         ...prev[type],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
@@ -389,7 +380,11 @@ export const NotificationSettings = () => {
     { key: 'payment', label: 'Payments', description: 'Payment reminders and confirmations' },
     { key: 'appointment', label: 'Appointments', description: 'Appointment reminders and updates' },
     { key: 'system', label: 'System', description: 'System updates and maintenance' },
-    { key: 'medical_record', label: 'Medical Records', description: 'Updates to your medical records' }
+    {
+      key: 'medical_record',
+      label: 'Medical Records',
+      description: 'Updates to your medical records',
+    },
   ];
 
   if (loading) {
@@ -401,14 +396,12 @@ export const NotificationSettings = () => {
       <div className="bg-white rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">Notification Settings</h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Manage how you receive notifications
-          </p>
+          <p className="text-sm text-gray-600 mt-1">Manage how you receive notifications</p>
         </div>
 
         <div className="p-6">
           <div className="space-y-6">
-            {notificationTypes.map((type) => (
+            {notificationTypes.map(type => (
               <div key={type.key} className="border-b border-gray-200 pb-6 last:border-0">
                 <div className="mb-4">
                   <h3 className="text-lg font-medium text-gray-900">{type.label}</h3>
@@ -421,7 +414,7 @@ export const NotificationSettings = () => {
                       type="checkbox"
                       id={`${type.key}-email`}
                       checked={preferences[type.key]?.email_enabled || false}
-                      onChange={(e) => updatePreference(type.key, 'email_enabled', e.target.checked)}
+                      onChange={e => updatePreference(type.key, 'email_enabled', e.target.checked)}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label htmlFor={`${type.key}-email`} className="ml-2 text-sm text-gray-700">
@@ -434,7 +427,7 @@ export const NotificationSettings = () => {
                       type="checkbox"
                       id={`${type.key}-sms`}
                       checked={preferences[type.key]?.sms_enabled || false}
-                      onChange={(e) => updatePreference(type.key, 'sms_enabled', e.target.checked)}
+                      onChange={e => updatePreference(type.key, 'sms_enabled', e.target.checked)}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label htmlFor={`${type.key}-sms`} className="ml-2 text-sm text-gray-700">
@@ -447,7 +440,7 @@ export const NotificationSettings = () => {
                       type="checkbox"
                       id={`${type.key}-push`}
                       checked={preferences[type.key]?.push_enabled || false}
-                      onChange={(e) => updatePreference(type.key, 'push_enabled', e.target.checked)}
+                      onChange={e => updatePreference(type.key, 'push_enabled', e.target.checked)}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label htmlFor={`${type.key}-push`} className="ml-2 text-sm text-gray-700">
@@ -460,7 +453,7 @@ export const NotificationSettings = () => {
                       type="checkbox"
                       id={`${type.key}-in_app`}
                       checked={preferences[type.key]?.in_app_enabled || false}
-                      onChange={(e) => updatePreference(type.key, 'in_app_enabled', e.target.checked)}
+                      onChange={e => updatePreference(type.key, 'in_app_enabled', e.target.checked)}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label htmlFor={`${type.key}-in_app`} className="ml-2 text-sm text-gray-700">
@@ -476,7 +469,7 @@ export const NotificationSettings = () => {
                     </label>
                     <select
                       value={preferences[type.key]?.frequency || 'immediate'}
-                      onChange={(e) => updatePreference(type.key, 'frequency', e.target.value)}
+                      onChange={e => updatePreference(type.key, 'frequency', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="immediate">Immediate</option>
@@ -494,7 +487,9 @@ export const NotificationSettings = () => {
                       <input
                         type="time"
                         value={preferences[type.key]?.quiet_hours_start || ''}
-                        onChange={(e) => updatePreference(type.key, 'quiet_hours_start', e.target.value)}
+                        onChange={e =>
+                          updatePreference(type.key, 'quiet_hours_start', e.target.value)
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
@@ -505,7 +500,9 @@ export const NotificationSettings = () => {
                       <input
                         type="time"
                         value={preferences[type.key]?.quiet_hours_end || ''}
-                        onChange={(e) => updatePreference(type.key, 'quiet_hours_end', e.target.value)}
+                        onChange={e =>
+                          updatePreference(type.key, 'quiet_hours_end', e.target.value)
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>

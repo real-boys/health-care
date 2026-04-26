@@ -53,10 +53,10 @@ export default function CrossChainStatusTracker() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Network</label>
             <select
               value={networkId}
-              onChange={(e) => setNetworkId(e.target.value)}
+              onChange={e => setNetworkId(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {networks.map((n) => (
+              {networks.map(n => (
                 <option key={n.id} value={n.id}>
                   {n.displayName}
                 </option>
@@ -69,7 +69,7 @@ export default function CrossChainStatusTracker() {
             <div className="flex gap-2">
               <input
                 value={txHash}
-                onChange={(e) => setTxHash(e.target.value.trim())}
+                onChange={e => setTxHash(e.target.value.trim())}
                 placeholder="0x… (EVM) or Stellar tx hash"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -78,7 +78,11 @@ export default function CrossChainStatusTracker() {
                 disabled={loading || !txHash}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
               >
-                {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                {loading ? (
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Search className="w-4 h-4" />
+                )}
                 Track
               </button>
             </div>
@@ -151,4 +155,3 @@ export default function CrossChainStatusTracker() {
     </div>
   );
 }
-

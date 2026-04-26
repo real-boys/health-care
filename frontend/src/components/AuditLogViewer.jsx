@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Download, Calendar, Shield, AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
+import {
+  Search,
+  Filter,
+  Download,
+  Calendar,
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Clock,
+} from 'lucide-react';
 import axios from 'axios';
 
 const AuditLogViewer = () => {
@@ -15,12 +25,12 @@ const AuditLogViewer = () => {
     max_risk_score: '',
     success: '',
     ip_address: '',
-    limit: 50
+    limit: 50,
   });
   const [pagination, setPagination] = useState({
     offset: 0,
     total: 0,
-    hasMore: true
+    hasMore: true,
   });
   const [showFilters, setShowFilters] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
@@ -30,7 +40,7 @@ const AuditLogViewer = () => {
     try {
       const params = {
         ...filters,
-        offset: reset ? 0 : pagination.offset
+        offset: reset ? 0 : pagination.offset,
       };
 
       // Remove empty filters
@@ -41,21 +51,21 @@ const AuditLogViewer = () => {
       });
 
       const response = await axios.get('/api/audit/logs', { params });
-      
+
       if (reset) {
         setLogs(response.data.data);
         setPagination(prev => ({
           ...prev,
           offset: 0,
           total: response.data.total,
-          hasMore: response.data.data.length >= filters.limit
+          hasMore: response.data.data.length >= filters.limit,
         }));
       } else {
         setLogs(prev => [...prev, ...response.data.data]);
         setPagination(prev => ({
           ...prev,
           offset: prev.offset + response.data.data.length,
-          hasMore: response.data.data.length >= filters.limit
+          hasMore: response.data.data.length >= filters.limit,
         }));
       }
     } catch (error) {
@@ -72,7 +82,7 @@ const AuditLogViewer = () => {
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -91,7 +101,7 @@ const AuditLogViewer = () => {
       max_risk_score: '',
       success: '',
       ip_address: '',
-      limit: 50
+      limit: 50,
     });
     fetchLogs(true);
   };
@@ -107,8 +117,9 @@ const AuditLogViewer = () => {
       const params = {
         ...filters,
         format,
-        start_date: filters.start_date || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        end_date: filters.end_date || new Date().toISOString()
+        start_date:
+          filters.start_date || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        end_date: filters.end_date || new Date().toISOString(),
       };
 
       Object.keys(params).forEach(key => {
@@ -118,7 +129,7 @@ const AuditLogViewer = () => {
       });
 
       const response = await axios.post('/api/audit/export', params, {
-        responseType: format === 'CSV' ? 'blob' : 'json'
+        responseType: format === 'CSV' ? 'blob' : 'json',
       });
 
       if (format === 'CSV') {
@@ -131,7 +142,9 @@ const AuditLogViewer = () => {
         window.URL.revokeObjectURL(url);
       } else {
         // Handle JSON export
-        const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+        const blob = new Blob([JSON.stringify(response.data, null, 2)], {
+          type: 'application/json',
+        });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -144,25 +157,31 @@ const AuditLogViewer = () => {
     }
   };
 
-  const getSeverityColor = (riskScore) => {
+  const getSeverityColor = riskScore => {
     if (riskScore >= 90) return 'text-red-600 bg-red-50';
     if (riskScore >= 70) return 'text-orange-600 bg-orange-50';
     if (riskScore >= 40) return 'text-yellow-600 bg-yellow-50';
     return 'text-green-600 bg-green-50';
   };
 
-  const getActionIcon = (action) => {
+  const getActionIcon = action => {
     switch (action) {
-      case 'CREATE': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'READ': return <Search className="w-4 h-4 text-blue-500" />;
-      case 'UPDATE': return <Clock className="w-4 h-4 text-yellow-500" />;
-      case 'DELETE': return <XCircle className="w-4 h-4 text-red-500" />;
-      case 'EXPORT': return <Download className="w-4 h-4 text-purple-500" />;
-      default: return <Shield className="w-4 h-4 text-gray-500" />;
+      case 'CREATE':
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'READ':
+        return <Search className="w-4 h-4 text-blue-500" />;
+      case 'UPDATE':
+        return <Clock className="w-4 h-4 text-yellow-500" />;
+      case 'DELETE':
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      case 'EXPORT':
+        return <Download className="w-4 h-4 text-purple-500" />;
+      default:
+        return <Shield className="w-4 h-4 text-gray-500" />;
     }
   };
 
-  const formatDate = (timestamp) => {
+  const formatDate = timestamp => {
     return new Date(timestamp).toLocaleString();
   };
 
@@ -174,7 +193,9 @@ const AuditLogViewer = () => {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Audit Logs</h1>
-              <p className="text-gray-600 mt-1">Comprehensive audit trail viewer with advanced filtering</p>
+              <p className="text-gray-600 mt-1">
+                Comprehensive audit trail viewer with advanced filtering
+              </p>
             </div>
             <div className="flex space-x-3">
               <button
@@ -205,7 +226,7 @@ const AuditLogViewer = () => {
                 <input
                   type="text"
                   value={filters.user_id}
-                  onChange={(e) => handleFilterChange('user_id', e.target.value)}
+                  onChange={e => handleFilterChange('user_id', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter user ID"
                 />
@@ -214,7 +235,7 @@ const AuditLogViewer = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
                 <select
                   value={filters.action}
-                  onChange={(e) => handleFilterChange('action', e.target.value)}
+                  onChange={e => handleFilterChange('action', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Actions</option>
@@ -228,10 +249,12 @@ const AuditLogViewer = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Resource Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Resource Type
+                </label>
                 <select
                   value={filters.resource_type}
-                  onChange={(e) => handleFilterChange('resource_type', e.target.value)}
+                  onChange={e => handleFilterChange('resource_type', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Resources</option>
@@ -247,7 +270,7 @@ const AuditLogViewer = () => {
                 <input
                   type="datetime-local"
                   value={filters.start_date}
-                  onChange={(e) => handleFilterChange('start_date', e.target.value)}
+                  onChange={e => handleFilterChange('start_date', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -256,7 +279,7 @@ const AuditLogViewer = () => {
                 <input
                   type="datetime-local"
                   value={filters.end_date}
-                  onChange={(e) => handleFilterChange('end_date', e.target.value)}
+                  onChange={e => handleFilterChange('end_date', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -265,31 +288,35 @@ const AuditLogViewer = () => {
                 <input
                   type="text"
                   value={filters.ip_address}
-                  onChange={(e) => handleFilterChange('ip_address', e.target.value)}
+                  onChange={e => handleFilterChange('ip_address', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter IP address"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Min Risk Score</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Min Risk Score
+                </label>
                 <input
                   type="number"
                   min="0"
                   max="100"
                   value={filters.min_risk_score}
-                  onChange={(e) => handleFilterChange('min_risk_score', e.target.value)}
+                  onChange={e => handleFilterChange('min_risk_score', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="0-100"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Max Risk Score</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Max Risk Score
+                </label>
                 <input
                   type="number"
                   min="0"
                   max="100"
                   value={filters.max_risk_score}
-                  onChange={(e) => handleFilterChange('max_risk_score', e.target.value)}
+                  onChange={e => handleFilterChange('max_risk_score', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="0-100"
                 />
@@ -298,7 +325,7 @@ const AuditLogViewer = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   value={filters.success}
-                  onChange={(e) => handleFilterChange('success', e.target.value)}
+                  onChange={e => handleFilterChange('success', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Status</option>
@@ -329,9 +356,7 @@ const AuditLogViewer = () => {
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">Audit Log Entries</h3>
-              <span className="text-sm text-gray-500">
-                {pagination.total} records found
-              </span>
+              <span className="text-sm text-gray-500">{pagination.total} records found</span>
             </div>
           </div>
 
@@ -366,7 +391,7 @@ const AuditLogViewer = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {logs.map((log) => (
+                {logs.map(log => (
                   <tr key={log.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDate(log.timestamp)}
@@ -395,14 +420,18 @@ const AuditLogViewer = () => {
                       {log.ip_address}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(log.risk_score)}`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(log.risk_score)}`}
+                      >
                         {log.risk_score}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        log.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          log.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {log.success ? 'Success' : 'Failed'}
                       </span>
                     </td>
@@ -472,7 +501,9 @@ const AuditLogViewer = () => {
                       </div>
                       <div className="flex justify-between">
                         <dt className="text-sm font-medium text-gray-500">Timestamp:</dt>
-                        <dd className="text-sm text-gray-900">{formatDate(selectedLog.timestamp)}</dd>
+                        <dd className="text-sm text-gray-900">
+                          {formatDate(selectedLog.timestamp)}
+                        </dd>
                       </div>
                       <div className="flex justify-between">
                         <dt className="text-sm font-medium text-gray-500">User ID:</dt>
@@ -510,7 +541,9 @@ const AuditLogViewer = () => {
                       </div>
                       <div className="flex justify-between">
                         <dt className="text-sm font-medium text-gray-500">User Agent:</dt>
-                        <dd className="text-sm text-gray-900 truncate max-w-xs">{selectedLog.user_agent}</dd>
+                        <dd className="text-sm text-gray-900 truncate max-w-xs">
+                          {selectedLog.user_agent}
+                        </dd>
                       </div>
                       <div className="flex justify-between">
                         <dt className="text-sm font-medium text-gray-500">Status Code:</dt>

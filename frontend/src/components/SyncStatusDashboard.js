@@ -14,7 +14,7 @@ import {
   BarChart3,
   Calendar,
   Search,
-  X
+  X,
 } from 'lucide-react';
 
 const SyncStatusDashboard = () => {
@@ -26,14 +26,14 @@ const SyncStatusDashboard = () => {
   const [filters, setFilters] = useState({
     status: 'all',
     dateRange: '24h',
-    search: ''
+    search: '',
   });
   const [metrics, setMetrics] = useState({
     total: 0,
     completed: 0,
     failed: 0,
     inProgress: 0,
-    successRate: 0
+    successRate: 0,
   });
 
   // Sample data for demonstration
@@ -55,8 +55,8 @@ const SyncStatusDashboard = () => {
       metadata: {
         version: 'v2.5',
         facility: 'Main Hospital',
-        department: 'Emergency'
-      }
+        department: 'Emergency',
+      },
     },
     {
       id: 2,
@@ -75,8 +75,8 @@ const SyncStatusDashboard = () => {
       metadata: {
         version: 'v2.5',
         facility: 'Main Hospital',
-        department: 'Laboratory'
-      }
+        department: 'Laboratory',
+      },
     },
     {
       id: 3,
@@ -95,8 +95,8 @@ const SyncStatusDashboard = () => {
       metadata: {
         version: 'v2.5',
         facility: 'Main Hospital',
-        department: 'Radiology'
-      }
+        department: 'Radiology',
+      },
     },
     {
       id: 4,
@@ -115,8 +115,8 @@ const SyncStatusDashboard = () => {
       metadata: {
         version: 'v2.5',
         facility: 'Main Hospital',
-        department: 'Pharmacy'
-      }
+        department: 'Pharmacy',
+      },
     },
     {
       id: 5,
@@ -135,9 +135,9 @@ const SyncStatusDashboard = () => {
       metadata: {
         version: 'v2.5',
         facility: 'Main Hospital',
-        department: 'Billing'
-      }
-    }
+        department: 'Billing',
+      },
+    },
   ];
 
   useEffect(() => {
@@ -172,7 +172,7 @@ const SyncStatusDashboard = () => {
     // Date range filter
     const now = new Date();
     const cutoffTime = new Date();
-    
+
     switch (filters.dateRange) {
       case '1h':
         cutoffTime.setHours(now.getHours() - 1);
@@ -189,19 +189,18 @@ const SyncStatusDashboard = () => {
     }
 
     if (filters.dateRange !== 'all') {
-      filtered = filtered.filter(item => 
-        item.startTime && new Date(item.startTime) >= cutoffTime
-      );
+      filtered = filtered.filter(item => item.startTime && new Date(item.startTime) >= cutoffTime);
     }
 
     // Search filter
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
-      filtered = filtered.filter(item =>
-        item.configName.toLowerCase().includes(searchTerm) ||
-        item.sourceSystem.toLowerCase().includes(searchTerm) ||
-        item.targetSystem.toLowerCase().includes(searchTerm) ||
-        item.messageType.toLowerCase().includes(searchTerm)
+      filtered = filtered.filter(
+        item =>
+          item.configName.toLowerCase().includes(searchTerm) ||
+          item.sourceSystem.toLowerCase().includes(searchTerm) ||
+          item.targetSystem.toLowerCase().includes(searchTerm) ||
+          item.messageType.toLowerCase().includes(searchTerm)
       );
     }
 
@@ -209,12 +208,12 @@ const SyncStatusDashboard = () => {
     calculateMetrics(filtered);
   };
 
-  const calculateMetrics = (data) => {
+  const calculateMetrics = data => {
     const total = data.length;
     const completed = data.filter(item => item.status === 'completed').length;
     const failed = data.filter(item => item.status === 'failed').length;
     const inProgress = data.filter(item => item.status === 'in_progress').length;
-    
+
     const successRate = total > 0 ? ((completed / total) * 100).toFixed(1) : 0;
 
     setMetrics({
@@ -222,11 +221,11 @@ const SyncStatusDashboard = () => {
       completed,
       failed,
       inProgress,
-      successRate
+      successRate,
     });
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = status => {
     switch (status) {
       case 'completed':
         return <CheckCircle className="w-5 h-5 text-green-600" />;
@@ -241,7 +240,7 @@ const SyncStatusDashboard = () => {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
       case 'completed':
         return 'bg-green-100 text-green-800';
@@ -256,12 +255,12 @@ const SyncStatusDashboard = () => {
     }
   };
 
-  const formatDuration = (duration) => {
+  const formatDuration = duration => {
     if (!duration) return '-';
     const seconds = Math.floor(duration / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
     } else if (minutes > 0) {
@@ -274,7 +273,16 @@ const SyncStatusDashboard = () => {
   const handleExportData = () => {
     // Export functionality
     const csvContent = [
-      ['Configuration', 'Status', 'Start Time', 'End Time', 'Duration', 'Records', 'Processed', 'Errors'],
+      [
+        'Configuration',
+        'Status',
+        'Start Time',
+        'End Time',
+        'Duration',
+        'Records',
+        'Processed',
+        'Errors',
+      ],
       ...filteredStatus.map(item => [
         item.configName,
         item.status,
@@ -283,9 +291,11 @@ const SyncStatusDashboard = () => {
         formatDuration(item.duration),
         item.recordCount,
         item.processedCount,
-        item.errorCount
-      ])
-    ].map(row => row.join(',')).join('\n');
+        item.errorCount,
+      ]),
+    ]
+      .map(row => row.join(','))
+      .join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -296,7 +306,7 @@ const SyncStatusDashboard = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  const handleRetrySync = async (syncId) => {
+  const handleRetrySync = async syncId => {
     try {
       // API call to retry sync
       console.log('Retrying sync:', syncId);
@@ -314,7 +324,9 @@ const SyncStatusDashboard = () => {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Sync Status Dashboard</h1>
-              <p className="mt-2 text-gray-600">Monitor and manage data synchronization activities</p>
+              <p className="mt-2 text-gray-600">
+                Monitor and manage data synchronization activities
+              </p>
             </div>
             <div className="flex gap-3">
               <button
@@ -396,10 +408,10 @@ const SyncStatusDashboard = () => {
               <Filter className="w-4 h-4 text-gray-500" />
               <span className="text-sm font-medium text-gray-700">Filters:</span>
             </div>
-            
+
             <select
               value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              onChange={e => setFilters({ ...filters, status: e.target.value })}
               className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Status</option>
@@ -411,7 +423,7 @@ const SyncStatusDashboard = () => {
 
             <select
               value={filters.dateRange}
-              onChange={(e) => setFilters({ ...filters, dateRange: e.target.value })}
+              onChange={e => setFilters({ ...filters, dateRange: e.target.value })}
               className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="1h">Last Hour</option>
@@ -426,7 +438,7 @@ const SyncStatusDashboard = () => {
               <input
                 type="text"
                 value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                onChange={e => setFilters({ ...filters, search: e.target.value })}
                 placeholder="Search configurations..."
                 className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -470,19 +482,23 @@ const SyncStatusDashboard = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredStatus.map((sync) => (
+                {filteredStatus.map(sync => (
                   <tr key={sync.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-gray-900">{sync.configName}</div>
-                        <div className="text-sm text-gray-500">{sync.sourceSystem} → {sync.targetSystem}</div>
+                        <div className="text-sm text-gray-500">
+                          {sync.sourceSystem} → {sync.targetSystem}
+                        </div>
                         <div className="text-xs text-gray-400">{sync.messageType}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         {getStatusIcon(sync.status)}
-                        <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(sync.status)}`}>
+                        <span
+                          className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(sync.status)}`}
+                        >
                           {sync.status.replace('_', ' ')}
                         </span>
                       </div>
@@ -557,7 +573,9 @@ const SyncStatusDashboard = () => {
                       </div>
                       <div>
                         <span className="text-gray-500">Status:</span>
-                        <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedStatus.status)}`}>
+                        <span
+                          className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedStatus.status)}`}
+                        >
                           {selectedStatus.status.replace('_', ' ')}
                         </span>
                       </div>
@@ -567,7 +585,9 @@ const SyncStatusDashboard = () => {
                       </div>
                       <div>
                         <span className="text-gray-500">Duration:</span>
-                        <span className="ml-2 font-medium">{formatDuration(selectedStatus.duration)}</span>
+                        <span className="ml-2 font-medium">
+                          {formatDuration(selectedStatus.duration)}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -578,7 +598,9 @@ const SyncStatusDashboard = () => {
                     <div className="bg-gray-200 rounded-full h-4 mb-2">
                       <div
                         className="bg-blue-600 h-4 rounded-full"
-                        style={{ width: `${(selectedStatus.processedCount / selectedStatus.recordCount) * 100}%` }}
+                        style={{
+                          width: `${(selectedStatus.processedCount / selectedStatus.recordCount) * 100}%`,
+                        }}
                       ></div>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -597,13 +619,17 @@ const SyncStatusDashboard = () => {
                       <div>
                         <span className="text-gray-500">Start Time:</span>
                         <span className="ml-2 font-medium">
-                          {selectedStatus.startTime ? new Date(selectedStatus.startTime).toLocaleString() : '-'}
+                          {selectedStatus.startTime
+                            ? new Date(selectedStatus.startTime).toLocaleString()
+                            : '-'}
                         </span>
                       </div>
                       <div>
                         <span className="text-gray-500">End Time:</span>
                         <span className="ml-2 font-medium">
-                          {selectedStatus.endTime ? new Date(selectedStatus.endTime).toLocaleString() : '-'}
+                          {selectedStatus.endTime
+                            ? new Date(selectedStatus.endTime).toLocaleString()
+                            : '-'}
                         </span>
                       </div>
                     </div>

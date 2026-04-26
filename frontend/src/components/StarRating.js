@@ -9,7 +9,7 @@ const StarRating = ({
   onChange,
   showValue = true,
   color = 'yellow',
-  className = ''
+  className = '',
 }) => {
   const [hoverValue, setHoverValue] = useState(0);
   const [rating, setRating] = useState(value);
@@ -18,7 +18,7 @@ const StarRating = ({
     sm: 'w-4 h-4',
     md: 'w-6 h-6',
     lg: 'w-8 h-8',
-    xl: 'w-10 h-10'
+    xl: 'w-10 h-10',
   };
 
   const colorClasses = {
@@ -26,12 +26,12 @@ const StarRating = ({
     blue: 'text-blue-400',
     green: 'text-green-400',
     red: 'text-red-400',
-    purple: 'text-purple-400'
+    purple: 'text-purple-400',
   };
 
-  const handleStarClick = (starValue) => {
+  const handleStarClick = starValue => {
     if (readonly) return;
-    
+
     const newRating = starValue;
     setRating(newRating);
     if (onChange) {
@@ -39,7 +39,7 @@ const StarRating = ({
     }
   };
 
-  const handleStarHover = (starValue) => {
+  const handleStarHover = starValue => {
     if (readonly) return;
     setHoverValue(starValue);
   };
@@ -49,7 +49,7 @@ const StarRating = ({
     setHoverValue(0);
   };
 
-  const renderStar = (index) => {
+  const renderStar = index => {
     const starValue = index + 1;
     const displayValue = hoverValue || rating;
     const isFilled = starValue <= displayValue;
@@ -82,9 +82,7 @@ const StarRating = ({
         {Array.from({ length: max }, (_, index) => renderStar(index))}
       </div>
       {showValue && (
-        <span className={`text-sm font-medium ${colorClasses[color]}`}>
-          {rating.toFixed(1)}
-        </span>
+        <span className={`text-sm font-medium ${colorClasses[color]}`}>{rating.toFixed(1)}</span>
       )}
     </div>
   );

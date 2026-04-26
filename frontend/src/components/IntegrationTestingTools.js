@@ -12,7 +12,7 @@ import {
   Settings,
   Zap,
   Clock,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 
 const IntegrationTestingTools = () => {
@@ -25,7 +25,7 @@ const IntegrationTestingTools = () => {
   const [loadTestConfig, setLoadTestConfig] = useState({
     concurrentRequests: 10,
     duration: 60,
-    messageInterval: 1000
+    messageInterval: 1000,
   });
   const [loadTestResults, setLoadTestResults] = useState(null);
 
@@ -41,54 +41,54 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
 
   // Sample FHIR resource for testing
   const sampleFHIRResource = {
-    "resourceType": "Patient",
-    "id": "example",
-    "identifier": [
+    resourceType: 'Patient',
+    id: 'example',
+    identifier: [
       {
-        "type": {
-          "coding": [
+        type: {
+          coding: [
             {
-              "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-              "code": "MR",
-              "display": "Medical Record Number"
-            }
-          ]
+              system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+              code: 'MR',
+              display: 'Medical Record Number',
+            },
+          ],
         },
-        "value": "12345",
-        "system": "urn:oid:2.16.840.1.113883.4.1"
-      }
+        value: '12345',
+        system: 'urn:oid:2.16.840.1.113883.4.1',
+      },
     ],
-    "name": [
+    name: [
       {
-        "use": "official",
-        "family": "Doe",
-        "given": ["John", "A"]
-      }
+        use: 'official',
+        family: 'Doe',
+        given: ['John', 'A'],
+      },
     ],
-    "gender": "male",
-    "birthDate": "1970-01-01",
-    "address": [
+    gender: 'male',
+    birthDate: '1970-01-01',
+    address: [
       {
-        "use": "home",
-        "line": ["123 Main St"],
-        "city": "Anytown",
-        "state": "NY",
-        "postalCode": "12345"
-      }
+        use: 'home',
+        line: ['123 Main St'],
+        city: 'Anytown',
+        state: 'NY',
+        postalCode: '12345',
+      },
     ],
-    "telecom": [
+    telecom: [
       {
-        "system": "phone",
-        "value": "(555)555-1234",
-        "use": "home"
-      }
-    ]
+        system: 'phone',
+        value: '(555)555-1234',
+        use: 'home',
+      },
+    ],
   };
 
   useEffect(() => {
     setHl7Message(sampleHL7Message);
     setFhirResource(JSON.stringify(sampleFHIRResource, null, 2));
-    
+
     // Load test history
     setTestHistory([
       {
@@ -97,7 +97,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
         timestamp: '2024-01-15T10:30:00Z',
         status: 'success',
         duration: 125,
-        details: 'Parsed ADT^A04 message successfully'
+        details: 'Parsed ADT^A04 message successfully',
       },
       {
         id: 2,
@@ -105,7 +105,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
         timestamp: '2024-01-15T10:25:00Z',
         status: 'failed',
         duration: 89,
-        details: 'Invalid resource type: "Patint" (should be "Patient")'
+        details: 'Invalid resource type: "Patint" (should be "Patient")',
       },
       {
         id: 3,
@@ -113,8 +113,8 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
         timestamp: '2024-01-15T10:20:00Z',
         status: 'success',
         duration: 245,
-        details: 'HL7 to FHIR transformation completed'
-      }
+        details: 'HL7 to FHIR transformation completed',
+      },
     ]);
   }, []);
 
@@ -128,7 +128,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const result = {
         success: true,
         data: {
@@ -137,37 +137,37 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
               messageType: 'ORM^O01',
               messageControlId: '123456',
               processingId: 'P',
-              versionId: '2.5'
+              versionId: '2.5',
             },
             segments: {
-              'PID': [
+              PID: [
                 {
-                  fields: ['1', '12345^^^HOSPITAL^MR', 'DOE^JOHN^A', '19700101', 'M']
-                }
+                  fields: ['1', '12345^^^HOSPITAL^MR', 'DOE^JOHN^A', '19700101', 'M'],
+                },
               ],
-              'PV1': [
+              PV1: [
                 {
-                  fields: ['1', 'I', 'ER^^^1^1', '123456^SMITH^JOHN^A^^MD']
-                }
-              ]
-            }
+                  fields: ['1', 'I', 'ER^^^1^1', '123456^SMITH^JOHN^A^^MD'],
+                },
+              ],
+            },
           },
           patient: {
             identifier: '12345',
             name: { firstName: 'JOHN', lastName: 'DOE' },
             birthDate: '19700101',
-            gender: 'M'
-          }
+            gender: 'M',
+          },
         },
         metadata: {
           segmentCount: 8,
           messageType: 'ORM^O01',
-          parsedAt: new Date().toISOString()
-        }
+          parsedAt: new Date().toISOString(),
+        },
       };
 
       setTestResults(result);
-      
+
       // Add to history
       const newHistoryItem = {
         id: Date.now(),
@@ -175,14 +175,13 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
         timestamp: new Date().toISOString(),
         status: 'success',
         duration: 1250,
-        details: `Parsed ${result.data.message.header.messageType} message successfully`
+        details: `Parsed ${result.data.message.header.messageType} message successfully`,
       };
       setTestHistory([newHistoryItem, ...testHistory.slice(0, 9)]);
-      
     } catch (error) {
       setTestResults({
         success: false,
-        error: error.message
+        error: error.message,
       });
     } finally {
       setLoading(false);
@@ -199,7 +198,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 800));
-      
+
       let parsedResource;
       try {
         parsedResource = JSON.parse(fhirResource);
@@ -211,7 +210,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
       const validation = {
         valid: true,
         errors: [],
-        warnings: []
+        warnings: [],
       };
 
       if (!parsedResource.resourceType) {
@@ -232,16 +231,16 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
         success: validation.valid,
         data: {
           resource: parsedResource,
-          validation: validation
+          validation: validation,
         },
         metadata: {
           resourceType: parsedResource.resourceType,
-          validatedAt: new Date().toISOString()
-        }
+          validatedAt: new Date().toISOString(),
+        },
       };
 
       setTestResults(result);
-      
+
       // Add to history
       const newHistoryItem = {
         id: Date.now(),
@@ -249,16 +248,15 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
         timestamp: new Date().toISOString(),
         status: validation.valid ? 'success' : 'failed',
         duration: 800,
-        details: validation.valid ? 
-          `${parsedResource.resourceType} resource is valid` : 
-          `Validation failed: ${validation.errors.join(', ')}`
+        details: validation.valid
+          ? `${parsedResource.resourceType} resource is valid`
+          : `Validation failed: ${validation.errors.join(', ')}`,
       };
       setTestHistory([newHistoryItem, ...testHistory.slice(0, 9)]);
-      
     } catch (error) {
       setTestResults({
         success: false,
-        error: error.message
+        error: error.message,
       });
     } finally {
       setLoading(false);
@@ -275,7 +273,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       const result = {
         success: true,
         data: {
@@ -292,8 +290,8 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                   identifier: [{ value: '12345' }],
                   name: [{ family: 'DOE', given: ['JOHN', 'A'] }],
                   gender: 'male',
-                  birthDate: '1970-01-01'
-                }
+                  birthDate: '1970-01-01',
+                },
               },
               {
                 resource: {
@@ -301,26 +299,26 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                   id: 'encounter-1',
                   status: 'finished',
                   class: { code: 'IMP' },
-                  subject: { reference: 'Patient/patient-1' }
-                }
-              }
-            ]
+                  subject: { reference: 'Patient/patient-1' },
+                },
+              },
+            ],
           },
           mappings: [
             { source: 'PID.3', target: 'Patient.identifier', transformation: 'Direct mapping' },
             { source: 'PID.5', target: 'Patient.name', transformation: 'Parse name components' },
             { source: 'PID.7', target: 'Patient.birthDate', transformation: 'Format date' },
-            { source: 'PID.8', target: 'Patient.gender', transformation: 'Map gender' }
-          ]
+            { source: 'PID.8', target: 'Patient.gender', transformation: 'Map gender' },
+          ],
         },
         metadata: {
           transformationTime: new Date().toISOString(),
-          resourceCount: 2
-        }
+          resourceCount: 2,
+        },
       };
 
       setTestResults(result);
-      
+
       // Add to history
       const newHistoryItem = {
         id: Date.now(),
@@ -328,14 +326,13 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
         timestamp: new Date().toISOString(),
         status: 'success',
         duration: 1500,
-        details: `Transformed HL7 to FHIR Bundle with ${result.data.resourceCount} resources`
+        details: `Transformed HL7 to FHIR Bundle with ${result.data.resourceCount} resources`,
       };
       setTestHistory([newHistoryItem, ...testHistory.slice(0, 9)]);
-      
     } catch (error) {
       setTestResults({
         success: false,
-        error: error.message
+        error: error.message,
       });
     } finally {
       setLoading(false);
@@ -349,7 +346,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
       const startTime = Date.now();
       const requests = [];
       const results = [];
-      
+
       for (let i = 0; i < loadTestConfig.concurrentRequests; i++) {
         requests.push(
           new Promise(resolve => {
@@ -357,30 +354,29 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
               resolve({
                 requestId: i + 1,
                 success: Math.random() > 0.1, // 90% success rate
-                duration: Math.floor(Math.random() * 500) + 100
+                duration: Math.floor(Math.random() * 500) + 100,
               });
             }, Math.random() * 1000);
           })
         );
       }
-      
+
       const testResults = await Promise.all(requests);
       const endTime = Date.now();
-      
+
       const successful = testResults.filter(r => r.success).length;
       const failed = testResults.length - successful;
       const avgDuration = testResults.reduce((sum, r) => sum + r.duration, 0) / testResults.length;
-      
+
       setLoadTestResults({
         totalRequests: testResults.length,
         successful,
         failed,
-        successRate: (successful / testResults.length * 100).toFixed(1),
+        successRate: ((successful / testResults.length) * 100).toFixed(1),
         averageDuration: avgDuration.toFixed(0),
         totalDuration: endTime - startTime,
-        requestsPerSecond: (testResults.length / ((endTime - startTime) / 1000)).toFixed(1)
+        requestsPerSecond: (testResults.length / ((endTime - startTime) / 1000)).toFixed(1),
       });
-      
     } catch (error) {
       console.error('Load test failed:', error);
     } finally {
@@ -390,7 +386,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
 
   const handleExportResults = () => {
     if (!testResults) return;
-    
+
     const dataStr = JSON.stringify(testResults, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);
@@ -408,7 +404,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
     { id: 'fhir-validator', label: 'FHIR Validator', icon: CheckCircle },
     { id: 'transformation', label: 'Data Transformation', icon: RefreshCw },
     { id: 'load-testing', label: 'Load Testing', icon: Zap },
-    { id: 'history', label: 'Test History', icon: Clock }
+    { id: 'history', label: 'Test History', icon: Clock },
   ];
 
   return (
@@ -423,7 +419,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
         {/* Tab Navigation */}
         <div className="border-b border-gray-200 mb-6">
           <nav className="-mb-px flex space-x-8">
-            {tabs.map((tab) => {
+            {tabs.map(tab => {
               const Icon = tab.icon;
               return (
                 <button
@@ -451,7 +447,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                 <FileText className="w-5 h-5 text-blue-600" />
                 HL7 Message Input
               </h3>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -459,12 +455,12 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                   </label>
                   <textarea
                     value={hl7Message}
-                    onChange={(e) => setHl7Message(e.target.value)}
+                    onChange={e => setHl7Message(e.target.value)}
                     className="w-full h-64 p-3 font-mono text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter HL7 message..."
                   />
                 </div>
-                
+
                 <div className="flex gap-3">
                   <button
                     onClick={handleParseHL7}
@@ -489,7 +485,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                 <Eye className="w-5 h-5 text-green-600" />
                 Parsed Results
               </h3>
-              
+
               {testResults && testResults.data ? (
                 <div className="space-y-4">
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -501,21 +497,21 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                       {testResults.metadata.segmentCount} segments parsed
                     </div>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Message Header</h4>
                     <pre className="bg-gray-50 p-3 rounded-lg text-sm overflow-x-auto">
                       {JSON.stringify(testResults.data.message.header, null, 2)}
                     </pre>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Patient Data</h4>
                     <pre className="bg-gray-50 p-3 rounded-lg text-sm overflow-x-auto">
                       {JSON.stringify(testResults.data.patient, null, 2)}
                     </pre>
                   </div>
-                  
+
                   {testResults && (
                     <button
                       onClick={handleExportResults}
@@ -543,7 +539,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                 <CheckCircle className="w-5 h-5 text-green-600" />
                 FHIR Resource Input
               </h3>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -551,12 +547,12 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                   </label>
                   <textarea
                     value={fhirResource}
-                    onChange={(e) => setFhirResource(e.target.value)}
+                    onChange={e => setFhirResource(e.target.value)}
                     className="w-full h-64 p-3 font-mono text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter FHIR resource JSON..."
                   />
                 </div>
-                
+
                 <div className="flex gap-3">
                   <button
                     onClick={handleValidateFHIR}
@@ -581,28 +577,32 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                 <Eye className="w-5 h-5 text-blue-600" />
                 Validation Results
               </h3>
-              
+
               {testResults && testResults.data ? (
                 <div className="space-y-4">
-                  <div className={`border rounded-lg p-4 ${
-                    testResults.data.validation.valid 
-                      ? 'bg-green-50 border-green-200' 
-                      : 'bg-red-50 border-red-200'
-                  }`}>
+                  <div
+                    className={`border rounded-lg p-4 ${
+                      testResults.data.validation.valid
+                        ? 'bg-green-50 border-green-200'
+                        : 'bg-red-50 border-red-200'
+                    }`}
+                  >
                     <div className="flex items-center gap-2 mb-2">
                       {testResults.data.validation.valid ? (
                         <CheckCircle className="w-5 h-5 text-green-600" />
                       ) : (
                         <AlertCircle className="w-5 h-5 text-red-600" />
                       )}
-                      <span className={`font-medium ${
-                        testResults.data.validation.valid ? 'text-green-800' : 'text-red-800'
-                      }`}>
+                      <span
+                        className={`font-medium ${
+                          testResults.data.validation.valid ? 'text-green-800' : 'text-red-800'
+                        }`}
+                      >
                         {testResults.data.validation.valid ? 'Valid' : 'Invalid'} FHIR Resource
                       </span>
                     </div>
                   </div>
-                  
+
                   {testResults.data.validation.errors.length > 0 && (
                     <div>
                       <h4 className="font-medium text-red-800 mb-2">Errors</h4>
@@ -616,13 +616,16 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                       </ul>
                     </div>
                   )}
-                  
+
                   {testResults.data.validation.warnings.length > 0 && (
                     <div>
                       <h4 className="font-medium text-yellow-800 mb-2">Warnings</h4>
                       <ul className="space-y-1">
                         {testResults.data.validation.warnings.map((warning, index) => (
-                          <li key={index} className="text-sm text-yellow-700 flex items-start gap-2">
+                          <li
+                            key={index}
+                            className="text-sm text-yellow-700 flex items-start gap-2"
+                          >
                             <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                             {warning}
                           </li>
@@ -630,7 +633,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                       </ul>
                     </div>
                   )}
-                  
+
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Resource Structure</h4>
                     <pre className="bg-gray-50 p-3 rounded-lg text-sm overflow-x-auto max-h-64">
@@ -655,7 +658,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                 <RefreshCw className="w-5 h-5 text-purple-600" />
                 HL7 to FHIR Transformation
               </h3>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -663,11 +666,11 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                   </label>
                   <textarea
                     value={hl7Message}
-                    onChange={(e) => setHl7Message(e.target.value)}
+                    onChange={e => setHl7Message(e.target.value)}
                     className="w-full h-48 p-3 font-mono text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Transformation Preview
@@ -683,7 +686,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-4 flex gap-3">
                 <button
                   onClick={handleTransformData}
@@ -707,7 +710,10 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                 <h3 className="text-lg font-semibold mb-4">Applied Mappings</h3>
                 <div className="space-y-2">
                   {testResults.data.mappings.map((mapping, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg"
+                    >
                       <CheckCircle className="w-4 h-4 text-purple-600" />
                       <span className="font-mono text-sm">{mapping.source}</span>
                       <RefreshCw className="w-4 h-4 text-gray-400" />
@@ -728,7 +734,7 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                 <Zap className="w-5 h-5 text-yellow-600" />
                 Load Test Configuration
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -737,16 +743,18 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                   <input
                     type="number"
                     value={loadTestConfig.concurrentRequests}
-                    onChange={(e) => setLoadTestConfig({
-                      ...loadTestConfig,
-                      concurrentRequests: parseInt(e.target.value) || 1
-                    })}
+                    onChange={e =>
+                      setLoadTestConfig({
+                        ...loadTestConfig,
+                        concurrentRequests: parseInt(e.target.value) || 1,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     min="1"
                     max="100"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Duration (seconds)
@@ -754,16 +762,18 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                   <input
                     type="number"
                     value={loadTestConfig.duration}
-                    onChange={(e) => setLoadTestConfig({
-                      ...loadTestConfig,
-                      duration: parseInt(e.target.value) || 10
-                    })}
+                    onChange={e =>
+                      setLoadTestConfig({
+                        ...loadTestConfig,
+                        duration: parseInt(e.target.value) || 10,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     min="10"
                     max="300"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Message Interval (ms)
@@ -771,17 +781,19 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                   <input
                     type="number"
                     value={loadTestConfig.messageInterval}
-                    onChange={(e) => setLoadTestConfig({
-                      ...loadTestConfig,
-                      messageInterval: parseInt(e.target.value) || 1000
-                    })}
+                    onChange={e =>
+                      setLoadTestConfig({
+                        ...loadTestConfig,
+                        messageInterval: parseInt(e.target.value) || 1000,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     min="100"
                     max="10000"
                   />
                 </div>
               </div>
-              
+
               <div className="mt-6">
                 <button
                   onClick={handleLoadTest}
@@ -800,14 +812,18 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                   <BarChart3 className="w-5 h-5 text-blue-600" />
                   Load Test Results
                 </h3>
-                
+
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <p className="text-2xl font-bold text-blue-600">{loadTestResults.totalRequests}</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {loadTestResults.totalRequests}
+                    </p>
                     <p className="text-sm text-gray-600">Total Requests</p>
                   </div>
                   <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <p className="text-2xl font-bold text-green-600">{loadTestResults.successful}</p>
+                    <p className="text-2xl font-bold text-green-600">
+                      {loadTestResults.successful}
+                    </p>
                     <p className="text-sm text-gray-600">Successful</p>
                   </div>
                   <div className="text-center p-4 bg-red-50 rounded-lg">
@@ -815,15 +831,21 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                     <p className="text-sm text-gray-600">Failed</p>
                   </div>
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <p className="text-2xl font-bold text-purple-600">{loadTestResults.successRate}%</p>
+                    <p className="text-2xl font-bold text-purple-600">
+                      {loadTestResults.successRate}%
+                    </p>
                     <p className="text-sm text-gray-600">Success Rate</p>
                   </div>
                   <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                    <p className="text-2xl font-bold text-yellow-600">{loadTestResults.averageDuration}ms</p>
+                    <p className="text-2xl font-bold text-yellow-600">
+                      {loadTestResults.averageDuration}ms
+                    </p>
                     <p className="text-sm text-gray-600">Avg Duration</p>
                   </div>
                   <div className="text-center p-4 bg-indigo-50 rounded-lg">
-                    <p className="text-2xl font-bold text-indigo-600">{loadTestResults.requestsPerSecond}</p>
+                    <p className="text-2xl font-bold text-indigo-600">
+                      {loadTestResults.requestsPerSecond}
+                    </p>
                     <p className="text-sm text-gray-600">Requests/sec</p>
                   </div>
                 </div>
@@ -838,10 +860,13 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
               <Clock className="w-5 h-5 text-gray-600" />
               Test History
             </h3>
-            
+
             <div className="space-y-3">
-              {testHistory.map((test) => (
-                <div key={test.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              {testHistory.map(test => (
+                <div
+                  key={test.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                >
                   <div className="flex items-center gap-4">
                     {test.status === 'success' ? (
                       <CheckCircle className="w-5 h-5 text-green-600" />
@@ -856,11 +881,13 @@ OBX|3|NM|HEMOGLOBIN||14.0|g/dL|12.0-16.0||||F|||20240115120000`;
                       </div>
                     </div>
                   </div>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    test.status === 'success' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      test.status === 'success'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
+                  >
                     {test.status}
                   </span>
                 </div>

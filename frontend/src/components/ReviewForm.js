@@ -2,13 +2,7 @@ import React, { useState } from 'react';
 import { Star, Send, AlertCircle, User } from 'lucide-react';
 import StarRating from './StarRating';
 
-const ReviewForm = ({
-  revieweeId,
-  revieweeType,
-  onSubmit,
-  onCancel,
-  initialData = {}
-}) => {
+const ReviewForm = ({ revieweeId, revieweeType, onSubmit, onCancel, initialData = {} }) => {
   const [formData, setFormData] = useState({
     rating: initialData.rating || 0,
     reviewTitle: initialData.reviewTitle || '',
@@ -16,7 +10,7 @@ const ReviewForm = ({
     reviewCategory: initialData.reviewCategory || 'overall_experience',
     serviceDate: initialData.serviceDate || '',
     isAnonymous: initialData.isAnonymous || false,
-    ...initialData
+    ...initialData,
   });
 
   const [errors, setErrors] = useState({});
@@ -30,7 +24,7 @@ const ReviewForm = ({
     { value: 'expertise', label: 'Expertise' },
     { value: 'bedside_manner', label: 'Bedside Manner' },
     { value: 'follow_up_care', label: 'Follow-up Care' },
-    { value: 'overall_experience', label: 'Overall Experience' }
+    { value: 'overall_experience', label: 'Overall Experience' },
   ];
 
   const validateForm = () => {
@@ -56,20 +50,20 @@ const ReviewForm = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
       await onSubmit({
         revieweeId,
         revieweeType,
-        ...formData
+        ...formData,
       });
     } catch (error) {
       console.error('Error submitting review:', error);
@@ -90,7 +84,9 @@ const ReviewForm = ({
     <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Write a Review</h2>
-        <p className="text-gray-600">Share your experience to help others make informed decisions</p>
+        <p className="text-gray-600">
+          Share your experience to help others make informed decisions
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -102,12 +98,14 @@ const ReviewForm = ({
           <div className="flex items-center gap-4">
             <StarRating
               value={formData.rating}
-              onChange={(value) => handleInputChange('rating', value)}
+              onChange={value => handleInputChange('rating', value)}
               size="lg"
               color="yellow"
             />
             <span className="text-sm text-gray-600">
-              {formData.rating === 0 ? 'Select a rating' : `${formData.rating} star${formData.rating !== 1 ? 's' : ''}`}
+              {formData.rating === 0
+                ? 'Select a rating'
+                : `${formData.rating} star${formData.rating !== 1 ? 's' : ''}`}
             </span>
           </div>
           {errors.rating && (
@@ -120,12 +118,10 @@ const ReviewForm = ({
 
         {/* Review Category */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Review Category
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Review Category</label>
           <select
             value={formData.reviewCategory}
-            onChange={(e) => handleInputChange('reviewCategory', e.target.value)}
+            onChange={e => handleInputChange('reviewCategory', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {categories.map(category => (
@@ -144,7 +140,7 @@ const ReviewForm = ({
           <input
             type="text"
             value={formData.reviewTitle}
-            onChange={(e) => handleInputChange('reviewTitle', e.target.value)}
+            onChange={e => handleInputChange('reviewTitle', e.target.value)}
             placeholder="Summarize your experience"
             maxLength={100}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
@@ -166,7 +162,7 @@ const ReviewForm = ({
           </label>
           <textarea
             value={formData.reviewText}
-            onChange={(e) => handleInputChange('reviewText', e.target.value)}
+            onChange={e => handleInputChange('reviewText', e.target.value)}
             placeholder="Describe your experience in detail..."
             rows={5}
             maxLength={1000}
@@ -189,13 +185,11 @@ const ReviewForm = ({
 
         {/* Service Date */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Service Date
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Service Date</label>
           <input
             type="date"
             value={formData.serviceDate}
-            onChange={(e) => handleInputChange('serviceDate', e.target.value)}
+            onChange={e => handleInputChange('serviceDate', e.target.value)}
             max={new Date().toISOString().split('T')[0]}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -207,7 +201,7 @@ const ReviewForm = ({
             type="checkbox"
             id="anonymous"
             checked={formData.isAnonymous}
-            onChange={(e) => handleInputChange('isAnonymous', e.target.checked)}
+            onChange={e => handleInputChange('isAnonymous', e.target.checked)}
             className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
           <label htmlFor="anonymous" className="ml-2 text-sm text-gray-700 flex items-center gap-2">

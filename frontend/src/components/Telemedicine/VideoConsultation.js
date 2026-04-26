@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Video, 
-  VideoOff, 
-  Mic, 
-  MicOff, 
-  PhoneOff, 
-  MessageSquare, 
-  Share, 
+import {
+  Video,
+  VideoOff,
+  Mic,
+  MicOff,
+  PhoneOff,
+  MessageSquare,
+  Share,
   FileText,
   User,
   Settings,
   Maximize,
-  Minimize
+  Minimize,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -39,7 +39,7 @@ const VideoConsultation = ({ roomId, patientName, onEndCall }) => {
           localVideoRef.current.srcObject = stream;
         }
       } catch (err) {
-        console.error("Error accessing media devices:", err);
+        console.error('Error accessing media devices:', err);
       }
     };
 
@@ -53,7 +53,7 @@ const VideoConsultation = ({ roomId, patientName, onEndCall }) => {
     };
   }, []);
 
-  const formatTime = (seconds) => {
+  const formatTime = seconds => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -61,14 +61,14 @@ const VideoConsultation = ({ roomId, patientName, onEndCall }) => {
 
   const toggleMute = () => {
     if (localStream) {
-      localStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
+      localStream.getAudioTracks().forEach(track => (track.enabled = !track.enabled));
       setIsMuted(!isMuted);
     }
   };
 
   const toggleVideo = () => {
     if (localStream) {
-      localStream.getVideoTracks().forEach(track => track.enabled = !track.enabled);
+      localStream.getVideoTracks().forEach(track => (track.enabled = !track.enabled));
       setIsVideoOff(!isVideoOff);
     }
   };
@@ -90,12 +90,18 @@ const VideoConsultation = ({ roomId, patientName, onEndCall }) => {
       </div>
 
       {/* Local Video (Picture-in-Picture) */}
-      <motion.div 
+      <motion.div
         drag
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
         className="local-video absolute bottom-24 right-6 w-48 h-32 bg-slate-700 rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 cursor-move"
       >
-        <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover mirror" />
+        <video
+          ref={localVideoRef}
+          autoPlay
+          playsInline
+          muted
+          className="w-full h-full object-cover mirror"
+        />
         {isVideoOff && (
           <div className="absolute inset-0 bg-slate-800 flex items-center justify-center">
             <User className="w-12 h-12 text-slate-500" />
@@ -105,21 +111,21 @@ const VideoConsultation = ({ roomId, patientName, onEndCall }) => {
 
       {/* Control Bar */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/60 backdrop-blur-xl px-8 py-4 rounded-3xl border border-white/10 shadow-2xl">
-        <button 
+        <button
           onClick={toggleMute}
           className={`p-4 rounded-full transition-all ${isMuted ? 'bg-red-500 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
         >
           {isMuted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
         </button>
-        
-        <button 
+
+        <button
           onClick={toggleVideo}
           className={`p-4 rounded-full transition-all ${isVideoOff ? 'bg-red-500 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
         >
           {isVideoOff ? <VideoOff className="w-6 h-6" /> : <Video className="w-6 h-6" />}
         </button>
 
-        <button 
+        <button
           onClick={onEndCall}
           className="p-4 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all shadow-lg shadow-red-600/20"
         >
@@ -128,14 +134,14 @@ const VideoConsultation = ({ roomId, patientName, onEndCall }) => {
 
         <div className="w-[1px] h-8 bg-white/10 mx-2" />
 
-        <button 
+        <button
           onClick={() => setIsChatOpen(!isChatOpen)}
           className={`p-4 rounded-full transition-all ${isChatOpen ? 'bg-blue-500 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
         >
           <MessageSquare className="w-6 h-6" />
         </button>
 
-        <button 
+        <button
           onClick={() => setIsDataSharing(!isDataSharing)}
           className={`p-4 rounded-full transition-all ${isDataSharing ? 'bg-purple-500 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
         >

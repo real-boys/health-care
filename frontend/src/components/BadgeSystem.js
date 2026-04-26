@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Award, 
-  Trophy, 
-  Star, 
-  Target, 
-  Lock, 
+import {
+  Award,
+  Trophy,
+  Star,
+  Target,
+  Lock,
   Unlock,
   Calendar,
   TrendingUp,
@@ -14,7 +14,7 @@ import {
   Sparkles,
   Crown,
   Gem,
-  Medal
+  Medal,
 } from 'lucide-react';
 
 const BadgeSystem = ({ userId, profileType, currentUser }) => {
@@ -36,15 +36,15 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
     try {
       const token = localStorage.getItem('token');
       const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       };
 
       // Fetch all available badges
       const badgesResponse = await fetch('/api/reputation/badges', {
-        headers
+        headers,
       });
-      
+
       if (badgesResponse.ok) {
         const badgesData = await badgesResponse.json();
         setBadges(badgesData.badges || []);
@@ -52,14 +52,13 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
 
       // Fetch user's earned badges
       const userBadgesResponse = await fetch(`/api/reputation/badges/${userId}`, {
-        headers
+        headers,
       });
-      
+
       if (userBadgesResponse.ok) {
         const userBadgesData = await userBadgesResponse.json();
         setUserBadges(userBadgesData || []);
       }
-
     } catch (error) {
       console.error('Error fetching badge data:', error);
     } finally {
@@ -67,64 +66,67 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
     }
   };
 
-  const getBadgeIcon = (badgeName) => {
+  const getBadgeIcon = badgeName => {
     const iconMap = {
-      'first_review': <Star className="w-8 h-8" />,
-      'five_star_provider': <Trophy className="w-8 h-8" />,
-      'helpful_contributor': <Award className="w-8 h-8" />,
-      'quick_responder': <TrendingUp className="w-8 h-8" />,
-      'trusted_reviewer': <Target className="w-8 h-8" />,
-      'expert_contributor': <Crown className="w-8 h-8" />,
-      'patient_champion': <Medal className="w-8 h-8" />,
-      'quality_care_provider': <Gem className="w-8 h-8" />,
-      'community_leader': <Sparkles className="w-8 h-8" />,
-      'rising_star': <TrendingUp className="w-8 h-8" />
+      first_review: <Star className="w-8 h-8" />,
+      five_star_provider: <Trophy className="w-8 h-8" />,
+      helpful_contributor: <Award className="w-8 h-8" />,
+      quick_responder: <TrendingUp className="w-8 h-8" />,
+      trusted_reviewer: <Target className="w-8 h-8" />,
+      expert_contributor: <Crown className="w-8 h-8" />,
+      patient_champion: <Medal className="w-8 h-8" />,
+      quality_care_provider: <Gem className="w-8 h-8" />,
+      community_leader: <Sparkles className="w-8 h-8" />,
+      rising_star: <TrendingUp className="w-8 h-8" />,
     };
-    
-    return iconMap[badgeName.toLowerCase().replace(/[^a-z0-9]/g, '_')] || <Award className="w-8 h-8" />;
+
+    return (
+      iconMap[badgeName.toLowerCase().replace(/[^a-z0-9]/g, '_')] || <Award className="w-8 h-8" />
+    );
   };
 
-  const getBadgeLevelColor = (level) => {
+  const getBadgeLevelColor = level => {
     const colors = {
       bronze: 'border-orange-300 bg-orange-50 text-orange-800',
       silver: 'border-gray-300 bg-gray-50 text-gray-800',
       gold: 'border-yellow-300 bg-yellow-50 text-yellow-800',
       platinum: 'border-purple-300 bg-purple-50 text-purple-800',
-      diamond: 'border-blue-300 bg-blue-50 text-blue-800'
+      diamond: 'border-blue-300 bg-blue-50 text-blue-800',
     };
     return colors[level] || colors.bronze;
   };
 
-  const getBadgeLevelIcon = (level) => {
+  const getBadgeLevelIcon = level => {
     const icons = {
       bronze: '🥉',
       silver: '🥈',
       gold: '🥇',
       platinum: '💎',
-      diamond: '👑'
+      diamond: '👑',
     };
     return icons[level] || '🥉';
   };
 
-  const getUserBadgeProgress = (badgeId) => {
+  const getUserBadgeProgress = badgeId => {
     const userBadge = userBadges.find(ub => ub.badge_id === badgeId);
     return userBadge ? userBadge.progress_percentage : 0;
   };
 
-  const isBadgeEarned = (badgeId) => {
+  const isBadgeEarned = badgeId => {
     return userBadges.some(ub => ub.badge_id === badgeId && ub.progress_percentage >= 100);
   };
 
   const filteredBadges = badges.filter(badge => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch =
+      !searchTerm ||
       badge.badge_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       badge.badge_description.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesCategory = selectedCategory === 'all' || badge.badge_category === selectedCategory;
-    
+
     const earned = isBadgeEarned(badge.id);
     const matchesFilter = (showAchieved && earned) || (showLocked && !earned);
-    
+
     return matchesSearch && matchesCategory && matchesFilter;
   });
 
@@ -134,17 +136,18 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
     { value: 'milestone', label: 'Milestones', icon: <Target className="w-4 h-4" /> },
     { value: 'quality', label: 'Quality', icon: <Star className="w-4 h-4" /> },
     { value: 'quantity', label: 'Quantity', icon: <TrendingUp className="w-4 h-4" /> },
-    { value: 'special', label: 'Special', icon: <Sparkles className="w-4 h-4" /> }
+    { value: 'special', label: 'Special', icon: <Sparkles className="w-4 h-4" /> },
   ];
 
   const stats = {
     totalEarned: userBadges.filter(ub => ub.progress_percentage >= 100).length,
     totalBadges: badges.length,
-    inProgress: userBadges.filter(ub => ub.progress_percentage > 0 && ub.progress_percentage < 100).length,
+    inProgress: userBadges.filter(ub => ub.progress_percentage > 0 && ub.progress_percentage < 100)
+      .length,
     totalPoints: userBadges.reduce((sum, ub) => {
       const badge = badges.find(b => b.id === ub.badge_id);
       return sum + (badge ? badge.points_value : 0);
-    }, 0)
+    }, 0),
   };
 
   if (loading) {
@@ -167,7 +170,7 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
             </h1>
             <p className="text-gray-600">Earn badges and track your achievements</p>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4 text-center">
             <div className="bg-blue-50 rounded-lg p-4">
               <div className="text-2xl font-bold text-blue-600">{stats.totalEarned}</div>
@@ -192,7 +195,7 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
             <Award className="w-8 h-8 text-gray-400" />
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -202,7 +205,7 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
             <Trophy className="w-8 h-8 text-green-400" />
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -212,13 +215,16 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
             <Target className="w-8 h-8 text-yellow-400" />
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Completion</p>
               <p className="text-2xl font-bold text-blue-600">
-                {stats.totalBadges > 0 ? Math.round((stats.totalEarned / stats.totalBadges) * 100) : 0}%
+                {stats.totalBadges > 0
+                  ? Math.round((stats.totalEarned / stats.totalBadges) * 100)
+                  : 0}
+                %
               </p>
             </div>
             <TrendingUp className="w-8 h-8 text-blue-400" />
@@ -236,11 +242,11 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
               type="text"
               placeholder="Search badges..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          
+
           {/* Category Filter */}
           <div className="flex gap-2 flex-wrap">
             {categories.map(category => (
@@ -259,24 +265,24 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
             ))}
           </div>
         </div>
-        
+
         {/* Toggle Filters */}
         <div className="flex gap-4 mt-4">
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={showAchieved}
-              onChange={(e) => setShowAchieved(e.target.checked)}
+              onChange={e => setShowAchieved(e.target.checked)}
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Show Earned</span>
           </label>
-          
+
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={showLocked}
-              onChange={(e) => setShowLocked(e.target.checked)}
+              onChange={e => setShowLocked(e.target.checked)}
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Show Locked</span>
@@ -289,7 +295,7 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Badges ({filteredBadges.length})
         </h2>
-        
+
         {filteredBadges.length === 0 ? (
           <div className="text-center py-12">
             <Award className="w-12 h-12 text-gray-400 mx-auto mb-4" />
@@ -301,41 +307,45 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
               const isEarned = isBadgeEarned(badge.id);
               const progress = getUserBadgeProgress(badge.id);
               const userBadge = userBadges.find(ub => ub.badge_id === badge.id);
-              
+
               return (
                 <div
                   key={badge.id}
                   onClick={() => setSelectedBadge(badge)}
                   className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                    isEarned 
-                      ? 'border-green-300 bg-green-50' 
-                      : progress > 0 
+                    isEarned
+                      ? 'border-green-300 bg-green-50'
+                      : progress > 0
                         ? 'border-yellow-300 bg-yellow-50'
                         : 'border-gray-300 bg-gray-50'
                   }`}
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <div className={`p-3 rounded-full ${
-                      isEarned 
-                        ? 'bg-green-100 text-green-600' 
-                        : progress > 0 
-                          ? 'bg-yellow-100 text-yellow-600'
-                          : 'bg-gray-200 text-gray-400'
-                    }`}>
+                    <div
+                      className={`p-3 rounded-full ${
+                        isEarned
+                          ? 'bg-green-100 text-green-600'
+                          : progress > 0
+                            ? 'bg-yellow-100 text-yellow-600'
+                            : 'bg-gray-200 text-gray-400'
+                      }`}
+                    >
                       {isEarned ? getBadgeIcon(badge.badge_name) : <Lock className="w-8 h-8" />}
                     </div>
-                    
+
                     <div className="flex items-center gap-1">
                       <span className="text-lg">{getBadgeLevelIcon(badge.badge_level)}</span>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getBadgeLevelColor(badge.badge_level)}`}>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${getBadgeLevelColor(badge.badge_level)}`}
+                      >
                         {badge.badge_level}
                       </span>
                     </div>
                   </div>
-                  
+
                   <h3 className="font-semibold text-gray-900 mb-1">{badge.badge_name}</h3>
                   <p className="text-sm text-gray-600 mb-3">{badge.badge_description}</p>
-                  
+
                   {/* Progress Bar */}
                   <div className="mb-3">
                     <div className="flex justify-between items-center mb-1">
@@ -351,7 +361,7 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
                       ></div>
                     </div>
                   </div>
-                  
+
                   {/* Badge Info */}
                   <div className="flex justify-between items-center text-xs text-gray-500">
                     <span>{badge.points_value} points</span>
@@ -362,7 +372,7 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
                       </span>
                     )}
                   </div>
-                  
+
                   {/* Unlock Criteria */}
                   {!isEarned && badge.unlock_criteria && (
                     <div className="mt-3 p-2 bg-white rounded text-xs text-gray-600">
@@ -391,35 +401,47 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
                 </button>
               </div>
             </div>
-            
+
             <div className="p-6">
               <div className="text-center mb-6">
-                <div className={`inline-flex p-6 rounded-full mb-4 ${
-                  isBadgeEarned(selectedBadge.id)
-                    ? 'bg-green-100 text-green-600'
-                    : 'bg-gray-200 text-gray-400'
-                }`}>
-                  {isBadgeEarned(selectedBadge.id) ? getBadgeIcon(selectedBadge.badge_name) : <Lock className="w-12 h-12" />}
+                <div
+                  className={`inline-flex p-6 rounded-full mb-4 ${
+                    isBadgeEarned(selectedBadge.id)
+                      ? 'bg-green-100 text-green-600'
+                      : 'bg-gray-200 text-gray-400'
+                  }`}
+                >
+                  {isBadgeEarned(selectedBadge.id) ? (
+                    getBadgeIcon(selectedBadge.badge_name)
+                  ) : (
+                    <Lock className="w-12 h-12" />
+                  )}
                 </div>
-                
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{selectedBadge.badge_name}</h3>
+
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  {selectedBadge.badge_name}
+                </h3>
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <span className="text-lg">{getBadgeLevelIcon(selectedBadge.badge_level)}</span>
-                  <span className={`px-3 py-1 font-medium rounded-full ${getBadgeLevelColor(selectedBadge.badge_level)}`}>
+                  <span
+                    className={`px-3 py-1 font-medium rounded-full ${getBadgeLevelColor(selectedBadge.badge_level)}`}
+                  >
                     {selectedBadge.badge_level}
                   </span>
                   <span className="px-3 py-1 bg-blue-100 text-blue-800 font-medium rounded-full">
                     {selectedBadge.points_value} points
                   </span>
                 </div>
-                
+
                 <p className="text-gray-600 mb-6">{selectedBadge.badge_description}</p>
-                
+
                 {/* Progress */}
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-medium text-gray-900">Progress</span>
-                    <span className="font-bold text-lg text-gray-900">{getUserBadgeProgress(selectedBadge.id)}%</span>
+                    <span className="font-bold text-lg text-gray-900">
+                      {getUserBadgeProgress(selectedBadge.id)}%
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
                     <div
@@ -430,26 +452,32 @@ const BadgeSystem = ({ userId, profileType, currentUser }) => {
                     ></div>
                   </div>
                 </div>
-                
+
                 {/* Unlock Criteria */}
                 <div className="bg-gray-50 rounded-lg p-4 text-left">
                   <h4 className="font-medium text-gray-900 mb-2">How to Earn This Badge</h4>
-                  <p className="text-sm text-gray-600">{selectedBadge.unlock_criteria || 'Complete the required activities to unlock this badge.'}</p>
+                  <p className="text-sm text-gray-600">
+                    {selectedBadge.unlock_criteria ||
+                      'Complete the required activities to unlock this badge.'}
+                  </p>
                 </div>
-                
+
                 {/* Achievement Date */}
                 {isBadgeEarned(selectedBadge.id) && (
                   <div className="mt-4 p-4 bg-green-50 rounded-lg">
                     <div className="flex items-center justify-center gap-2 text-green-800">
                       <Trophy className="w-5 h-5" />
                       <span className="font-medium">
-                        Earned on {new Date(userBadges.find(ub => ub.badge_id === selectedBadge.id)?.earned_at).toLocaleDateString()}
+                        Earned on{' '}
+                        {new Date(
+                          userBadges.find(ub => ub.badge_id === selectedBadge.id)?.earned_at
+                        ).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
                 )}
               </div>
-              
+
               <div className="flex justify-end">
                 <button
                   onClick={() => setSelectedBadge(null)}

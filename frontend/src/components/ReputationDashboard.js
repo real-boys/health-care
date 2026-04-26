@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  TrendingUp, 
-  Award, 
-  Star, 
-  Users, 
-  Calendar, 
+import {
+  TrendingUp,
+  Award,
+  Star,
+  Users,
+  Calendar,
   Target,
   Activity,
   ChevronUp,
   ChevronDown,
   BarChart3,
-  PieChart
+  PieChart,
 } from 'lucide-react';
 import StarRating from './StarRating';
 import ReviewCard from './ReviewCard';
@@ -32,33 +32,39 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
   const fetchReputationData = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const token = localStorage.getItem('token');
       const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       };
 
       // Fetch profile data
-      const profileResponse = await fetch(`/api/reputation/profile/${userId}?profileType=${profileType}`, {
-        headers
-      });
+      const profileResponse = await fetch(
+        `/api/reputation/profile/${userId}?profileType=${profileType}`,
+        {
+          headers,
+        }
+      );
       if (!profileResponse.ok) throw new Error('Failed to fetch profile');
       const profile = await profileResponse.json();
       setProfileData(profile);
 
       // Fetch recent reviews
-      const reviewsResponse = await fetch(`/api/reputation/reviews/${userId}?revieweeType=${profileType}&limit=5`, {
-        headers
-      });
+      const reviewsResponse = await fetch(
+        `/api/reputation/reviews/${userId}?revieweeType=${profileType}&limit=5`,
+        {
+          headers,
+        }
+      );
       if (!reviewsResponse.ok) throw new Error('Failed to fetch reviews');
       const reviewsData = await reviewsResponse.json();
       setRecentReviews(reviewsData.reviews);
 
       // Fetch badges
       const badgesResponse = await fetch(`/api/reputation/badges/${userId}`, {
-        headers
+        headers,
       });
       if (!badgesResponse.ok) throw new Error('Failed to fetch badges');
       const badgesData = await badgesResponse.json();
@@ -66,7 +72,7 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
 
       // Fetch metrics
       const metricsResponse = await fetch(`/api/reputation/metrics/${userId}?period=daily`, {
-        headers
+        headers,
       });
       if (!metricsResponse.ok) throw new Error('Failed to fetch metrics');
       const metricsData = await metricsResponse.json();
@@ -74,12 +80,11 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
 
       // Fetch history
       const historyResponse = await fetch(`/api/reputation/history/${userId}?limit=10`, {
-        headers
+        headers,
       });
       if (!historyResponse.ok) throw new Error('Failed to fetch history');
       const historyData = await historyResponse.json();
       setHistory(historyData);
-
     } catch (err) {
       setError(err.message);
     } finally {
@@ -87,19 +92,19 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
     }
   };
 
-  const getLevelColor = (level) => {
+  const getLevelColor = level => {
     const colors = {
       new: 'bg-gray-100 text-gray-800',
       bronze: 'bg-orange-100 text-orange-800',
       silver: 'bg-gray-100 text-gray-800',
       gold: 'bg-yellow-100 text-yellow-800',
       platinum: 'bg-purple-100 text-purple-800',
-      diamond: 'bg-blue-100 text-blue-800'
+      diamond: 'bg-blue-100 text-blue-800',
     };
     return colors[level] || colors.new;
   };
 
-  const getProgressPercentage = (score) => {
+  const getProgressPercentage = score => {
     return Math.min((score / 5) * 100, 100);
   };
 
@@ -109,7 +114,7 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
     return {
       value: change.toFixed(2),
       isPositive: change >= 0,
-      percentage: previous > 0 ? ((change / previous) * 100).toFixed(1) : 0
+      percentage: previous > 0 ? ((change / previous) * 100).toFixed(1) : 0,
     };
   };
 
@@ -146,23 +151,36 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {profileData.first_name} {profileData.last_name}
             </h1>
-            <p className="text-gray-600 mb-4">{profileType.charAt(0).toUpperCase() + profileType.slice(1)} Reputation Dashboard</p>
-            
+            <p className="text-gray-600 mb-4">
+              {profileType.charAt(0).toUpperCase() + profileType.slice(1)} Reputation Dashboard
+            </p>
+
             {/* Reputation Level */}
             <div className="flex items-center gap-3">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getLevelColor(profileData.reputation_level)}`}>
-                {profileData.level_icon} {profileData.reputation_level.charAt(0).toUpperCase() + profileData.reputation_level.slice(1)}
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium ${getLevelColor(profileData.reputation_level)}`}
+              >
+                {profileData.level_icon}{' '}
+                {profileData.reputation_level.charAt(0).toUpperCase() +
+                  profileData.reputation_level.slice(1)}
               </span>
               <span className="text-gray-500">
-                Level {profileData.reputation_level === 'new' ? 1 : 
-                      profileData.reputation_level === 'bronze' ? 2 :
-                      profileData.reputation_level === 'silver' ? 3 :
-                      profileData.reputation_level === 'gold' ? 4 :
-                      profileData.reputation_level === 'platinum' ? 5 : 6}
+                Level{' '}
+                {profileData.reputation_level === 'new'
+                  ? 1
+                  : profileData.reputation_level === 'bronze'
+                    ? 2
+                    : profileData.reputation_level === 'silver'
+                      ? 3
+                      : profileData.reputation_level === 'gold'
+                        ? 4
+                        : profileData.reputation_level === 'platinum'
+                          ? 5
+                          : 6}
               </span>
             </div>
           </div>
-          
+
           <div className="text-right">
             <div className="text-4xl font-bold text-gray-900 mb-1">
               {profileData.overall_score.toFixed(1)}
@@ -242,18 +260,24 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
                       ></div>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-gray-900">{profileData.total_ratings}</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {profileData.total_ratings}
+                      </div>
                       <div className="text-sm text-gray-600">Total Ratings</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-gray-900">{profileData.total_reviews}</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {profileData.total_reviews}
+                      </div>
                       <div className="text-sm text-gray-600">Reviews</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-gray-900">{profileData.positive_reviews}</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {profileData.positive_reviews}
+                      </div>
                       <div className="text-sm text-gray-600">Positive</div>
                     </div>
                     <div>
@@ -303,7 +327,7 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
                   </select>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 {recentReviews.map(review => (
                   <ReviewCard
@@ -326,12 +350,14 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
           {activeTab === 'badges' && (
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-gray-900">Earned Badges</h3>
-              
+
               {badges.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-lg">
                   <Award className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-600">No badges earned yet</p>
-                  <p className="text-sm text-gray-500 mt-2">Complete activities to earn your first badge!</p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Complete activities to earn your first badge!
+                  </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -356,7 +382,7 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
           {activeTab === 'analytics' && (
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-gray-900">Performance Analytics</h3>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Score Trend */}
                 <div className="bg-gray-50 rounded-lg p-6">
@@ -404,9 +430,16 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
                     <tbody>
                       {metrics.slice(0, 10).map((metric, index) => (
                         <tr key={index} className="border-b">
-                          <td className="py-2">{new Date(metric.metric_date).toLocaleDateString()}</td>
+                          <td className="py-2">
+                            {new Date(metric.metric_date).toLocaleDateString()}
+                          </td>
                           <td className="text-center py-2">
-                            <StarRating value={metric.daily_rating_average || 0} readonly showValue={false} size="sm" />
+                            <StarRating
+                              value={metric.daily_rating_average || 0}
+                              readonly
+                              showValue={false}
+                              size="sm"
+                            />
                           </td>
                           <td className="text-center py-2">{metric.daily_review_count || 0}</td>
                           <td className="text-center py-2">{metric.daily_positive_reviews || 0}</td>
@@ -423,7 +456,7 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
           {activeTab === 'history' && (
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-gray-900">Reputation History</h3>
-              
+
               {history.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-lg">
                   <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
@@ -439,14 +472,21 @@ const ReputationDashboard = ({ userId, profileType, currentUser }) => {
                       <div className="flex-1">
                         <p className="font-medium text-gray-900">{event.event_description}</p>
                         <p className="text-sm text-gray-600">
-                          {new Date(event.created_at).toLocaleDateString()} • {event.event_type.replace('_', ' ')}
+                          {new Date(event.created_at).toLocaleDateString()} •{' '}
+                          {event.event_type.replace('_', ' ')}
                         </p>
                       </div>
                       {event.score_change && (
-                        <div className={`flex items-center gap-1 text-sm font-medium ${
-                          event.score_change >= 0 ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {event.score_change >= 0 ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        <div
+                          className={`flex items-center gap-1 text-sm font-medium ${
+                            event.score_change >= 0 ? 'text-green-600' : 'text-red-600'
+                          }`}
+                        >
+                          {event.score_change >= 0 ? (
+                            <ChevronUp className="w-4 h-4" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4" />
+                          )}
                           {Math.abs(event.score_change)}
                         </div>
                       )}
@@ -467,7 +507,7 @@ const ScoreCard = ({ title, value, icon, color }) => {
     blue: 'bg-blue-50 text-blue-600 border-blue-200',
     green: 'bg-green-50 text-green-600 border-green-200',
     purple: 'bg-purple-50 text-purple-600 border-purple-200',
-    yellow: 'bg-yellow-50 text-yellow-600 border-yellow-200'
+    yellow: 'bg-yellow-50 text-yellow-600 border-yellow-200',
   };
 
   return (

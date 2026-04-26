@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  ArrowRight, 
-  Plus, 
-  Trash2, 
-  Save, 
-  Eye, 
+import {
+  ArrowRight,
+  Plus,
+  Trash2,
+  Save,
+  Eye,
   RotateCcw,
   CheckCircle,
   AlertTriangle,
-  Info
+  Info,
 } from 'lucide-react';
 
 const DataMappingInterface = () => {
@@ -24,76 +24,146 @@ const DataMappingInterface = () => {
 
   // Sample HL7 fields data structure
   const sampleHL7Fields = {
-    'MSH': [
-      { field: 'MSH.4', name: 'Sending Facility', type: 'ST', description: 'Facility sending the message' },
-      { field: 'MSH.5', name: 'Receiving Facility', type: 'ST', description: 'Facility receiving the message' },
+    MSH: [
+      {
+        field: 'MSH.4',
+        name: 'Sending Facility',
+        type: 'ST',
+        description: 'Facility sending the message',
+      },
+      {
+        field: 'MSH.5',
+        name: 'Receiving Facility',
+        type: 'ST',
+        description: 'Facility receiving the message',
+      },
       { field: 'MSH.7', name: 'Date/Time', type: 'TS', description: 'Message timestamp' },
-      { field: 'MSH.9', name: 'Message Type', type: 'CM', description: 'Message type and trigger event' },
-      { field: 'MSH.10', name: 'Control ID', type: 'ST', description: 'Message control ID' }
+      {
+        field: 'MSH.9',
+        name: 'Message Type',
+        type: 'CM',
+        description: 'Message type and trigger event',
+      },
+      { field: 'MSH.10', name: 'Control ID', type: 'ST', description: 'Message control ID' },
     ],
-    'PID': [
+    PID: [
       { field: 'PID.3', name: 'Patient ID', type: 'CX', description: 'Patient identifier' },
-      { field: 'PID.5', name: 'Patient Name', type: 'XPN', description: 'Patient name information' },
+      {
+        field: 'PID.5',
+        name: 'Patient Name',
+        type: 'XPN',
+        description: 'Patient name information',
+      },
       { field: 'PID.7', name: 'Birth Date', type: 'DT', description: 'Date of birth' },
       { field: 'PID.8', name: 'Gender', type: 'IS', description: 'Administrative gender' },
       { field: 'PID.11', name: 'Address', type: 'XAD', description: 'Patient address' },
-      { field: 'PID.13', name: 'Phone Number', type: 'XTN', description: 'Phone number' }
+      { field: 'PID.13', name: 'Phone Number', type: 'XTN', description: 'Phone number' },
     ],
-    'PV1': [
-      { field: 'PV1.2', name: 'Patient Class', type: 'IS', description: 'Patient class (inpatient/outpatient)' },
-      { field: 'PV1.3', name: 'Patient Location', type: 'PL', description: 'Assigned patient location' },
+    PV1: [
+      {
+        field: 'PV1.2',
+        name: 'Patient Class',
+        type: 'IS',
+        description: 'Patient class (inpatient/outpatient)',
+      },
+      {
+        field: 'PV1.3',
+        name: 'Patient Location',
+        type: 'PL',
+        description: 'Assigned patient location',
+      },
       { field: 'PV1.7', name: 'Attending Doctor', type: 'XCN', description: 'Attending physician' },
-      { field: 'PV1.10', name: 'Hospital Service', type: 'IS', description: 'Hospital service' }
+      { field: 'PV1.10', name: 'Hospital Service', type: 'IS', description: 'Hospital service' },
     ],
-    'OBX': [
+    OBX: [
       { field: 'OBX.3', name: 'Observation ID', type: 'CE', description: 'Observation identifier' },
-      { field: 'OBX.5', name: 'Observation Value', type: 'ST', description: 'Observation result value' },
+      {
+        field: 'OBX.5',
+        name: 'Observation Value',
+        type: 'ST',
+        description: 'Observation result value',
+      },
       { field: 'OBX.6', name: 'Units', type: 'CE', description: 'Units of measurement' },
       { field: 'OBX.7', name: 'Reference Range', type: 'ST', description: 'Reference range' },
-      { field: 'OBX.11', name: 'Result Status', type: 'IS', description: 'Observation result status' }
-    ]
+      {
+        field: 'OBX.11',
+        name: 'Result Status',
+        type: 'IS',
+        description: 'Observation result status',
+      },
+    ],
   };
 
   // Sample FHIR fields data structure
   const sampleFHIRFields = {
-    'Patient': [
-      { field: 'identifier', name: 'Identifier', type: 'Identifier', description: 'Patient identifiers' },
+    Patient: [
+      {
+        field: 'identifier',
+        name: 'Identifier',
+        type: 'Identifier',
+        description: 'Patient identifiers',
+      },
       { field: 'name', name: 'Name', type: 'HumanName', description: 'Patient name(s)' },
       { field: 'gender', name: 'Gender', type: 'code', description: 'Administrative gender' },
       { field: 'birthDate', name: 'Birth Date', type: 'date', description: 'Date of birth' },
       { field: 'address', name: 'Address', type: 'Address', description: 'Patient address(es)' },
-      { field: 'telecom', name: 'Telecom', type: 'ContactPoint', description: 'Contact details' }
+      { field: 'telecom', name: 'Telecom', type: 'ContactPoint', description: 'Contact details' },
     ],
-    'Encounter': [
-      { field: 'identifier', name: 'Identifier', type: 'Identifier', description: 'Encounter identifiers' },
+    Encounter: [
+      {
+        field: 'identifier',
+        name: 'Identifier',
+        type: 'Identifier',
+        description: 'Encounter identifiers',
+      },
       { field: 'status', name: 'Status', type: 'code', description: 'Encounter status' },
       { field: 'class', name: 'Class', type: 'Coding', description: 'Encounter class' },
       { field: 'subject', name: 'Subject', type: 'Reference', description: 'Patient reference' },
       { field: 'period', name: 'Period', type: 'Period', description: 'Encounter period' },
-      { field: 'location', name: 'Location', type: 'BackboneElement', description: 'Encounter locations' }
+      {
+        field: 'location',
+        name: 'Location',
+        type: 'BackboneElement',
+        description: 'Encounter locations',
+      },
     ],
-    'Observation': [
-      { field: 'identifier', name: 'Identifier', type: 'Identifier', description: 'Observation identifiers' },
+    Observation: [
+      {
+        field: 'identifier',
+        name: 'Identifier',
+        type: 'Identifier',
+        description: 'Observation identifiers',
+      },
       { field: 'status', name: 'Status', type: 'code', description: 'Observation status' },
       { field: 'code', name: 'Code', type: 'CodeableConcept', description: 'Observation code' },
       { field: 'subject', name: 'Subject', type: 'Reference', description: 'Patient reference' },
-      { field: 'effectiveDateTime', name: 'Effective Date', type: 'dateTime', description: 'Observation time' },
-      { field: 'valueQuantity', name: 'Value', type: 'Quantity', description: 'Observation value' }
+      {
+        field: 'effectiveDateTime',
+        name: 'Effective Date',
+        type: 'dateTime',
+        description: 'Observation time',
+      },
+      { field: 'valueQuantity', name: 'Value', type: 'Quantity', description: 'Observation value' },
     ],
-    'DiagnosticReport': [
-      { field: 'identifier', name: 'Identifier', type: 'Identifier', description: 'Report identifiers' },
+    DiagnosticReport: [
+      {
+        field: 'identifier',
+        name: 'Identifier',
+        type: 'Identifier',
+        description: 'Report identifiers',
+      },
       { field: 'status', name: 'Status', type: 'code', description: 'Report status' },
       { field: 'code', name: 'Code', type: 'CodeableConcept', description: 'Report code' },
       { field: 'subject', name: 'Subject', type: 'Reference', description: 'Patient reference' },
-      { field: 'result', name: 'Result', type: 'Reference', description: 'Observation references' }
-    ]
+      { field: 'result', name: 'Result', type: 'Reference', description: 'Observation references' },
+    ],
   };
 
   useEffect(() => {
     // Initialize with sample data
     setHl7Fields(sampleHL7Fields);
     setFhirFields(sampleFHIRFields);
-    
+
     // Load sample mappings
     setMappings([
       {
@@ -103,10 +173,18 @@ const DataMappingInterface = () => {
         mappings: [
           { hl7Field: 'PID.3', fhirField: 'Patient.identifier', transformation: 'Direct mapping' },
           { hl7Field: 'PID.5', fhirField: 'Patient.name', transformation: 'Parse name components' },
-          { hl7Field: 'PID.7', fhirField: 'Patient.birthDate', transformation: 'Format date (YYYYMMDD → YYYY-MM-DD)' },
-          { hl7Field: 'PID.8', fhirField: 'Patient.gender', transformation: 'Map gender (M→male, F→female)' }
-        ]
-      }
+          {
+            hl7Field: 'PID.7',
+            fhirField: 'Patient.birthDate',
+            transformation: 'Format date (YYYYMMDD → YYYY-MM-DD)',
+          },
+          {
+            hl7Field: 'PID.8',
+            fhirField: 'Patient.gender',
+            transformation: 'Map gender (M→male, F→female)',
+          },
+        ],
+      },
     ]);
   }, []);
 
@@ -115,27 +193,27 @@ const DataMappingInterface = () => {
     e.dataTransfer.effectAllowed = 'copy';
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = e => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
   };
 
   const handleDrop = (e, targetField, targetType) => {
     e.preventDefault();
-    
+
     if (!draggedField) return;
 
     const newMapping = {
       id: Date.now(),
       hl7Field: draggedField.sourceType === 'HL7' ? draggedField.field : targetField,
       fhirField: targetType === 'FHIR' ? draggedField.field : targetField,
-      transformation: 'Direct mapping'
+      transformation: 'Direct mapping',
     };
 
     // Add to current mapping configuration
     if (selectedConfig) {
-      const updatedMappings = mappings.map(mapping => 
-        mapping.id === selectedConfig.id 
+      const updatedMappings = mappings.map(mapping =>
+        mapping.id === selectedConfig.id
           ? { ...mapping, mappings: [...mapping.mappings, newMapping] }
           : mapping
       );
@@ -146,8 +224,8 @@ const DataMappingInterface = () => {
   };
 
   const handleRemoveMapping = (mappingId, configId) => {
-    const updatedMappings = mappings.map(mapping => 
-      mapping.id === configId 
+    const updatedMappings = mappings.map(mapping =>
+      mapping.id === configId
         ? { ...mapping, mappings: mapping.mappings.filter(m => m.id !== mappingId) }
         : mapping
     );
@@ -164,7 +242,7 @@ const DataMappingInterface = () => {
       id: Date.now(),
       name: mappingName,
       description: mappingDescription,
-      mappings: []
+      mappings: [],
     };
 
     setMappings([...mappings, newMapping]);
@@ -184,7 +262,7 @@ const DataMappingInterface = () => {
       'PID.3': '12345^^^HOSPITAL^MR',
       'PID.5': 'DOE^JOHN^A^^^',
       'PID.7': '19700101',
-      'PID.8': 'M'
+      'PID.8': 'M',
     };
 
     const transformedData = {
@@ -192,35 +270,37 @@ const DataMappingInterface = () => {
       identifier: [{ value: '12345', system: 'urn:oid:2.16.840.1.113883.4.1' }],
       name: [{ family: 'DOE', given: ['JOHN', 'A'] }],
       birthDate: '1970-01-01',
-      gender: 'male'
+      gender: 'male',
     };
 
     setPreviewData({
       original: sampleHL7Data,
       transformed: transformedData,
-      mappings: selectedConfig.mappings
+      mappings: selectedConfig.mappings,
     });
     setShowPreview(true);
   };
 
   const FieldTypeIcon = ({ type }) => {
     const colors = {
-      'ST': 'bg-blue-100 text-blue-800',
-      'CX': 'bg-green-100 text-green-800',
-      'XPN': 'bg-purple-100 text-purple-800',
-      'DT': 'bg-yellow-100 text-yellow-800',
-      'IS': 'bg-red-100 text-red-800',
-      'XAD': 'bg-indigo-100 text-indigo-800',
-      'XTN': 'bg-pink-100 text-pink-800',
-      'TS': 'bg-gray-100 text-gray-800',
-      'CM': 'bg-orange-100 text-orange-800',
-      'CE': 'bg-teal-100 text-teal-800',
-      'PL': 'bg-cyan-100 text-cyan-800',
-      'XCN': 'bg-lime-100 text-lime-800'
+      ST: 'bg-blue-100 text-blue-800',
+      CX: 'bg-green-100 text-green-800',
+      XPN: 'bg-purple-100 text-purple-800',
+      DT: 'bg-yellow-100 text-yellow-800',
+      IS: 'bg-red-100 text-red-800',
+      XAD: 'bg-indigo-100 text-indigo-800',
+      XTN: 'bg-pink-100 text-pink-800',
+      TS: 'bg-gray-100 text-gray-800',
+      CM: 'bg-orange-100 text-orange-800',
+      CE: 'bg-teal-100 text-teal-800',
+      PL: 'bg-cyan-100 text-cyan-800',
+      XCN: 'bg-lime-100 text-lime-800',
     };
 
     return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${colors[type] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${colors[type] || 'bg-gray-100 text-gray-800'}`}
+      >
         {type}
       </span>
     );
@@ -261,25 +341,21 @@ const DataMappingInterface = () => {
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mapping Name
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mapping Name</label>
                 <input
                   type="text"
                   value={mappingName}
-                  onChange={(e) => setMappingName(e.target.value)}
+                  onChange={e => setMappingName(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter mapping name"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <input
                   type="text"
                   value={mappingDescription}
-                  onChange={(e) => setMappingDescription(e.target.value)}
+                  onChange={e => setMappingDescription(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Brief description"
                 />
@@ -290,7 +366,7 @@ const DataMappingInterface = () => {
           {/* Mapping Tabs */}
           <div className="border-b border-gray-200 mb-6">
             <nav className="-mb-px flex space-x-8">
-              {mappings.map((mapping) => (
+              {mappings.map(mapping => (
                 <button
                   key={mapping.id}
                   onClick={() => setSelectedConfig(mapping)}
@@ -318,16 +394,25 @@ const DataMappingInterface = () => {
               {selectedConfig.mappings.length === 0 ? (
                 <div className="text-center py-8 bg-gray-50 rounded-lg">
                   <Info className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-500">No mappings created yet. Drag and drop fields below to create mappings.</p>
+                  <p className="text-gray-500">
+                    No mappings created yet. Drag and drop fields below to create mappings.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {selectedConfig.mappings.map((mapping) => (
-                    <div key={mapping.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  {selectedConfig.mappings.map(mapping => (
+                    <div
+                      key={mapping.id}
+                      className="flex items-center justify-between p-3 bg-blue-50 rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
-                        <span className="font-mono text-sm bg-white px-2 py-1 rounded">{mapping.hl7Field}</span>
+                        <span className="font-mono text-sm bg-white px-2 py-1 rounded">
+                          {mapping.hl7Field}
+                        </span>
                         <ArrowRight className="w-4 h-4 text-gray-400" />
-                        <span className="font-mono text-sm bg-white px-2 py-1 rounded">{mapping.fhirField}</span>
+                        <span className="font-mono text-sm bg-white px-2 py-1 rounded">
+                          {mapping.fhirField}
+                        </span>
                         <span className="text-sm text-gray-600">{mapping.transformation}</span>
                       </div>
                       <button
@@ -354,11 +439,11 @@ const DataMappingInterface = () => {
                 <div key={segment}>
                   <h4 className="font-medium text-gray-700 mb-2">{segment} Segment</h4>
                   <div className="space-y-2">
-                    {fields.map((field) => (
+                    {fields.map(field => (
                       <div
                         key={field.field}
                         draggable
-                        onDragStart={(e) => handleDragStart(e, field, 'HL7')}
+                        onDragStart={e => handleDragStart(e, field, 'HL7')}
                         onDragOver={handleDragOver}
                         className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-move hover:bg-gray-100 transition-colors"
                       >
@@ -386,13 +471,13 @@ const DataMappingInterface = () => {
                 <div key={resource}>
                   <h4 className="font-medium text-gray-700 mb-2">{resource} Resource</h4>
                   <div className="space-y-2">
-                    {fields.map((field) => (
+                    {fields.map(field => (
                       <div
                         key={field.field}
                         draggable
-                        onDragStart={(e) => handleDragStart(e, field, 'FHIR')}
+                        onDragStart={e => handleDragStart(e, field, 'FHIR')}
                         onDragOver={handleDragOver}
-                        onDrop={(e) => handleDrop(e, field.field, 'FHIR')}
+                        onDrop={e => handleDrop(e, field.field, 'FHIR')}
                         className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-move hover:bg-gray-100 transition-colors"
                       >
                         <div className="flex items-center gap-3">
@@ -448,7 +533,10 @@ const DataMappingInterface = () => {
                   <h4 className="font-medium text-gray-900 mb-3">Applied Mappings</h4>
                   <div className="space-y-2">
                     {previewData.mappings.map((mapping, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                      <div
+                        key={index}
+                        className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg"
+                      >
                         <CheckCircle className="w-4 h-4 text-green-600" />
                         <span className="font-mono text-sm">{mapping.hl7Field}</span>
                         <ArrowRight className="w-4 h-4 text-gray-400" />

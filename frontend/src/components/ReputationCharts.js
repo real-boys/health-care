@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  LineChart, 
-  Line, 
-  AreaChart, 
-  Area, 
-  BarChart, 
-  Bar, 
-  PieChart, 
-  Pie, 
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
   Cell,
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
 } from 'recharts';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Calendar, 
-  BarChart3, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Calendar,
+  BarChart3,
   PieChart as PieChartIcon,
   Activity,
   Download,
   Filter,
-  ChevronDown
+  ChevronDown,
 } from 'lucide-react';
 
 const ReputationCharts = ({ userId, profileType }) => {
@@ -46,8 +46,8 @@ const ReputationCharts = ({ userId, profileType }) => {
     try {
       const token = localStorage.getItem('token');
       const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       };
 
       // Calculate date range
@@ -68,7 +68,7 @@ const ReputationCharts = ({ userId, profileType }) => {
         `/api/reputation/history/${userId}?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
         { headers }
       );
-      
+
       if (historyResponse.ok) {
         const historyData = await historyResponse.json();
         setHistory(historyData || []);
@@ -79,7 +79,7 @@ const ReputationCharts = ({ userId, profileType }) => {
         `/api/reputation/metrics/${userId}?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
         { headers }
       );
-      
+
       if (metricsResponse.ok) {
         const metricsData = await metricsResponse.json();
         setMetrics(metricsData || []);
@@ -90,12 +90,11 @@ const ReputationCharts = ({ userId, profileType }) => {
         `/api/reputation/reviews/${userId}?revieweeType=${profileType}&limit=100`,
         { headers }
       );
-      
+
       if (reviewsResponse.ok) {
         const reviewsData = await reviewsResponse.json();
         setReviews(reviewsData.reviews || []);
       }
-
     } catch (error) {
       console.error('Error fetching chart data:', error);
     } finally {
@@ -106,7 +105,7 @@ const ReputationCharts = ({ userId, profileType }) => {
   // Process data for charts
   const getScoreTrendData = () => {
     const scoreMap = new Map();
-    
+
     history.forEach(item => {
       if (item.event_type === 'rating_received' && item.new_score) {
         const date = new Date(item.created_at).toLocaleDateString();
@@ -123,7 +122,10 @@ const ReputationCharts = ({ userId, profileType }) => {
     const distribution = [1, 2, 3, 4, 5].map(rating => ({
       rating: `${rating} Star${rating !== 1 ? 's' : ''}`,
       count: reviews.filter(review => review.rating === rating).length,
-      percentage: reviews.length > 0 ? (reviews.filter(review => review.rating === rating).length / reviews.length) * 100 : 0
+      percentage:
+        reviews.length > 0
+          ? (reviews.filter(review => review.rating === rating).length / reviews.length) * 100
+          : 0,
     }));
 
     return distribution;
@@ -131,7 +133,7 @@ const ReputationCharts = ({ userId, profileType }) => {
 
   const getCategoryDistribution = () => {
     const categories = {};
-    
+
     reviews.forEach(review => {
       const category = review.review_category || 'other';
       categories[category] = (categories[category] || 0) + 1;
@@ -140,13 +142,13 @@ const ReputationCharts = ({ userId, profileType }) => {
     return Object.entries(categories).map(([category, count]) => ({
       name: category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
       value: count,
-      percentage: reviews.length > 0 ? (count / reviews.length) * 100 : 0
+      percentage: reviews.length > 0 ? (count / reviews.length) * 100 : 0,
     }));
   };
 
   const getDailyMetrics = () => {
     const metricsMap = new Map();
-    
+
     metrics.forEach(metric => {
       const date = new Date(metric.metric_date).toLocaleDateString();
       metricsMap.set(date, {
@@ -154,7 +156,7 @@ const ReputationCharts = ({ userId, profileType }) => {
         avgRating: metric.daily_rating_average || 0,
         reviewCount: metric.daily_review_count || 0,
         positiveReviews: metric.daily_positive_reviews || 0,
-        helpfulVotes: metric.daily_helpful_votes || 0
+        helpfulVotes: metric.daily_helpful_votes || 0,
       });
     });
 
@@ -163,11 +165,11 @@ const ReputationCharts = ({ userId, profileType }) => {
 
   const getMonthlySummary = () => {
     const monthlyMap = new Map();
-    
+
     metrics.forEach(metric => {
       const date = new Date(metric.metric_date);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      
+
       if (!monthlyMap.has(monthKey)) {
         monthlyMap.set(monthKey, {
           month: monthKey,
@@ -175,10 +177,10 @@ const ReputationCharts = ({ userId, profileType }) => {
           totalReviews: 0,
           totalPositive: 0,
           totalVotes: 0,
-          count: 0
+          count: 0,
         });
       }
-      
+
       const monthData = monthlyMap.get(monthKey);
       monthData.avgRating += metric.daily_rating_average || 0;
       monthData.totalReviews += metric.daily_review_count || 0;
@@ -187,13 +189,15 @@ const ReputationCharts = ({ userId, profileType }) => {
       monthData.count += 1;
     });
 
-    return Array.from(monthlyMap.values()).map(month => ({
-      month: month.month,
-      avgRating: month.count > 0 ? month.avgRating / month.count : 0,
-      totalReviews: month.totalReviews,
-      totalPositive: month.totalPositive,
-      totalVotes: month.totalVotes
-    })).sort((a, b) => a.month.localeCompare(b.month));
+    return Array.from(monthlyMap.values())
+      .map(month => ({
+        month: month.month,
+        avgRating: month.count > 0 ? month.avgRating / month.count : 0,
+        totalReviews: month.totalReviews,
+        totalPositive: month.totalPositive,
+        totalVotes: month.totalVotes,
+      }))
+      .sort((a, b) => a.month.localeCompare(b.month));
   };
 
   const scoreTrendData = getScoreTrendData();
@@ -208,13 +212,13 @@ const ReputationCharts = ({ userId, profileType }) => {
     { value: '7days', label: 'Last 7 Days' },
     { value: '30days', label: 'Last 30 Days' },
     { value: '90days', label: 'Last 90 Days' },
-    { value: '1year', label: 'Last Year' }
+    { value: '1year', label: 'Last Year' },
   ];
 
   const chartTypes = [
     { value: 'line', label: 'Line Chart', icon: <TrendingUp className="w-4 h-4" /> },
     { value: 'area', label: 'Area Chart', icon: <Activity className="w-4 h-4" /> },
-    { value: 'bar', label: 'Bar Chart', icon: <BarChart3 className="w-4 h-4" /> }
+    { value: 'bar', label: 'Bar Chart', icon: <BarChart3 className="w-4 h-4" /> },
   ];
 
   if (loading) {
@@ -234,13 +238,13 @@ const ReputationCharts = ({ userId, profileType }) => {
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Reputation Analytics</h1>
             <p className="text-gray-600">Visualize your reputation trends and performance</p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             {/* Time Range Selector */}
             <div className="relative">
               <select
                 value={timeRange}
-                onChange={(e) => setTimeRange(e.target.value)}
+                onChange={e => setTimeRange(e.target.value)}
                 className="appearance-none pl-10 pr-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 {timeRanges.map(range => (
@@ -252,7 +256,7 @@ const ReputationCharts = ({ userId, profileType }) => {
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             </div>
-            
+
             <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
               <Download className="w-4 h-4" />
               Export
@@ -268,13 +272,15 @@ const ReputationCharts = ({ userId, profileType }) => {
             <div>
               <p className="text-sm text-gray-600">Current Score</p>
               <p className="text-2xl font-bold text-gray-900">
-                {scoreTrendData.length > 0 ? scoreTrendData[scoreTrendData.length - 1].score.toFixed(1) : '0.0'}
+                {scoreTrendData.length > 0
+                  ? scoreTrendData[scoreTrendData.length - 1].score.toFixed(1)
+                  : '0.0'}
               </p>
             </div>
             <TrendingUp className="w-8 h-8 text-green-500" />
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -284,25 +290,30 @@ const ReputationCharts = ({ userId, profileType }) => {
             <BarChart3 className="w-8 h-8 text-blue-500" />
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Avg Rating</p>
               <p className="text-2xl font-bold text-gray-900">
-                {reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) : '0.0'}
+                {reviews.length > 0
+                  ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+                  : '0.0'}
               </p>
             </div>
             <Activity className="w-8 h-8 text-yellow-500" />
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Positive Rate</p>
               <p className="text-2xl font-bold text-gray-900">
-                {reviews.length > 0 ? Math.round((reviews.filter(r => r.rating >= 4).length / reviews.length) * 100) : 0}%
+                {reviews.length > 0
+                  ? Math.round((reviews.filter(r => r.rating >= 4).length / reviews.length) * 100)
+                  : 0}
+                %
               </p>
             </div>
             <TrendingUp className="w-8 h-8 text-purple-500" />
@@ -331,7 +342,7 @@ const ReputationCharts = ({ userId, profileType }) => {
             ))}
           </div>
         </div>
-        
+
         <ResponsiveContainer width="100%" height={300}>
           {chartType === 'line' ? (
             <LineChart data={scoreTrendData}>
@@ -340,7 +351,13 @@ const ReputationCharts = ({ userId, profileType }) => {
               <YAxis domain={[0, 5]} />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="score" stroke="#3B82F6" strokeWidth={2} dot={{ fill: '#3B82F6' }} />
+              <Line
+                type="monotone"
+                dataKey="score"
+                stroke="#3B82F6"
+                strokeWidth={2}
+                dot={{ fill: '#3B82F6' }}
+              />
             </LineChart>
           ) : chartType === 'area' ? (
             <AreaChart data={scoreTrendData}>
@@ -349,7 +366,13 @@ const ReputationCharts = ({ userId, profileType }) => {
               <YAxis domain={[0, 5]} />
               <Tooltip />
               <Legend />
-              <Area type="monotone" dataKey="score" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} />
+              <Area
+                type="monotone"
+                dataKey="score"
+                stroke="#3B82F6"
+                fill="#3B82F6"
+                fillOpacity={0.3}
+              />
             </AreaChart>
           ) : (
             <BarChart data={scoreTrendData}>
@@ -414,9 +437,27 @@ const ReputationCharts = ({ userId, profileType }) => {
             <YAxis yAxisId="right" orientation="right" />
             <Tooltip />
             <Legend />
-            <Line yAxisId="left" type="monotone" dataKey="avgRating" stroke="#3B82F6" name="Avg Rating" />
-            <Line yAxisId="right" type="monotone" dataKey="reviewCount" stroke="#10B981" name="Review Count" />
-            <Line yAxisId="right" type="monotone" dataKey="helpfulVotes" stroke="#F59E0B" name="Helpful Votes" />
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="avgRating"
+              stroke="#3B82F6"
+              name="Avg Rating"
+            />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="reviewCount"
+              stroke="#10B981"
+              name="Review Count"
+            />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="helpfulVotes"
+              stroke="#F59E0B"
+              name="Helpful Votes"
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

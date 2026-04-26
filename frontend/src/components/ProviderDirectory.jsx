@@ -124,7 +124,7 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
     insurance: [],
     language: [],
     gender: [],
-    consultationType: []
+    consultationType: [],
   });
   const [sortBy, setSortBy] = useState('relevance');
   const [viewMode, setViewMode] = useState('grid');
@@ -426,11 +426,12 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
 
     // Search query filter
     if (searchQuery) {
-      filtered = filtered.filter(provider =>
-        provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        provider.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        provider.subspecialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        provider.specialties.some(spec => spec.toLowerCase().includes(searchQuery.toLowerCase()))
+      filtered = filtered.filter(
+        provider =>
+          provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          provider.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          provider.subspecialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          provider.specialties.some(spec => spec.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
 
@@ -440,7 +441,7 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
         if (key === 'specialty') {
           filtered = filtered.filter(provider => values.includes(provider.specialty));
         } else if (key === 'location') {
-          filtered = filtered.filter(provider => 
+          filtered = filtered.filter(provider =>
             values.some(loc => provider.location.toLowerCase().includes(loc.toLowerCase()))
           );
         } else if (key === 'rating') {
@@ -487,7 +488,7 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
       ...prev,
       [filterType]: prev[filterType].includes(value)
         ? prev[filterType].filter(item => item !== value)
-        : [...prev[filterType], value]
+        : [...prev[filterType], value],
     }));
   };
 
@@ -500,18 +501,18 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
       insurance: [],
       language: [],
       gender: [],
-      consultationType: []
+      consultationType: [],
     });
     setSearchQuery('');
   };
 
-  const addToComparison = (provider) => {
+  const addToComparison = provider => {
     if (comparisonList.length < 3 && !comparisonList.find(p => p.id === provider.id)) {
       setComparisonList([...comparisonList, provider]);
     }
   };
 
-  const removeFromComparison = (providerId) => {
+  const removeFromComparison = providerId => {
     setComparisonList(comparisonList.filter(p => p.id !== providerId));
   };
 
@@ -551,7 +552,7 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
               type="text"
               placeholder="Search by name, specialty, condition, or treatment..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -611,7 +612,9 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
 
               {/* Rating Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Rating</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Minimum Rating
+                </label>
                 <div className="space-y-2">
                   {[4.5, 4.0, 3.5, 3.0].map(rating => (
                     <label key={rating} className="flex items-center">
@@ -632,7 +635,9 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
 
               {/* Consultation Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Consultation Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Consultation Type
+                </label>
                 <div className="space-y-2">
                   {['In-Person', 'Video', 'Phone'].map(type => (
                     <label key={type} className="flex items-center">
@@ -650,10 +655,7 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
             </div>
 
             <div className="flex justify-between items-center mt-4">
-              <button
-                onClick={clearFilters}
-                className="text-sm text-gray-600 hover:text-gray-800"
-              >
+              <button onClick={clearFilters} className="text-sm text-gray-600 hover:text-gray-800">
                 Clear all filters
               </button>
               <div className="text-sm text-gray-600">
@@ -669,7 +671,7 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
         <div className="flex items-center gap-4">
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
+            onChange={e => setSortBy(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="relevance">Sort by Relevance</option>
@@ -705,7 +707,9 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
 
         {comparisonList.length > 0 && (
           <button
-            onClick={() => {/* Show comparison modal */}}
+            onClick={() => {
+              /* Show comparison modal */
+            }}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
           >
             <Users className="w-4 h-4" />
@@ -715,7 +719,11 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
       </div>
 
       {/* Provider Cards */}
-      <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+      <div
+        className={
+          viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'
+        }
+      >
         {filteredProviders.map(provider => (
           <ProviderCard
             key={provider.id}
@@ -733,7 +741,9 @@ const ProviderDirectory = ({ patientId, userLocation }) => {
         <ProviderDetailModal
           provider={selectedProvider}
           onClose={() => setSelectedProvider(null)}
-          onBookAppointment={() => {/* Handle booking */}}
+          onBookAppointment={() => {
+            /* Handle booking */
+          }}
         />
       )}
 
@@ -754,7 +764,9 @@ const ProviderCard = ({ provider, viewMode, onSelect, onCompare, isInComparison 
   const isListView = viewMode === 'list';
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow ${isListView ? 'flex gap-4 p-4' : 'p-4'}`}>
+    <div
+      className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow ${isListView ? 'flex gap-4 p-4' : 'p-4'}`}
+    >
       {/* Provider Image */}
       <div className={`${isListView ? 'w-24 h-24' : 'w-full h-48'} mb-4`}>
         <img
@@ -768,7 +780,9 @@ const ProviderCard = ({ provider, viewMode, onSelect, onCompare, isInComparison 
       <div className={`flex-1 ${isListView ? '' : 'space-y-3'}`}>
         <div>
           <h3 className="font-semibold text-lg text-gray-900">{provider.name}</h3>
-          <p className="text-gray-600">{provider.specialty} • {provider.subspecialty}</p>
+          <p className="text-gray-600">
+            {provider.specialty} • {provider.subspecialty}
+          </p>
           <div className="flex items-center gap-2 mt-1">
             <div className="flex items-center">
               <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -848,12 +862,11 @@ const ProviderDetailModal = ({ provider, onClose, onBookAppointment }) => {
         <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-start">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">{provider.name}</h2>
-            <p className="text-gray-600">{provider.specialty} • {provider.subspecialty}</p>
+            <p className="text-gray-600">
+              {provider.specialty} • {provider.subspecialty}
+            </p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -962,7 +975,10 @@ const ProviderDetailModal = ({ provider, onClose, onBookAppointment }) => {
                 <h3 className="font-semibold text-lg mb-3">Specialties & Conditions</h3>
                 <div className="flex flex-wrap gap-2">
                   {provider.specialties.map(specialty => (
-                    <span key={specialty} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                    <span
+                      key={specialty}
+                      className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
+                    >
                       {specialty}
                     </span>
                   ))}
@@ -977,7 +993,9 @@ const ProviderDetailModal = ({ provider, onClose, onBookAppointment }) => {
                     <h4 className="font-medium mb-2">Education</h4>
                     <ul className="space-y-1">
                       {provider.education.map((edu, index) => (
-                        <li key={index} className="text-gray-700">• {edu}</li>
+                        <li key={index} className="text-gray-700">
+                          • {edu}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -985,7 +1003,9 @@ const ProviderDetailModal = ({ provider, onClose, onBookAppointment }) => {
                     <h4 className="font-medium mb-2">Board Certifications</h4>
                     <ul className="space-y-1">
                       {provider.boardCertifications.map((cert, index) => (
-                        <li key={index} className="text-gray-700">• {cert}</li>
+                        <li key={index} className="text-gray-700">
+                          • {cert}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -997,7 +1017,10 @@ const ProviderDetailModal = ({ provider, onClose, onBookAppointment }) => {
                 <h3 className="font-semibold text-lg mb-3">Languages</h3>
                 <div className="flex flex-wrap gap-2">
                   {provider.languages.map(language => (
-                    <span key={language} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                    <span
+                      key={language}
+                      className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm"
+                    >
                       {language}
                     </span>
                   ))}
@@ -1023,13 +1046,9 @@ const ProviderDetailModal = ({ provider, onClose, onBookAppointment }) => {
             <AvailabilityTab provider={provider} onBookAppointment={onBookAppointment} />
           )}
 
-          {activeTab === 'reviews' && (
-            <ReviewsTab provider={provider} />
-          )}
+          {activeTab === 'reviews' && <ReviewsTab provider={provider} />}
 
-          {activeTab === 'media' && (
-            <MediaTab provider={provider} />
-          )}
+          {activeTab === 'media' && <MediaTab provider={provider} />}
         </div>
 
         {/* Action Buttons */}
@@ -1087,7 +1106,7 @@ const AvailabilityTab = ({ provider, onBookAppointment }) => {
             <input
               type="date"
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              onChange={e => setSelectedDate(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               min={new Date().toISOString().split('T')[0]}
             />
@@ -1096,7 +1115,7 @@ const AvailabilityTab = ({ provider, onBookAppointment }) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">Select Time</label>
             <select
               value={selectedTime}
-              onChange={(e) => setSelectedTime(e.target.value)}
+              onChange={e => setSelectedTime(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a time</option>
@@ -1133,20 +1152,22 @@ const ReviewsTab = ({ provider }) => {
   const mockReviews = [
     {
       id: 1,
-      patient: "John D.",
+      patient: 'John D.',
       rating: 5,
-      date: "2024-11-15",
-      comment: "Dr. Chen is an exceptional cardiologist. She took the time to explain my condition thoroughly and made me feel comfortable throughout the entire process.",
-      helpful: 23
+      date: '2024-11-15',
+      comment:
+        'Dr. Chen is an exceptional cardiologist. She took the time to explain my condition thoroughly and made me feel comfortable throughout the entire process.',
+      helpful: 23,
     },
     {
       id: 2,
-      patient: "Maria S.",
+      patient: 'Maria S.',
       rating: 4,
-      date: "2024-10-28",
-      comment: "Very professional and knowledgeable. The wait time was a bit long, but the quality of care was excellent.",
-      helpful: 15
-    }
+      date: '2024-10-28',
+      comment:
+        'Very professional and knowledgeable. The wait time was a bit long, but the quality of care was excellent.',
+      helpful: 15,
+    },
   ];
 
   return (
@@ -1158,7 +1179,10 @@ const ReviewsTab = ({ provider }) => {
             <div className="text-4xl font-bold">{provider.rating}</div>
             <div className="flex items-center justify-center mt-1">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`w-5 h-5 ${i < Math.floor(provider.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+                <Star
+                  key={i}
+                  className={`w-5 h-5 ${i < Math.floor(provider.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                />
               ))}
             </div>
             <div className="text-sm text-gray-600 mt-1">{provider.reviews} reviews</div>
@@ -1173,7 +1197,9 @@ const ReviewsTab = ({ provider }) => {
                     style={{ width: `${stars === 5 ? 70 : stars === 4 ? 20 : 5}%` }}
                   />
                 </div>
-                <span className="text-sm text-gray-600 w-8">{stars === 5 ? 70 : stars === 4 ? 20 : 5}%</span>
+                <span className="text-sm text-gray-600 w-8">
+                  {stars === 5 ? 70 : stars === 4 ? 20 : 5}%
+                </span>
               </div>
             ))}
           </div>
@@ -1193,7 +1219,9 @@ const ReviewsTab = ({ provider }) => {
                   onClick={() => setNewReview(prev => ({ ...prev, rating: star }))}
                   className="p-1"
                 >
-                  <Star className={`w-6 h-6 ${star <= newReview.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+                  <Star
+                    className={`w-6 h-6 ${star <= newReview.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                  />
                 </button>
               ))}
             </div>
@@ -1202,7 +1230,7 @@ const ReviewsTab = ({ provider }) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
             <textarea
               value={newReview.comment}
-              onChange={(e) => setNewReview(prev => ({ ...prev, comment: e.target.value }))}
+              onChange={e => setNewReview(prev => ({ ...prev, comment: e.target.value }))}
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="Share your experience with this provider..."
@@ -1226,7 +1254,10 @@ const ReviewsTab = ({ provider }) => {
                   <div className="flex items-center gap-2 mt-1">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                        />
                       ))}
                     </div>
                     <span className="text-sm text-gray-500">{review.date}</span>
@@ -1238,9 +1269,7 @@ const ReviewsTab = ({ provider }) => {
                 <button className="text-sm text-gray-600 hover:text-gray-800">
                   Helpful ({review.helpful})
                 </button>
-                <button className="text-sm text-gray-600 hover:text-gray-800">
-                  Report
-                </button>
+                <button className="text-sm text-gray-600 hover:text-gray-800">Report</button>
               </div>
             </div>
           ))}
@@ -1302,10 +1331,7 @@ const ComparisonModal = ({ providers, onClose, onRemove }) => {
       <div className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
           <h2 className="text-xl font-bold">Compare Providers</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -1335,7 +1361,9 @@ const ComparisonModal = ({ providers, onClose, onRemove }) => {
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Specialty</td>
                   {providers.map(provider => (
-                    <td key={provider.id} className="py-3 px-4">{provider.specialty}</td>
+                    <td key={provider.id} className="py-3 px-4">
+                      {provider.specialty}
+                    </td>
                   ))}
                 </tr>
                 <tr className="border-b">
@@ -1352,31 +1380,41 @@ const ComparisonModal = ({ providers, onClose, onRemove }) => {
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Experience</td>
                   {providers.map(provider => (
-                    <td key={provider.id} className="py-3 px-4">{provider.experience} years</td>
+                    <td key={provider.id} className="py-3 px-4">
+                      {provider.experience} years
+                    </td>
                   ))}
                 </tr>
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Distance</td>
                   {providers.map(provider => (
-                    <td key={provider.id} className="py-3 px-4">{provider.distance} mi</td>
+                    <td key={provider.id} className="py-3 px-4">
+                      {provider.distance} mi
+                    </td>
                   ))}
                 </tr>
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Consultation Price</td>
                   {providers.map(provider => (
-                    <td key={provider.id} className="py-3 px-4">${provider.price.consultation}</td>
+                    <td key={provider.id} className="py-3 px-4">
+                      ${provider.price.consultation}
+                    </td>
                   ))}
                 </tr>
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Languages</td>
                   {providers.map(provider => (
-                    <td key={provider.id} className="py-3 px-4">{provider.languages.join(', ')}</td>
+                    <td key={provider.id} className="py-3 px-4">
+                      {provider.languages.join(', ')}
+                    </td>
                   ))}
                 </tr>
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Insurance</td>
                   {providers.map(provider => (
-                    <td key={provider.id} className="py-3 px-4">{provider.insurance.slice(0, 3).join(', ')}...</td>
+                    <td key={provider.id} className="py-3 px-4">
+                      {provider.insurance.slice(0, 3).join(', ')}...
+                    </td>
                   ))}
                 </tr>
               </tbody>

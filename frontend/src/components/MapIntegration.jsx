@@ -1,8 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, Navigation, Search, Filter, Layers, Maximize2, Minimize2, Plus, Minus, Crosshair, Map as MapIcon } from 'lucide-react';
+import {
+  MapPin,
+  Navigation,
+  Search,
+  Filter,
+  Layers,
+  Maximize2,
+  Minimize2,
+  Plus,
+  Minus,
+  Crosshair,
+  Map as MapIcon,
+  Star,
+} from 'lucide-react';
 
 const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationUpdate }) => {
-  const [mapCenter, setMapCenter] = useState({ lat: 40.7128, lng: -74.0060 }); // Default: NYC
+  const [mapCenter, setMapCenter] = useState({ lat: 40.7128, lng: -74.006 }); // Default: NYC
   const [zoom, setZoom] = useState(12);
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [mapStyle, setMapStyle] = useState('default');
@@ -16,19 +29,19 @@ const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationU
   useEffect(() => {
     // Initialize map
     setMapLoaded(true);
-    
+
     // Get user's current location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        position => {
           const userCoords = {
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           };
           setMapCenter(userCoords);
           onLocationUpdate?.(userCoords);
         },
-        (error) => {
+        error => {
           console.error('Error getting location:', error);
         }
       );
@@ -49,21 +62,23 @@ const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationU
 
   const calculateDistance = (lat1, lng1, lat2, lng2) => {
     const R = 3959; // Earth's radius in miles
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   };
 
-  const handleMapClick = (event) => {
+  const handleMapClick = event => {
     // In production, this would get actual coordinates from the map
     const newCenter = {
       lat: mapCenter.lat + (Math.random() - 0.5) * 0.1,
-      lng: mapCenter.lng + (Math.random() - 0.5) * 0.1
+      lng: mapCenter.lng + (Math.random() - 0.5) * 0.1,
     };
     setMapCenter(newCenter);
   };
@@ -76,23 +91,23 @@ const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationU
     setZoom(prev => Math.max(prev - 1, 1));
   };
 
-  const handleSearchLocation = (query) => {
+  const handleSearchLocation = query => {
     // In production, this would use a geocoding service
     const mockLocations = {
-      'new york': { lat: 40.7128, lng: -74.0060 },
+      'new york': { lat: 40.7128, lng: -74.006 },
       'los angeles': { lat: 34.0522, lng: -118.2437 },
-      'chicago': { lat: 41.8781, lng: -87.6298 },
-      'houston': { lat: 29.7604, lng: -95.3698 },
-      'philadelphia': { lat: 39.9526, lng: -75.1652 }
+      chicago: { lat: 41.8781, lng: -87.6298 },
+      houston: { lat: 29.7604, lng: -95.3698 },
+      philadelphia: { lat: 39.9526, lng: -75.1652 },
     };
-    
+
     const location = mockLocations[query.toLowerCase()];
     if (location) {
       setMapCenter(location);
     }
   };
 
-  const handleProviderMarkerClick = (provider) => {
+  const handleProviderMarkerClick = provider => {
     setSelectedProvider(provider);
     onProviderSelect?.(provider);
   };
@@ -100,15 +115,15 @@ const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationU
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        position => {
           const userCoords = {
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           };
           setMapCenter(userCoords);
           onLocationUpdate?.(userCoords);
         },
-        (error) => {
+        error => {
           console.error('Error getting location:', error);
         }
       );
@@ -127,7 +142,7 @@ const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationU
               type="text"
               placeholder="Search for a location..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              onKeyPress={(e) => {
+              onKeyPress={e => {
                 if (e.key === 'Enter') {
                   handleSearchLocation(e.target.value);
                 }
@@ -150,7 +165,7 @@ const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationU
             <label className="text-sm font-medium text-gray-700">Search Radius:</label>
             <select
               value={searchRadius}
-              onChange={(e) => setSearchRadius(Number(e.target.value))}
+              onChange={e => setSearchRadius(Number(e.target.value))}
               className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value={5}>5 miles</option>
@@ -165,7 +180,7 @@ const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationU
             <label className="text-sm font-medium text-gray-700">Map Style:</label>
             <select
               value={mapStyle}
-              onChange={(e) => setMapStyle(e.target.value)}
+              onChange={e => setMapStyle(e.target.value)}
               className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="default">Default</option>
@@ -197,28 +212,29 @@ const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationU
       {/* Map Container */}
       <div className="flex-1 relative bg-gray-100">
         {/* Mock Map */}
-        <div 
+        <div
           ref={mapRef}
           className="w-full h-full relative cursor-crosshair"
           onClick={handleMapClick}
           style={{
-            backgroundImage: mapStyle === 'satellite' 
-              ? 'linear-gradient(45deg, #2d3748 25%, #4a5568 25%, #4a5568 50%, #2d3748 50%, #2d3748 75%, #4a5568 75%, #4a5568)'
-              : mapStyle === 'dark'
-              ? 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)'
-              : mapStyle === 'terrain'
-              ? 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)'
-              : 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%)',
-            backgroundSize: '20px 20px'
+            backgroundImage:
+              mapStyle === 'satellite'
+                ? 'linear-gradient(45deg, #2d3748 25%, #4a5568 25%, #4a5568 50%, #2d3748 50%, #2d3748 75%, #4a5568 75%, #4a5568)'
+                : mapStyle === 'dark'
+                  ? 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)'
+                  : mapStyle === 'terrain'
+                    ? 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)'
+                    : 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%)',
+            backgroundSize: '20px 20px',
           }}
         >
           {/* Map Center Indicator */}
-          <div 
+          <div
             className="absolute w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg transform -translate-x-1/2 -translate-y-1/2"
-            style={{ 
-              left: '50%', 
+            style={{
+              left: '50%',
               top: '50%',
-              zIndex: 10
+              zIndex: 10,
             }}
           >
             <div className="absolute inset-0 bg-blue-600 rounded-full animate-ping"></div>
@@ -230,26 +246,28 @@ const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationU
             const distance = 0.2 + (index % 3) * 0.1; // Vary distance from center
             const x = 50 + distance * 30 * Math.cos(angle);
             const y = 50 + distance * 30 * Math.sin(angle);
-            
+
             return (
               <div
                 key={provider.id}
                 className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all ${
                   selectedProvider?.id === provider.id ? 'scale-125 z-20' : 'hover:scale-110 z-10'
                 }`}
-                style={{ 
-                  left: `${x}%`, 
-                  top: `${y}%`
+                style={{
+                  left: `${x}%`,
+                  top: `${y}%`,
                 }}
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   handleProviderMarkerClick(provider);
                 }}
               >
                 <div className="relative">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-lg ${
-                    selectedProvider?.id === provider.id ? 'bg-blue-600' : 'bg-red-600'
-                  }`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-lg ${
+                      selectedProvider?.id === provider.id ? 'bg-blue-600' : 'bg-red-600'
+                    }`}
+                  >
                     <MapPin className="w-4 h-4" />
                   </div>
                   {selectedProvider?.id === provider.id && (
@@ -285,16 +303,10 @@ const MapIntegration = ({ providers, onProviderSelect, userLocation, onLocationU
         <div className="absolute top-4 right-4 space-y-2">
           {/* Zoom Controls */}
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <button
-              onClick={handleZoomIn}
-              className="p-2 hover:bg-gray-100 border-b"
-            >
+            <button onClick={handleZoomIn} className="p-2 hover:bg-gray-100 border-b">
               <Plus className="w-4 h-4" />
             </button>
-            <button
-              onClick={handleZoomOut}
-              className="p-2 hover:bg-gray-100"
-            >
+            <button onClick={handleZoomOut} className="p-2 hover:bg-gray-100">
               <Minus className="w-4 h-4" />
             </button>
           </div>
@@ -388,7 +400,7 @@ const MapLegend = ({ providers }) => {
           <span className="text-xs">Limited Availability</span>
         </div>
       </div>
-      
+
       {/* Provider Type Breakdown */}
       <div className="pt-2 border-t">
         <h5 className="font-medium text-xs mb-2">Provider Types</h5>
@@ -417,14 +429,14 @@ const LocationSearch = ({ onLocationSelect, recentSearches = [] }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const mockSuggestions = [
-    { name: 'New York, NY', lat: 40.7128, lng: -74.0060 },
+    { name: 'New York, NY', lat: 40.7128, lng: -74.006 },
     { name: 'Los Angeles, CA', lat: 34.0522, lng: -118.2437 },
     { name: 'Chicago, IL', lat: 41.8781, lng: -87.6298 },
     { name: 'Houston, TX', lat: 29.7604, lng: -95.3698 },
-    { name: 'Phoenix, AZ', lat: 33.4484, lng: -112.0740 },
+    { name: 'Phoenix, AZ', lat: 33.4484, lng: -112.074 },
     { name: 'Philadelphia, PA', lat: 39.9526, lng: -75.1652 },
     { name: 'San Antonio, TX', lat: 29.4241, lng: -98.4936 },
-    { name: 'San Diego, CA', lat: 32.7157, lng: -117.1611 }
+    { name: 'San Diego, CA', lat: 32.7157, lng: -117.1611 },
   ];
 
   useEffect(() => {
@@ -439,7 +451,7 @@ const LocationSearch = ({ onLocationSelect, recentSearches = [] }) => {
     }
   }, [query]);
 
-  const handleSelect = (location) => {
+  const handleSelect = location => {
     setQuery(location.name);
     setShowSuggestions(false);
     onLocationSelect(location);
@@ -452,7 +464,7 @@ const LocationSearch = ({ onLocationSelect, recentSearches = [] }) => {
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={e => setQuery(e.target.value)}
           placeholder="Search for a city, address, or zip code..."
           className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />

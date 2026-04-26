@@ -17,7 +17,7 @@ import {
   Settings,
   Bell,
   Calendar,
-  Filter
+  Filter,
 } from 'lucide-react';
 
 const ConnectionHealthMonitoring = () => {
@@ -48,8 +48,8 @@ const ConnectionHealthMonitoring = () => {
       metrics: {
         cpu: 45,
         memory: 62,
-        network: 78
-      }
+        network: 78,
+      },
     },
     {
       id: 2,
@@ -67,8 +67,8 @@ const ConnectionHealthMonitoring = () => {
       metrics: {
         cpu: 32,
         memory: 48,
-        network: 65
-      }
+        network: 65,
+      },
     },
     {
       id: 3,
@@ -86,8 +86,8 @@ const ConnectionHealthMonitoring = () => {
       metrics: {
         cpu: 78,
         memory: 85,
-        network: 92
-      }
+        network: 92,
+      },
     },
     {
       id: 4,
@@ -105,9 +105,9 @@ const ConnectionHealthMonitoring = () => {
       metrics: {
         cpu: 92,
         memory: 94,
-        network: 88
-      }
-    }
+        network: 88,
+      },
+    },
   ];
 
   // Sample alerts
@@ -119,7 +119,7 @@ const ConnectionHealthMonitoring = () => {
       message: 'Unable to establish connection to pharmacy system endpoint',
       timestamp: new Date(Date.now() - 5 * 60 * 1000),
       connectionId: 4,
-      acknowledged: false
+      acknowledged: false,
     },
     {
       id: 2,
@@ -128,7 +128,7 @@ const ConnectionHealthMonitoring = () => {
       message: 'Response time exceeded 800ms threshold',
       timestamp: new Date(Date.now() - 15 * 60 * 1000),
       connectionId: 3,
-      acknowledged: false
+      acknowledged: false,
     },
     {
       id: 3,
@@ -137,13 +137,13 @@ const ConnectionHealthMonitoring = () => {
       message: 'Lab system will undergo maintenance at 2:00 AM',
       timestamp: new Date(Date.now() - 30 * 60 * 1000),
       connectionId: 2,
-      acknowledged: true
-    }
+      acknowledged: true,
+    },
   ];
 
   useEffect(() => {
     fetchHealthData();
-    
+
     if (autoRefresh) {
       const interval = setInterval(fetchHealthData, 30000); // Refresh every 30 seconds
       return () => clearInterval(interval);
@@ -155,25 +155,29 @@ const ConnectionHealthMonitoring = () => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       setConnections(sampleConnections);
       setAlerts(sampleAlerts);
-      
+
       // Calculate overall metrics
       const healthyConnections = sampleConnections.filter(c => c.status === 'healthy').length;
       const degradedConnections = sampleConnections.filter(c => c.status === 'degraded').length;
       const unhealthyConnections = sampleConnections.filter(c => c.status === 'unhealthy').length;
-      
-      const avgResponseTime = sampleConnections
-        .filter(c => c.responseTime !== null)
-        .reduce((sum, c) => sum + c.responseTime, 0) / 
+
+      const avgResponseTime =
+        sampleConnections
+          .filter(c => c.responseTime !== null)
+          .reduce((sum, c) => sum + c.responseTime, 0) /
         sampleConnections.filter(c => c.responseTime !== null).length;
-      
-      const avgUptime = sampleConnections.reduce((sum, c) => sum + c.uptime, 0) / sampleConnections.length;
-      const avgSuccessRate = sampleConnections.reduce((sum, c) => sum + c.successRate, 0) / sampleConnections.length;
-      
+
+      const avgUptime =
+        sampleConnections.reduce((sum, c) => sum + c.uptime, 0) / sampleConnections.length;
+      const avgSuccessRate =
+        sampleConnections.reduce((sum, c) => sum + c.successRate, 0) / sampleConnections.length;
+
       setHealthData({
-        overallStatus: unhealthyConnections > 0 ? 'unhealthy' : degradedConnections > 0 ? 'degraded' : 'healthy',
+        overallStatus:
+          unhealthyConnections > 0 ? 'unhealthy' : degradedConnections > 0 ? 'degraded' : 'healthy',
         totalConnections: sampleConnections.length,
         healthyConnections,
         degradedConnections,
@@ -181,16 +185,15 @@ const ConnectionHealthMonitoring = () => {
         avgResponseTime: Math.round(avgResponseTime),
         avgUptime: avgUptime.toFixed(1),
         avgSuccessRate: avgSuccessRate.toFixed(1),
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       });
-      
+
       setMetrics({
         totalRequests: sampleConnections.reduce((sum, c) => sum + c.totalRequests, 0),
         totalErrors: sampleConnections.reduce((sum, c) => sum + c.errorCount, 0),
         dataTransferred: '2.4 GB',
-        activeAlerts: alerts.filter(a => !a.acknowledged).length
+        activeAlerts: alerts.filter(a => !a.acknowledged).length,
       });
-      
     } catch (error) {
       console.error('Error fetching health data:', error);
     } finally {
@@ -198,7 +201,7 @@ const ConnectionHealthMonitoring = () => {
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = status => {
     switch (status) {
       case 'healthy':
         return <CheckCircle className="w-5 h-5 text-green-600" />;
@@ -211,7 +214,7 @@ const ConnectionHealthMonitoring = () => {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
       case 'healthy':
         return 'bg-green-100 text-green-800';
@@ -224,7 +227,7 @@ const ConnectionHealthMonitoring = () => {
     }
   };
 
-  const getAlertIcon = (type) => {
+  const getAlertIcon = type => {
     switch (type) {
       case 'error':
         return <AlertCircle className="w-4 h-4 text-red-600" />;
@@ -237,27 +240,29 @@ const ConnectionHealthMonitoring = () => {
     }
   };
 
-  const handleAcknowledgeAlert = (alertId) => {
-    setAlerts(alerts.map(alert => 
-      alert.id === alertId ? { ...alert, acknowledged: true } : alert
-    ));
+  const handleAcknowledgeAlert = alertId => {
+    setAlerts(
+      alerts.map(alert => (alert.id === alertId ? { ...alert, acknowledged: true } : alert))
+    );
   };
 
-  const handleTestConnection = async (connectionId) => {
+  const handleTestConnection = async connectionId => {
     try {
       // Simulate connection test
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setConnections(connections.map(conn => 
-        conn.id === connectionId 
-          ? { 
-              ...conn, 
-              lastCheck: new Date(),
-              status: Math.random() > 0.2 ? 'healthy' : 'degraded',
-              responseTime: Math.floor(Math.random() * 200) + 50
-            }
-          : conn
-      ));
+
+      setConnections(
+        connections.map(conn =>
+          conn.id === connectionId
+            ? {
+                ...conn,
+                lastCheck: new Date(),
+                status: Math.random() > 0.2 ? 'healthy' : 'degraded',
+                responseTime: Math.floor(Math.random() * 200) + 50,
+              }
+            : conn
+        )
+      );
     } catch (error) {
       console.error('Error testing connection:', error);
     }
@@ -275,7 +280,9 @@ const ConnectionHealthMonitoring = () => {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Connection Health Monitoring</h1>
-              <p className="mt-2 text-gray-600">Real-time monitoring of integration connections and system health</p>
+              <p className="mt-2 text-gray-600">
+                Real-time monitoring of integration connections and system health
+              </p>
             </div>
             <div className="flex gap-3">
               <button
@@ -307,14 +314,14 @@ const ConnectionHealthMonitoring = () => {
                   <input
                     type="checkbox"
                     checked={autoRefresh}
-                    onChange={(e) => setAutoRefresh(e.target.checked)}
+                    onChange={e => setAutoRefresh(e.target.checked)}
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   Auto Refresh
                 </label>
                 <select
                   value={selectedTimeRange}
-                  onChange={(e) => setSelectedTimeRange(e.target.value)}
+                  onChange={e => setSelectedTimeRange(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="1h">Last Hour</option>
@@ -330,20 +337,22 @@ const ConnectionHealthMonitoring = () => {
                 <div className="flex items-center justify-center mb-2">
                   {getStatusIcon(healthData.overallStatus)}
                 </div>
-                <p className="text-2xl font-bold text-blue-600 capitalize">{healthData.overallStatus}</p>
+                <p className="text-2xl font-bold text-blue-600 capitalize">
+                  {healthData.overallStatus}
+                </p>
                 <p className="text-sm text-gray-600">System Status</p>
               </div>
-              
+
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <p className="text-2xl font-bold text-green-600">{healthData.avgResponseTime}ms</p>
                 <p className="text-sm text-gray-600">Avg Response Time</p>
               </div>
-              
+
               <div className="text-center p-4 bg-purple-50 rounded-lg">
                 <p className="text-2xl font-bold text-purple-600">{healthData.avgUptime}%</p>
                 <p className="text-sm text-gray-600">Avg Uptime</p>
               </div>
-              
+
               <div className="text-center p-4 bg-yellow-50 rounded-lg">
                 <p className="text-2xl font-bold text-yellow-600">{healthData.avgSuccessRate}%</p>
                 <p className="text-sm text-gray-600">Success Rate</p>
@@ -381,27 +390,32 @@ const ConnectionHealthMonitoring = () => {
                 <p>No active alerts</p>
               </div>
             ) : (
-              alerts.filter(alert => !alert.acknowledged).map(alert => (
-                <div key={alert.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    {getAlertIcon(alert.type)}
-                    <div>
-                      <div className="font-medium text-gray-900">{alert.title}</div>
-                      <div className="text-sm text-gray-600">{alert.message}</div>
-                      <div className="text-xs text-gray-500">
-                        {alert.timestamp.toLocaleString()} • 
-                        {connections.find(c => c.id === alert.connectionId)?.name}
+              alerts
+                .filter(alert => !alert.acknowledged)
+                .map(alert => (
+                  <div
+                    key={alert.id}
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      {getAlertIcon(alert.type)}
+                      <div>
+                        <div className="font-medium text-gray-900">{alert.title}</div>
+                        <div className="text-sm text-gray-600">{alert.message}</div>
+                        <div className="text-xs text-gray-500">
+                          {alert.timestamp.toLocaleString()} •
+                          {connections.find(c => c.id === alert.connectionId)?.name}
+                        </div>
                       </div>
                     </div>
+                    <button
+                      onClick={() => handleAcknowledgeAlert(alert.id)}
+                      className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-lg hover:bg-blue-200"
+                    >
+                      Acknowledge
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleAcknowledgeAlert(alert.id)}
-                    className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-lg hover:bg-blue-200"
-                  >
-                    Acknowledge
-                  </button>
-                </div>
-              ))
+                ))
             )}
           </div>
         </div>
@@ -409,7 +423,7 @@ const ConnectionHealthMonitoring = () => {
         {/* Connection Details */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Connection Details</h2>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {connections.map(connection => (
               <div key={connection.id} className="border border-gray-200 rounded-lg p-4">
@@ -425,7 +439,9 @@ const ConnectionHealthMonitoring = () => {
                       <p className="text-sm text-gray-500">{connection.endpoint}</p>
                     </div>
                   </div>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(connection.status)}`}>
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(connection.status)}`}
+                  >
                     {connection.status}
                   </span>
                 </div>
@@ -460,10 +476,13 @@ const ConnectionHealthMonitoring = () => {
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-500 w-12">CPU</span>
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className={`h-2 rounded-full ${
-                            connection.metrics.cpu > 80 ? 'bg-red-500' :
-                            connection.metrics.cpu > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                            connection.metrics.cpu > 80
+                              ? 'bg-red-500'
+                              : connection.metrics.cpu > 60
+                                ? 'bg-yellow-500'
+                                : 'bg-green-500'
                           }`}
                           style={{ width: `${connection.metrics.cpu}%` }}
                         ></div>
@@ -473,28 +492,38 @@ const ConnectionHealthMonitoring = () => {
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-500 w-12">Memory</span>
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className={`h-2 rounded-full ${
-                            connection.metrics.memory > 80 ? 'bg-red-500' :
-                            connection.metrics.memory > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                            connection.metrics.memory > 80
+                              ? 'bg-red-500'
+                              : connection.metrics.memory > 60
+                                ? 'bg-yellow-500'
+                                : 'bg-green-500'
                           }`}
                           style={{ width: `${connection.metrics.memory}%` }}
                         ></div>
                       </div>
-                      <span className="text-xs text-gray-600 w-8">{connection.metrics.memory}%</span>
+                      <span className="text-xs text-gray-600 w-8">
+                        {connection.metrics.memory}%
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-500 w-12">Network</span>
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className={`h-2 rounded-full ${
-                            connection.metrics.network > 80 ? 'bg-red-500' :
-                            connection.metrics.network > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                            connection.metrics.network > 80
+                              ? 'bg-red-500'
+                              : connection.metrics.network > 60
+                                ? 'bg-yellow-500'
+                                : 'bg-green-500'
                           }`}
                           style={{ width: `${connection.metrics.network}%` }}
                         ></div>
                       </div>
-                      <span className="text-xs text-gray-600 w-8">{connection.metrics.network}%</span>
+                      <span className="text-xs text-gray-600 w-8">
+                        {connection.metrics.network}%
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -523,26 +552,28 @@ const ConnectionHealthMonitoring = () => {
               <BarChart3 className="w-5 h-5 text-blue-600" />
               System Metrics
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
                 <Server className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-blue-600">{metrics.totalRequests.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {metrics.totalRequests.toLocaleString()}
+                </p>
                 <p className="text-sm text-gray-600">Total Requests</p>
               </div>
-              
+
               <div className="text-center p-4 bg-red-50 rounded-lg">
                 <AlertCircle className="w-8 h-8 text-red-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold text-red-600">{metrics.totalErrors}</p>
                 <p className="text-sm text-gray-600">Total Errors</p>
               </div>
-              
+
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <Database className="w-8 h-8 text-green-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold text-green-600">{metrics.dataTransferred}</p>
                 <p className="text-sm text-gray-600">Data Transferred</p>
               </div>
-              
+
               <div className="text-center p-4 bg-yellow-50 rounded-lg">
                 <Bell className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold text-yellow-600">{metrics.activeAlerts}</p>
@@ -573,12 +604,14 @@ const ConnectionHealthMonitoring = () => {
                       <input
                         type="checkbox"
                         checked={autoRefresh}
-                        onChange={(e) => setAutoRefresh(e.target.checked)}
+                        onChange={e => setAutoRefresh(e.target.checked)}
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <div>
                         <div className="font-medium text-gray-900">Auto Refresh</div>
-                        <div className="text-sm text-gray-500">Automatically refresh health data every 30 seconds</div>
+                        <div className="text-sm text-gray-500">
+                          Automatically refresh health data every 30 seconds
+                        </div>
                       </div>
                     </label>
                   </div>
@@ -621,11 +654,19 @@ const ConnectionHealthMonitoring = () => {
                     </label>
                     <div className="space-y-2">
                       <label className="flex items-center gap-2">
-                        <input type="checkbox" defaultChecked className="rounded border-gray-300 text-blue-600" />
+                        <input
+                          type="checkbox"
+                          defaultChecked
+                          className="rounded border-gray-300 text-blue-600"
+                        />
                         <span className="text-sm text-gray-700">Email notifications</span>
                       </label>
                       <label className="flex items-center gap-2">
-                        <input type="checkbox" defaultChecked className="rounded border-gray-300 text-blue-600" />
+                        <input
+                          type="checkbox"
+                          defaultChecked
+                          className="rounded border-gray-300 text-blue-600"
+                        />
                         <span className="text-sm text-gray-700">SMS alerts</span>
                       </label>
                       <label className="flex items-center gap-2">
