@@ -1,23 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
-const { createClaimProcessingTables, createClaimProcessingViews } = require('./claimProcessingSchema');
-
-// Load rate limiting schema
-const rateLimitingSchema = fs.readFileSync(path.join(__dirname, 'rate_limiting_schema.sql'), 'utf8');
-
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'healthcare.db');
-
-function initializeDatabase() {
-  return new Promise((resolve, reject) => {
-    const db = new sqlite3.Database(DB_PATH, (err) => {
-      if (err) {
-        console.error('Error opening database:', err);
-        reject(err);
-        return;
-      }
-      console.log('Connected to SQLite database');
-    });
 
     const tables = [
       `CREATE TABLE IF NOT EXISTS users (
@@ -137,6 +120,40 @@ function initializeDatabase() {
         read BOOLEAN DEFAULT FALSE,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (id)
+      )`,
+
+      `CREATE TABLE IF NOT EXISTS integration_configs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        type TEXT CHECK (type IN ('HL7', 'FHIR', 'CUSTOM')) NOT NULL,
+        description TEXT,
+        connection_config TEXT NOT NULL DEFAULT '{}',
+        mapping_config TEXT NOT NULL DEFAULT '{}',
+        is_active BOOLEAN DEFAULT true,
+        sync_frequency TEXT CHECK (sync_frequency IN ('REAL_TIME', 'HOURLY', 'DAILY', 'WEEKLY')) DEFAULT 'DAILY',
+        last_sync DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+
+      `CREATE TABLE IF NOT EXISTS sync_status (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        integration_id INTEGER NOT NULL,
+        status TEXT CHECK (status IN ('PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED', 'CANCELLED')) DEFAULT 'PENDING',
+        message_type TEXT NOT NULL,
+        source_system TEXT NOT NULL,
+        target_system TEXT NOT NULL,
+        record_count INTEGER DEFAULT 0,
+        processed_count INTEGER DEFAULT 0,
+        error_count INTEGER DEFAULT 0,
+        error_message TEXT,
+        start_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        end_time DATETIME,
+        duration INTEGER,
+        metadata TEXT DEFAULT '{}',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (integration_id) REFERENCES integration_configs(id) ON DELETE CASCADE
       )`
     ];
 
@@ -149,13 +166,19 @@ function initializeDatabase() {
       'CREATE INDEX IF NOT EXISTS idx_payments_patient_id ON premium_payments(patient_id)',
       'CREATE INDEX IF NOT EXISTS idx_appointments_patient_id ON appointments(patient_id)',
       'CREATE INDEX IF NOT EXISTS idx_appointments_date ON appointments(appointment_date)',
-      'CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)'
+      'CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)',
+      'CREATE INDEX IF NOT EXISTS idx_integration_configs_type ON integration_configs(type)',
+      'CREATE INDEX IF NOT EXISTS idx_integration_configs_active ON integration_configs(is_active)',
+      'CREATE INDEX IF NOT EXISTS idx_sync_status_integration_id ON sync_status(integration_id)',
+      'CREATE INDEX IF NOT EXISTS idx_sync_status_status ON sync_status(status)',
+      'CREATE INDEX IF NOT EXISTS idx_sync_status_start_time ON sync_status(start_time)'
     ];
 
     let completedTables = 0;
     let completedIndexes = 0;
     let completedProcessingTables = 0;
     let completedViews = 0;
+
 
     tables.forEach((sql) => {
       db.run(sql, (err) => {
@@ -166,68 +189,58 @@ function initializeDatabase() {
         }
         completedTables++;
         if (completedTables === tables.length) {
-          // Create claim processing tables
-          const processingTableStatements = createClaimProcessingTables.split(';').filter(stmt => stmt.trim());
-          
-          processingTableStatements.forEach((statement) => {
-            if (statement.trim()) {
-              db.run(statement, (err) => {
-                if (err) {
-                  console.error('Error creating claim processing table:', err);
-                } else {
-                  completedProcessingTables++;
-                }
-                
-                if (completedProcessingTables === processingTableStatements.length) {
-                  // Create rate limiting tables
-                  const rateLimitStatements = rateLimitingSchema.split(';').filter(stmt => stmt.trim());
-                  let completedRateLimitTables = 0;
-                  
-                  rateLimitStatements.forEach((rateLimitStatement) => {
-                    if (rateLimitStatement.trim()) {
-                      db.run(rateLimitStatement, (err) => {
-                        if (err) {
-                          console.error('Error creating rate limiting table:', err);
-                        } else {
-                          completedRateLimitTables++;
-                        }
-                        
-                        if (completedRateLimitTables === rateLimitStatements.length) {
-                          // Create views
-                          const viewStatements = createClaimProcessingViews.split(';').filter(stmt => stmt.trim());
-                  
-                  viewStatements.forEach((viewStatement) => {
-                    if (viewStatement.trim()) {
-                      db.run(viewStatement, (err) => {
-                        if (err) {
-                          console.error('Error creating view:', err);
-                        } else {
-                          completedViews++;
-                        }
-                        
-                        if (completedViews === viewStatements.length) {
-                          // Create indexes
-                          indexes.forEach((indexSql) => {
-                            db.run(indexSql, (err) => {
+
+        }
+      });
+    });
+
+    function createClaimProcessingTablesFunc() {
+      // Create claim processing tables
+      const processingTableStatements = createClaimProcessingTables.split(';').filter(stmt => stmt.trim());
+      
+      processingTableStatements.forEach((statement) => {
+        if (statement.trim()) {
+          db.run(statement, (err) => {
+            if (err) {
+              console.error('Error creating claim processing table:', err);
+            } else {
+              completedProcessingTables++;
+            }
+            
+            if (completedProcessingTables === processingTableStatements.length) {
+              // Create views
+              const viewStatements = createClaimProcessingViews.split(';').filter(stmt => stmt.trim());
+              
+              viewStatements.forEach((viewStatement) => {
+                if (viewStatement.trim()) {
+                  db.run(viewStatement, (err) => {
+                    if (err) {
+                      console.error('Error creating view:', err);
+                    } else {
+                      completedViews++;
+                    }
+                    
+                    if (completedViews === viewStatements.length) {
+                      // Create indexes
+                      indexes.forEach((indexSql) => {
+                        db.run(indexSql, (err) => {
+                          if (err) {
+                            console.error('Error creating index:', err);
+                          } else {
+                            completedIndexes++;
+                          }
+                          if (completedIndexes === indexes.length) {
+                            db.close((err) => {
                               if (err) {
-                                console.error('Error creating index:', err);
+                                console.error('Error closing database:', err);
+                                reject(err);
                               } else {
-                                completedIndexes++;
-                              }
-                              if (completedIndexes === indexes.length) {
-                                db.close((err) => {
-                                  if (err) {
-                                    console.error('Error closing database:', err);
-                                    reject(err);
-                                  } else {
-                                    console.log('Database initialized successfully');
-                                    resolve();
-                                  }
-                                });
+                                console.log('Database initialized successfully');
+                                resolve();
                               }
                             });
-                          });
-                        }
+                          }
+                        });
                       });
                     }
                   });
@@ -237,7 +250,7 @@ function initializeDatabase() {
           });
         }
       });
-    });
+    }
   });
 }
 

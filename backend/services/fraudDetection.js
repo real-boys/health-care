@@ -4,9 +4,11 @@
  */
 
 const axios = require('axios');
+const FraudDetectionMLService = require('./fraudDetectionML');
 
 class FraudDetectionService {
   constructor() {
+    this.mlService = new FraudDetectionMLService();
     this.modelConfig = {
       threshold: 0.7,
       features: [
@@ -15,7 +17,8 @@ class FraudDetectionService {
         'provider_anomaly',
         'diagnosis_anomaly',
         'temporal_anomaly',
-        'geographic_anomaly'
+        'geographic_anomaly',
+        'network_anomaly'
       ]
     };
     this.initializeModel();
@@ -57,6 +60,16 @@ class FraudDetectionService {
   }
 
   /**
+   * Build the ensemble score by combining rule engine with ML simulation
+   */
+  async calculateEnsembleScore(claim, patientHistory, ruleRiskScore) {
+    const msScore = await this.mlService.calculateIsolationForestScore(claim, patientHistory);
+    // Weight: 60% ML, 40% Rules
+    const ensembleScore = (msScore * 0.6) + (ruleRiskScore * 0.4);
+    return Math.min(ensembleScore, 1.0);
+  }
+
+  /**
    * Extract features from claim and patient history
    */
   async extractFeatures(claim, patientHistory) {
@@ -79,6 +92,9 @@ class FraudDetectionService {
 
     // Geographic anomaly detection
     features.geographic_anomaly = await this.detectGeographicAnomaly(claim, patientHistory);
+
+    // Network anomaly detection (new)
+    features.network_anomaly = await this.detectNetworkAnomaly(claim);
 
     return features;
   }
@@ -252,16 +268,31 @@ class FraudDetectionService {
   }
 
   /**
+   * Detect network-based anomalies (coordinated fraud rings)
+   */
+  async detectNetworkAnomaly(claim) {
+    const diagnoses = claim.diagnosisCodes ? claim.diagnosisCodes.split(',') : [];
+    if (diagnoses.length > 6 && parseFloat(claim.totalAmount) > 15000) {
+       return {
+         score: 0.7,
+         reason: 'Pattern matches known upcoding/unbundling network structure'
+       };
+    }
+    return { score: 0.1, reason: 'No known network patterns detected' };
+  }
+
+  /**
    * Calculate overall risk score from features
    */
   async calculateRiskScore(features) {
     const weights = {
       amount_anomaly: 0.25,
-      frequency_anomaly: 0.20,
+      frequency_anomaly: 0.15,
       provider_anomaly: 0.15,
-      diagnosis_anomaly: 0.20,
+      diagnosis_anomaly: 0.15,
       temporal_anomaly: 0.10,
-      geographic_anomaly: 0.10
+      geographic_anomaly: 0.05,
+      network_anomaly: 0.20
     };
 
     let weightedScore = 0;
@@ -343,12 +374,27 @@ class FraudDetectionService {
   /**
    * Get model statistics
    */
-  getModelStatistics() {
+  async getModelStatistics() {
+    const mlStats = await this.mlService.getModelStats();
     return {
       config: this.modelConfig,
       fraudRules: this.fraudRules,
-      version: '1.0.0'
+      version: '2.0.0-ensemble',
+      performanceMetrics: mlStats
     };
+  }
+
+  // Delegations to ML Service
+  async recordFalsePositiveFeedback(claimId, reason, investigatorId) {
+    return this.mlService.recordFeedback(claimId, false, reason, investigatorId);
+  }
+  
+  async getNetworkGraphData(recentClaims) {
+     return this.mlService.getPatternNetwork(recentClaims);
+  }
+  
+  async getHeatmapData(recentClaims) {
+     return this.mlService.getTemporalHeatmap(recentClaims);
   }
 }
 

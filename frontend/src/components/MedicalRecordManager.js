@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  FileText, 
-  Upload, 
-  Shield, 
-  Eye, 
-  EyeOff, 
-  Lock, 
-  Unlock, 
-  UserPlus, 
-  UserMinus, 
-  History, 
-  Search, 
+import {
+  FileText,
+  Upload,
+  Shield,
+  Eye,
+  EyeOff,
+  Lock,
+  Unlock,
+  UserPlus,
+  UserMinus,
+  History,
+  Search,
   Filter,
   CheckCircle,
   AlertCircle,
@@ -18,7 +18,7 @@ import {
   X,
   FileCode,
   FileImageIcon,
-  FileBox
+  FileBox,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CryptoJS from 'crypto-js';
@@ -62,7 +62,7 @@ const MedicalRecordManager = ({ account, contract }) => {
       setLoading(true);
       // In a real Soroban app, we'd use the Stellar SDK to call 'get_owner_records'
       // and then fetch each record detail using 'get_medical_record'
-      
+
       // Mock data for demo since we don't have a real running network here
       const mockRecords = [
         {
@@ -73,7 +73,7 @@ const MedicalRecordManager = ({ account, contract }) => {
           version: 1,
           type: 'report',
           owner: account,
-          authorizedUsers: ['0x123...456']
+          authorizedUsers: ['0x123...456'],
         },
         {
           id: 2,
@@ -83,8 +83,8 @@ const MedicalRecordManager = ({ account, contract }) => {
           version: 2,
           type: 'image',
           owner: account,
-          authorizedUsers: []
-        }
+          authorizedUsers: [],
+        },
       ];
       setRecords(mockRecords);
       setLoading(false);
@@ -94,17 +94,17 @@ const MedicalRecordManager = ({ account, contract }) => {
     }
   };
 
-  const handleDrag = (e) => {
+  const handleDrag = e => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
+    if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
-    } else if (e.type === "dragleave") {
+    } else if (e.type === 'dragleave') {
       setDragActive(false);
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = e => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -113,20 +113,20 @@ const MedicalRecordManager = ({ account, contract }) => {
     }
   };
 
-  const uploadFile = async (file) => {
+  const uploadFile = async file => {
     try {
       setUploading(true);
       setUploadProgress(10);
 
       // 1. Generate a random encryption key (or use a user-provided one)
       const encryptionKey = CryptoJS.lib.WordArray.random(128 / 8).toString();
-      
+
       // 2. Read file as ArrayBuffer
       setUploadProgress(30);
       const reader = new FileReader();
-      reader.onload = async (e) => {
+      reader.onload = async e => {
         const content = e.target.result;
-        
+
         // 3. Encrypt file content
         setUploadProgress(50);
         const encrypted = CryptoJS.AES.encrypt(
@@ -146,7 +146,7 @@ const MedicalRecordManager = ({ account, contract }) => {
         //   const tx = await contract.upload_medical_record(account, mockCid, file.name);
         //   await tx.wait();
         // }
-        
+
         const newRecord = {
           id: records.length + 1,
           description: file.name,
@@ -155,7 +155,7 @@ const MedicalRecordManager = ({ account, contract }) => {
           version: 1,
           type: file.type.split('/')[0],
           owner: account,
-          authorizedUsers: []
+          authorizedUsers: [],
         };
 
         setRecords([newRecord, ...records]);
@@ -167,14 +167,13 @@ const MedicalRecordManager = ({ account, contract }) => {
         }, 500);
       };
       reader.readAsArrayBuffer(file);
-
     } catch (error) {
       console.error('Upload failed:', error);
       setUploading(false);
     }
   };
 
-  const decryptAndPreview = async (record) => {
+  const decryptAndPreview = async record => {
     if (!decryptionKey) {
       setShowKeyInput(true);
       setSelectedRecord(record);
@@ -192,11 +191,11 @@ const MedicalRecordManager = ({ account, contract }) => {
 
       // 2. Decrypt
       // const decrypted = CryptoJS.AES.decrypt(encryptedData, decryptionKey);
-      
+
       // Mock successful decryption
       setViewingRecord({
         ...record,
-        content: 'Decrypted content placeholder for ' + record.description
+        content: 'Decrypted content placeholder for ' + record.description,
       });
       setLoading(false);
       setShowKeyInput(false);
@@ -207,7 +206,7 @@ const MedicalRecordManager = ({ account, contract }) => {
     }
   };
 
-  const managePermissions = (record) => {
+  const managePermissions = record => {
     // UI to add/remove authorized users
     setSelectedRecord(record);
     // Open a modal...
@@ -229,18 +228,18 @@ const MedicalRecordManager = ({ account, contract }) => {
         <div className="flex space-x-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search records..."
               className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
-          <select 
+          <select
             className="px-4 py-2 border rounded-lg bg-white"
             value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
+            onChange={e => setFilterType(e.target.value)}
           >
             <option value="all">All Types</option>
             <option value="image">Images/Scans</option>
@@ -251,7 +250,7 @@ const MedicalRecordManager = ({ account, contract }) => {
       </header>
 
       {/* Upload Section */}
-      <div 
+      <div
         className={`upload-zone mb-10 border-2 border-dashed rounded-xl p-10 text-center transition-all ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -260,15 +259,17 @@ const MedicalRecordManager = ({ account, contract }) => {
       >
         <Upload className="w-12 h-12 mx-auto text-blue-500 mb-4" />
         <h3 className="text-xl font-semibold mb-2">Drag & Drop Medical Records</h3>
-        <p className="text-gray-500 mb-6">Support for DICOM, PDF, JPEG, and PNG. Files are encrypted before upload.</p>
-        
-        <input 
-          type="file" 
-          id="file-upload" 
-          className="hidden" 
-          onChange={(e) => uploadFile(e.target.files[0])}
+        <p className="text-gray-500 mb-6">
+          Support for DICOM, PDF, JPEG, and PNG. Files are encrypted before upload.
+        </p>
+
+        <input
+          type="file"
+          id="file-upload"
+          className="hidden"
+          onChange={e => uploadFile(e.target.files[0])}
         />
-        <label 
+        <label
           htmlFor="file-upload"
           className="cursor-pointer bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
@@ -282,7 +283,7 @@ const MedicalRecordManager = ({ account, contract }) => {
               <span>{uploadProgress}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <motion.div 
+              <motion.div
                 className="bg-blue-500 h-2 rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${uploadProgress}%` }}
@@ -295,8 +296,8 @@ const MedicalRecordManager = ({ account, contract }) => {
       {/* Records Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence>
-          {filteredRecords.map((record) => (
-            <motion.div 
+          {filteredRecords.map(record => (
+            <motion.div
               key={record.id}
               layout
               initial={{ opacity: 0, scale: 0.9 }}
@@ -307,16 +308,20 @@ const MedicalRecordManager = ({ account, contract }) => {
               <div className="p-5">
                 <div className="flex justify-between items-start mb-4">
                   <div className="p-3 bg-blue-50 rounded-lg">
-                    {record.type === 'image' ? <FileImageIcon className="text-blue-600" /> : <FileText className="text-blue-600" />}
+                    {record.type === 'image' ? (
+                      <FileImageIcon className="text-blue-600" />
+                    ) : (
+                      <FileText className="text-blue-600" />
+                    )}
                   </div>
                   <div className="flex space-x-2">
-                    <button 
+                    <button
                       onClick={() => decryptAndPreview(record)}
                       className="p-2 hover:bg-gray-100 rounded-lg"
                     >
                       <Eye className="w-4 h-4 text-gray-600" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => managePermissions(record)}
                       className="p-2 hover:bg-gray-100 rounded-lg"
                     >
@@ -324,7 +329,7 @@ const MedicalRecordManager = ({ account, contract }) => {
                     </button>
                   </div>
                 </div>
-                
+
                 <h4 className="font-bold text-gray-900 truncate mb-1">{record.description}</h4>
                 <div className="text-sm text-gray-500 flex items-center mb-3">
                   <History className="w-3 h-3 mr-1" />
@@ -333,9 +338,14 @@ const MedicalRecordManager = ({ account, contract }) => {
 
                 <div className="flex items-center justify-between mt-4 pt-4 border-t">
                   <div className="flex -space-x-2">
-                    <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[10px] text-white">Yo</div>
+                    <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[10px] text-white">
+                      Yo
+                    </div>
                     {record.authorizedUsers.map((_, i) => (
-                      <div key={i} className="w-6 h-6 rounded-full bg-gray-400 border-2 border-white" />
+                      <div
+                        key={i}
+                        className="w-6 h-6 rounded-full bg-gray-400 border-2 border-white"
+                      />
                     ))}
                   </div>
                   <span className="text-[10px] bg-gray-100 px-2 py-1 rounded-full text-gray-600">
@@ -351,7 +361,7 @@ const MedicalRecordManager = ({ account, contract }) => {
       {/* Key Input Modal */}
       {showKeyInput && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-xl p-8 max-w-md w-full shadow-2xl"
@@ -360,22 +370,27 @@ const MedicalRecordManager = ({ account, contract }) => {
               <Lock className="w-6 h-6 text-orange-500" />
               <h3 className="text-xl font-bold">Decryption Required</h3>
             </div>
-            <p className="text-gray-600 mb-6 font-medium">Please enter the symmetric key used to encrypt this record.</p>
-            <input 
-              type="password" 
+            <p className="text-gray-600 mb-6 font-medium">
+              Please enter the symmetric key used to encrypt this record.
+            </p>
+            <input
+              type="password"
               placeholder="Enter encryption key"
               className="w-full px-4 py-3 border rounded-lg mb-6 outline-none focus:ring-2 focus:ring-blue-500"
               value={decryptionKey}
-              onChange={(e) => setDecryptionKey(e.target.value)}
+              onChange={e => setDecryptionKey(e.target.value)}
             />
             <div className="flex space-x-3">
-              <button 
-                onClick={() => { setShowKeyInput(false); setDecryptionKey(''); }}
+              <button
+                onClick={() => {
+                  setShowKeyInput(false);
+                  setDecryptionKey('');
+                }}
                 className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={() => decryptAndPreview(selectedRecord)}
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
@@ -389,7 +404,7 @@ const MedicalRecordManager = ({ account, contract }) => {
       {/* Viewer Modal */}
       {viewingRecord && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[60] p-10">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="bg-white rounded-2xl w-full max-w-4xl h-full flex flex-col overflow-hidden shadow-2xl"
@@ -402,7 +417,7 @@ const MedicalRecordManager = ({ account, contract }) => {
                   <p className="text-sm text-gray-500">CID: {viewingRecord.cid}</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setViewingRecord(null)}
                 className="p-2 hover:bg-gray-200 rounded-full"
               >
@@ -418,7 +433,9 @@ const MedicalRecordManager = ({ account, contract }) => {
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase">Patient Address</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase">
+                        Patient Address
+                      </p>
                       <p className="text-sm font-mono truncate">{viewingRecord.owner}</p>
                     </div>
                     <div>
@@ -434,19 +451,19 @@ const MedicalRecordManager = ({ account, contract }) => {
                   </div>
                 </div>
                 <div className="mt-auto pt-20 flex justify-between items-end opacity-20">
-                    <div className="w-20 h-20 bg-black rotate-45" />
-                    <p className="text-[8px] font-mono">ENCRYPTED_SHA256_VERIFIED_ON_STELLAR</p>
+                  <div className="w-20 h-20 bg-black rotate-45" />
+                  <p className="text-[8px] font-mono">ENCRYPTED_SHA256_VERIFIED_ON_STELLAR</p>
                 </div>
               </div>
             </div>
             <div className="p-6 border-t bg-gray-50 flex justify-end space-x-4">
-                <button className="flex items-center px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg font-medium">
-                    <History className="w-4 h-4 mr-2" />
-                    View History
-                </button>
-                <button className="flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold">
-                    Download Original
-                </button>
+              <button className="flex items-center px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg font-medium">
+                <History className="w-4 h-4 mr-2" />
+                View History
+              </button>
+              <button className="flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold">
+                Download Original
+              </button>
             </div>
           </motion.div>
         </div>

@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package healthcare.payment;
+
+option go_package = "github.com/healthcare/payment/pb";
+option java_package = "com.healthcare.payment";
+option java_outer_classname = "PaymentProto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// Payment Service
+service PaymentService {
+  rpc ProcessPayment (ProcessPaymentRequest) returns (PaymentResponse) {}
+  rpc GetPaymentStatus (GetPaymentStatusRequest) returns (Payment) {}
+  rpc RefundPayment (RefundPaymentRequest) returns (RefundResponse) {}
+  rpc ListPayments (ListPaymentsRequest) returns (ListPaymentsResponse) {}
+  rpc ValidatePayment (ValidatePaymentRequest) returns (ValidatePaymentResponse) {}
+}
+
+enum PaymentStatus {
+  PENDING = 0;
+  PROCESSING = 1;
+  COMPLETED = 2;
+  FAILED = 3;
+  REFUNDED = 4;
+  CANCELLED = 5;
+}
+
+enum PaymentMethod {
+  CREDIT_CARD = 0;
+  DEBIT_CARD = 1;
+  BANK_TRANSFER = 2;
+  PAYPAL = 3;
+  STRIPE = 4;
+}
+
+message Payment {
+  string id = 1;
+  string patient_id = 2;
+  string claim_id = 3;
+  double amount = 4;
+  PaymentStatus status = 5;
+  PaymentMethod method = 6;
+  string reference_number = 7;
+  string description = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+  google.protobuf.Timestamp completed_at = 11;
+}
+
+message ProcessPaymentRequest {
+  string patient_id = 1;
+  string claim_id = 2;
+  double amount = 3;
+  PaymentMethod method = 4;
+  PaymentDetails details = 5;
+  string idempotency_key = 6;
+}
+
+message PaymentDetails {
+  string card_token = 1;
+  string paypal_email = 2;
+  string bank_account = 3;
+  string bank_routing = 4;
+}
+
+message PaymentResponse {
+  bool success = 1;
+  Payment payment = 2;
+  string error = 3;
+  string transaction_id = 4;
+}
+
+message GetPaymentStatusRequest {
+  string payment_id = 1;
+}
+
+message RefundPaymentRequest {
+  string payment_id = 1;
+  double amount = 2;
+  string reason = 3;
+}
+
+message RefundResponse {
+  bool success = 1;
+  string refund_id = 2;
+  double amount = 3;
+  PaymentStatus status = 4;
+  string error = 5;
+}
+
+message ListPaymentsRequest {
+  string patient_id = 1;
+  PaymentStatus status = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message ListPaymentsResponse {
+  repeated Payment payments = 1;
+  int32 total = 2;
+}
+
+message ValidatePaymentRequest {
+  PaymentMethod method = 1;
+  PaymentDetails details = 2;
+}
+
+message ValidatePaymentResponse {
+  bool valid = 1;
+  string error = 2;
+}

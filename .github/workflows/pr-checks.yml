@@ -1,0 +1,268 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci
+        
+    - name: Run ESLint
+      run: |
+        cd frontend
+        npm run lint
+        
+    - name: Check formatting
+      run: |
+        cd frontend
+        npm run format:check
+        
+    - name: Run tests
+      run: |
+        cd frontend
+        npm test -- --coverage --watchAll=false
+        
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./frontend/coverage/lcov.info
+        flags: frontend
+        name: frontend-coverage
+
+  backend-tests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd backend
+        npm ci
+        
+    - name: Run ESLint
+      run: |
+        cd backend
+        npm run lint
+        
+    - name: Check formatting
+      run: |
+        cd backend
+        npm run format:check
+        
+    - name: Run tests
+      run: |
+        cd backend
+        npm test -- --coverage
+        
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./backend/coverage/lcov.info
+        flags: backend
+        name: backend-coverage
+
+  smart-contract-tests:
+    name: Smart Contract Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: contracts/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd contracts
+        npm ci
+        
+    - name: Compile contracts
+      run: |
+        cd contracts
+        npx hardhat compile
+        
+    - name: Run tests
+      run: |
+        cd contracts
+        npx hardhat test
+        
+    - name: Run coverage
+      run: |
+        cd contracts
+        npx hardhat coverage
+        
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./contracts/coverage/lcov.info
+        flags: contracts
+        name: contracts-coverage
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Run npm audit
+      run: |
+        cd frontend && npm audit --audit-level moderate
+        cd ../backend && npm audit --audit-level moderate
+        cd ../contracts && npm audit --audit-level moderate
+        
+    - name: Run CodeQL Analysis
+      uses: github/codeql-action/init@v2
+      with:
+        languages: javascript
+        
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+  build-check:
+    name: Build Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm ci
+        npm run build
+        
+    - name: Build backend
+      run: |
+        cd backend
+        npm ci
+        npm run build
+        
+    - name: Build contracts
+      run: |
+        cd contracts
+        npm ci
+        npx hardhat compile
+
+  pr-size-check:
+    name: PR Size Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Check PR size
+      run: |
+        CHANGES=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -n 1)
+        FILES_CHANGED=$(echo $CHANGES | awk '{print $1}')
+        INSERTIONS=$(echo $CHANGES | awk '{print $4}')
+        DELETIONS=$(echo $CHANGES | awk '{print $6}')
+        
+        echo "Files changed: $FILES_CHANGED"
+        echo "Insertions: $INSERTIONS"
+        echo "Deletions: $DELETIONS"
+        
+        if [[ $FILES_CHANGED -gt 50 ]]; then
+          echo "::warning::Large PR detected ($FILES_CHANGED files). Consider breaking into smaller PRs."
+        fi
+        
+        if [[ $INSERTIONS -gt 1000 ]]; then
+          echo "::warning::Large PR detected ($INSERTIONS insertions). Consider breaking into smaller PRs."
+        fi
+
+  check-requirements:
+    name: Check Requirements
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Check for CONTRIBUTING.md
+      run: |
+        if [ ! -f "CONTRIBUTING.md" ]; then
+          echo "::error::CONTRIBUTING.md not found"
+          exit 1
+        fi
+        
+    - name: Check for README.md
+      run: |
+        if [ ! -f "README.md" ]; then
+          echo "::error::README.md not found"
+          exit 1
+        fi
+        
+    - name: Check for LICENSE
+      run: |
+        if [ ! -f "LICENSE" ]; then
+          echo "::error::LICENSE not found"
+          exit 1
+        fi
+        
+    - name: Check for package.json
+      run: |
+        if [ ! -f "frontend/package.json" ] || [ ! -f "backend/package.json" ]; then
+          echo "::error::package.json not found in frontend or backend"
+          exit 1
+        fi
+
+  notify-team:
+    name: Notify Team
+    runs-on: ubuntu-latest
+    needs: [frontend-tests, backend-tests, smart-contract-tests, security-audit, build-check]
+    if: always()
+    
+    steps:
+    - name: Notify on success
+      if: ${{ needs.frontend-tests.result == 'success' && needs.backend-tests.result == 'success' && needs.smart-contract-tests.result == 'success' && needs.security-audit.result == 'success' && needs.build-check.result == 'success' }}
+      run: |
+        echo "✅ All checks passed! PR is ready for review."
+        
+    - name: Notify on failure
+      if: ${{ needs.frontend-tests.result == 'failure' || needs.backend-tests.result == 'failure' || needs.smart-contract-tests.result == 'failure' || needs.security-audit.result == 'failure' || needs.build-check.result == 'failure' }}
+      run: |
+        echo "❌ Some checks failed. Please review the logs and fix the issues."

@@ -1,0 +1,342 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Healthcare API Gateway - AWS API Gateway with Lambda and ECS Backend'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - development
+      - staging
+      - production
+    Description: Deployment environment
+
+  JwtSecret:
+    Type: String
+    NoEcho: true
+    Description: JWT secret for token verification
+
+  ApiKeyHashSalt:
+    Type: String
+    NoEcho: true
+    Description: Salt for API key hashing
+
+Resources:
+  # ================== API Gateway ==================
+  HealthcareApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub 'Healthcare-API-${Environment}'
+      Description: Healthcare Platform API Gateway
+      ApiKeySourceType: HEADER
+      BinaryMediaTypes:
+        - '*/*'
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Policy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: 'execute-api:Invoke'
+            Resource: '*'
+            Condition:
+              IpAddress:
+                aws:SourceIp: !Ref AllowedIpRanges
+
+  # API Gateway Authorizer for JWT
+  JwtAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: JwtAuthorizer
+      Type: TOKEN
+      RestApiId: !Ref HealthcareApi
+      AuthorizerUri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${JwtAuthorizerFunction.Arn}/invocations'
+      IdentitySource: method.request.header.Authorization
+      IdentityValidationExpression: '^Bearer [a-zA-Z0-9\-._~+/]+=*$'
+
+  # Lambda Authorizer for JWT
+  JwtAuthorizerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'healthcare-jwt-authorizer-${Environment}'
+      Runtime: nodejs18.x
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Handler: index.handler
+      Environment:
+        Variables:
+          JWT_SECRET: !Ref JwtSecret
+      Code:
+        ZipFile: |
+          const jwt = require('jsonwebtoken');
+          
+          exports.handler = async (event) => {
+            const token = event.authorizationToken.replace('Bearer ', '');
+            
+            try {
+              const decoded = jwt.verify(token, process.env.JWT_SECRET);
+              
+              return {
+                principalId: decoded.userId,
+                policyDocument: {
+                  Version: '2012-10-17',
+                  Statement: [
+                    {
+                      Action: 'execute-api:Invoke',
+                      Effect: 'Allow',
+                      Resource: event.methodArn
+                    }
+                  ]
+                },
+                context: {
+                  userId: decoded.userId,
+                  role: decoded.role,
+                  email: decoded.email
+                }
+              };
+            } catch (error) {
+              throw new Error('Unauthorized');
+            }
+          };
+
+  # ================== API Resources ==================
+  AuthResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref HealthcareApi
+      ParentId: !GetAtt HealthcareApi.RootResourceId
+      PathPart: 'auth'
+
+  ProvidersResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref HealthcareApi
+      ParentId: !GetAtt HealthcareApi.RootResourceId
+      PathPart: 'providers'
+
+  AppointmentsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref HealthcareApi
+      ParentId: !GetAtt HealthcareApi.RootResourceId
+      PathPart: 'appointments'
+
+  PatientsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref HealthcareApi
+      ParentId: !GetAtt HealthcareApi.RootResourceId
+      PathPart: 'patients'
+
+  ClaimsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref HealthcareApi
+      ParentId: !GetAtt HealthcareApi.RootResourceId
+      PathPart: 'claims'
+
+  PaymentsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref HealthcareApi
+      ParentId: !GetAtt HealthcareApi.RootResourceId
+      PathPart: 'payments'
+
+  # ================== API Methods ==================
+  # Health Check (No Auth)
+  HealthGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref HealthcareApi
+      ResourceId: !GetAtt HealthcareApi.RootResourceId
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: HTTP_PROXY
+        IntegrationHttpMethod: GET
+        Uri: !Sub 'http://${EcsLoadBalancer.DNSName}/api/health'
+        IntegrationResponses:
+          - StatusCode: 200
+
+  # Auth Login (No Auth)
+  AuthPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref HealthcareApi
+      ResourceId: !Ref AuthResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      MethodResponses:
+        - StatusCode: 200
+      Integration:
+        Type: HTTP_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'http://${EcsLoadBalancer.DNSName}/api/auth/login'
+        RequestParameters:
+          integration.request.header.Content-Type: "'application/json'"
+
+  # Providers (JWT Auth)
+  ProvidersGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref HealthcareApi
+      ResourceId: !Ref ProvidersResource
+      HttpMethod: GET
+      AuthorizationType: CUSTOM
+      AuthorizerId: !Ref JwtAuthorizer
+      MethodResponses:
+        - StatusCode: 200
+      Integration:
+        Type: HTTP_PROXY
+        IntegrationHttpMethod: GET
+        Uri: !Sub 'http://${EcsLoadBalancer.DNSName}/api/providers/search'
+
+  # ================== Usage Plans & API Keys ==================
+  ApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      Name: !Sub 'Healthcare-API-Plan-${Environment}'
+      Description: Usage plan for Healthcare API
+      ApiStages:
+        - ApiId: !Ref HealthcareApi
+          Stage: !Ref Environment
+      Quota:
+        Limit: 10000
+        Period: MONTH
+      Throttle:
+        BurstLimit: 100
+        RateLimit: 50
+
+  InternalApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub 'Healthcare-Internal-Key-${Environment}'
+      Description: API Key for internal services
+      Enabled: true
+      StageKeys:
+        - RestApiId: !Ref HealthcareApi
+          StageName: !Ref Environment
+
+  # ================== Deployment ==================
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - HealthGetMethod
+      - AuthPostMethod
+      - ProvidersGetMethod
+    Properties:
+      RestApiId: !Ref HealthcareApi
+
+  ApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      StageName: !Ref Environment
+      RestApiId: !Ref HealthcareApi
+      DeploymentId: !Ref ApiDeployment
+      MethodSettings:
+        - ResourcePath: '/*'
+          HttpMethod: '*'
+          ThrottlingBurstLimit: 200
+          ThrottlingRateLimit: 100
+          CachingEnabled: true
+          CacheTtlInSeconds: 60
+
+  # ================== ECS Cluster ==================
+  EcsCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub 'Healthcare-Cluster-${Environment}'
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+
+  EcsLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub 'Healthcare-LB-${Environment}'
+      Scheme: internal
+      Type: application
+      Subnets: !Ref PrivateSubnets
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+
+  # ================== IAM Roles ==================
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  ApiGatewayCloudWatchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+
+  # ================== WAF Web ACL ==================
+  WebAcl:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: !Sub 'Healthcare-WebACL-${Environment}'
+      Scope: REGIONAL
+      DefaultAction:
+        Allow: {}
+      Rules:
+        - Name: RateLimitRule
+          Priority: 1
+          Statement:
+            RateBasedStatement:
+              Limit: 2000
+              AggregateKeyType: IP
+          Action:
+            Block: {}
+        - Name: AWSManagedRulesSQLInjectionRuleSet
+          Priority: 2
+          OverrideAction:
+            None: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              Vendor: AWS
+              Name: AWSManagedRulesSQLInjectionRuleSet
+        - Name: AWSManagedRulesKnownBadInputsRuleSet
+          Priority: 3
+          OverrideAction:
+            None: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              Vendor: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet
+
+  WebAclAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${HealthcareApi}/stages/${Environment}'
+      WebACLArn: !GetAtt WebAcl.Arn
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway Endpoint URL
+    Value: !Sub 'https://${HealthcareApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+  
+  ApiId:
+    Description: API Gateway ID
+    Value: !Ref HealthcareApi
+  
+  LoadBalancerDns:
+    Description: Load Balancer DNS
+    Value: !GetAtt EcsLoadBalancer.DNSName

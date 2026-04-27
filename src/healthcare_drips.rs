@@ -379,6 +379,63 @@ pub enum HealthcareDripsError {
     PaymentNotDue = 37,
     HolidayPostponementFailed = 38,
     WeekendPostponementFailed = 39,
+    NetworkCongestionHigh = 40,
+    ReportTemplateNotFound = 41,
+    InvalidSchedule = 42,
+}
+
+// ========== CONGESTION TYPES ==========
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CongestionInfo {
+    pub current_fee_rate: i128,
+    pub queue_size: u32,
+    pub high_congestion_threshold: i128,
+    pub last_updated: u64,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct QueuedTransaction {
+    pub id: u64,
+    pub caller: Address,
+    pub action: Symbol,
+    pub payload: Vec<ScVal>,
+    pub max_fee: i128,
+    pub priority: u32,
+    pub submitted: u64,
+}
+
+// ========== REPORTING TYPES ==========
+#[contracttype]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+pub enum ReportType {
+    PremiumPayment = 0,
+    ClaimSummary = 1,
+    ContributorPerformance = 2,
+    SystemHealth = 3,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReportTemplate {
+    pub id: u64,
+    pub report_type: ReportType,
+    pub creator: Address,
+    pub recipients: Vec<Address>,
+    pub schedule_interval: u64,
+    pub last_generated: u64,
+    pub next_generation: u64,
+    pub filters: Map<Symbol, String>,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReportOutput {
+    pub template_id: u64,
+    pub generated_at: u64,
+    pub data_ipfs_hash: String,
+    pub signature: BytesN<32>,
 }
 
 // ========== CONTRACT ==========
@@ -401,18 +458,20 @@ impl HealthcareDrips {
         env.storage().instance().set(&Symbol::short("next_kyc_id"), &1u64);
         env.storage().instance().set(&Symbol::short("next_license_id"), &1u64);
         env.storage().instance().set(&Symbol::short("next_swap_id"), &1u64);
+        env.storage().instance().set(&Symbol::short("next_report_id"), &1u64);
+        env.storage().instance().set(&Symbol::short("next_queue_id"), &1u64);
 
-        // Initialize verified contributors list
+        // Initialize lists
         env.storage().instance().set(&Symbol::short("verified_contributors"), &Vec::new(env));
-
-        // Initialize active issues list
         env.storage().instance().set(&Symbol::short("active_issues"), &Vec::new(env));
+        env.storage().instance().set(&Symbol::short("report_templates"), &Vec::new(env));
+        env.storage().instance().set(&Symbol::short("queued_transactions"), &Vec::new(env));
 
-        // Initialize fraud detection
+        // Initialize modular components
         Self::initialize_fraud_detection(env);
-        
-        // Initialize multi-token support
         Self::initialize_multi_token_support(env);
+        Self::initialize_congestion_handling(env);
+        Self::initialize_automated_reporting(env);
     }
 
     // Initialize fraud detection
@@ -541,6 +600,12 @@ impl HealthcareDrips {
         for allocation in token_allocations.iter() {
             Self::update_token_balance(env, allocation.token.clone(), 0);
         }
+        
+        // Emit event for indexing
+        env.events().publish(
+            (HEALTHCARE_DRIPS, Symbol::short("created")),
+            (next_id, patient, insurer, premium_amount)
+        );
         
         Ok(next_id)
     }
@@ -814,6 +879,12 @@ impl HealthcareDrips {
         // Update token balances
         Self::update_token_balance(env, swap.to_token.clone(), swap.executed_amount);
         
+        // Emit event for indexing
+        env.events().publish(
+            (HEALTHCARE_DRIPS, Symbol::short("swap_executed")),
+            (swap_id, swap.from_token.clone(), swap.to_token.clone(), swap.executed_amount)
+        );
+        
         Ok(())
     }
     
@@ -1058,12 +1129,13 @@ impl HealthcareDrips {
         // Store issue
         env.storage().instance().set(&Symbol::new(&env, &format!("issue_{}", next_id)), &issue);
         
-        // Add to patient's issues
-        let mut patient_issues: Vec<u64> = env.storage().instance()
-            .get(&Symbol::new(&env, &format!("patient_issues_{}", patient)))
-            .unwrap_or(Vec::new(env));
-        patient_issues.push_back(next_id);
         env.storage().instance().set(&Symbol::new(&env, &format!("patient_issues_{}", patient)), &patient_issues);
+        
+        // Emit event for indexing
+        env.events().publish(
+            (HEALTHCARE_DRIPS, Symbol::short("issue_created")),
+            (next_id, patient, funding_amount, deadline)
+        );
         
         Ok(next_id)
     }
@@ -1110,12 +1182,14 @@ impl HealthcareDrips {
         
         env.storage().instance().set(&issue_key, &issue);
         
-        // Add to active issues
-        let mut active_issues: Vec<u64> = env.storage().instance()
-            .get(&Symbol::short("active_issues"))
-            .unwrap_or(Vec::new(env));
         active_issues.push_back(issue_id);
         env.storage().instance().set(&Symbol::short("active_issues"), &active_issues);
+        
+        // Emit event for indexing
+        env.events().publish(
+            (HEALTHCARE_DRIPS, Symbol::short("issue_submitted")),
+            (issue_id, issue.patient.clone(), issue.status)
+        );
         
         Ok(())
     }
@@ -1169,6 +1243,12 @@ impl HealthcareDrips {
         
         // Update contributor stats
         Self::update_contributor_stats(env, caller.clone());
+        
+        // Emit event for indexing
+        env.events().publish(
+            (HEALTHCARE_DRIPS, Symbol::short("app_submitted")),
+            (issue_id, caller)
+        );
         
         Ok(())
     }
@@ -1228,6 +1308,12 @@ impl HealthcareDrips {
             env.storage().instance().set(&issue_key, &issue);
         }
         
+        // Emit event for indexing
+        env.events().publish(
+            (HEALTHCARE_DRIPS, Symbol::short("app_reviewed")),
+            (issue_id, contributor, approved)
+        );
+        
         Ok(())
     }
     
@@ -1253,6 +1339,12 @@ impl HealthcareDrips {
         issue.last_updated = env.ledger().timestamp();
         
         env.storage().instance().set(&issue_key, &issue);
+        
+        // Emit event for indexing
+        env.events().publish(
+            (HEALTHCARE_DRIPS, Symbol::short("issue_approved")),
+            (issue_id, issue.patient.clone())
+        );
         
         Ok(())
     }
@@ -1993,25 +2085,207 @@ impl HealthcareDrips {
         Ok(adjusted_time)
     }
     
+    // ========== CONGESTION HANDLING ==========
+
+    fn initialize_congestion_handling(env: &Env) {
+        let info = CongestionInfo {
+            current_fee_rate: 100, // base fee
+            queue_size: 0,
+            high_congestion_threshold: 5000,
+            last_updated: env.ledger().timestamp(),
+        };
+        env.storage().instance().set(&Symbol::short("congestion_info"), &info);
+    }
+
+    pub fn get_congestion_info(env: &Env) -> CongestionInfo {
+        env.storage().instance().get(&Symbol::short("congestion_info")).unwrap()
+    }
+
+    pub fn update_network_fee(env: &Env, new_fee: i128, caller: Address) -> Result<(), HealthcareDripsError> {
+        if !Self::has_role(env, caller, ISSUE_CREATOR) {
+            return Err(HealthcareDripsError::Unauthorized);
+        }
+        
+        let mut info = Self::get_congestion_info(env);
+        info.current_fee_rate = new_fee;
+        info.last_updated = env.ledger().timestamp();
+        env.storage().instance().set(&Symbol::short("congestion_info"), &info);
+        
+        // Emit congestion update event
+        env.events().publish(
+            (HEALTHCARE_DRIPS, Symbol::short("congestion_update")),
+            (new_fee, info.last_updated)
+        );
+        
+        Ok(())
+    }
+
+    pub fn queue_transaction(
+        env: &Env,
+        caller: Address,
+        action: Symbol,
+        payload: Vec<ScVal>,
+        max_fee: i128,
+        priority: u32
+    ) -> Result<u64, HealthcareDripsError> {
+        let info = Self::get_congestion_info(env);
+        
+        // If congestion is too high and fee is too low, queue it
+        if info.current_fee_rate > info.high_congestion_threshold && max_fee < info.current_fee_rate {
+            let next_id = Self::get_next_queue_id(env);
+            let tx = QueuedTransaction {
+                id: next_id,
+                caller: caller.clone(),
+                action,
+                payload,
+                max_fee,
+                priority,
+                submitted: env.ledger().timestamp(),
+            };
+            
+            let mut queue: Vec<u64> = env.storage().instance()
+                .get(&Symbol::short("queued_transactions"))
+                .unwrap_or(Vec::new(env));
+            queue.push_back(next_id);
+            env.storage().instance().set(&Symbol::short("queued_transactions"), &queue);
+            
+            env.storage().instance().set(&Symbol::new(&env, &format!("qtx_{}", next_id)), &tx);
+            
+            // Increment queue size
+            let mut updated_info = info.clone();
+            updated_info.queue_size += 1;
+            env.storage().instance().set(&Symbol::short("congestion_info"), &updated_info);
+
+            // Emit queuing event
+            env.events().publish(
+                (HEALTHCARE_DRIPS, Symbol::short("tx_queued")),
+                (next_id, caller, action)
+            );
+            
+            return Ok(next_id);
+        }
+        
+        Err(HealthcareDripsError::NetworkCongestionHigh)
+    }
+
+    // ========== AUTOMATED REPORTING ==========
+
+    fn initialize_automated_reporting(env: &Env) {
+        // Already handled in main initialize
+    }
+
+    pub fn create_report_template(
+        env: &Env,
+        report_type: ReportType,
+        recipients: Vec<Address>,
+        schedule_interval: u64,
+        filters: Map<Symbol, String>,
+        caller: Address
+    ) -> Result<u64, HealthcareDripsError> {
+        if schedule_interval == 0 {
+            return Err(HealthcareDripsError::InvalidSchedule);
+        }
+
+        let next_id = Self::get_next_report_id(env);
+        let template = ReportTemplate {
+            id: next_id,
+            report_type,
+            creator: caller,
+            recipients,
+            schedule_interval,
+            last_generated: 0,
+            next_generation: env.ledger().timestamp() + schedule_interval,
+            filters,
+        };
+
+        let mut templates: Vec<u64> = env.storage().instance()
+            .get(&Symbol::short("report_templates"))
+            .unwrap_or(Vec::new(env));
+        templates.push_back(next_id);
+        env.storage().instance().set(&Symbol::short("report_templates"), &templates);
+        
+        env.storage().instance().set(&Symbol::new(&env, &format!("rpt_tmpl_{}", next_id)), &template);
+
+        // Emit report template created event
+        env.events().publish(
+            (HEALTHCARE_DRIPS, Symbol::short("report_template_created")),
+            (next_id, report_type)
+        );
+
+        Ok(next_id)
+    }
+
+    pub fn generate_report_manual(
+        env: &Env,
+        template_id: u64,
+        data_ipfs_hash: String,
+        signature: BytesN<32>,
+        caller: Address
+    ) -> Result<(), HealthcareDripsError> {
+        let tmpl_key = Symbol::new(&env, &format!("rpt_tmpl_{}", template_id));
+        let mut template: ReportTemplate = env.storage().instance()
+            .get(&tmpl_key)
+            .ok_or(HealthcareDripsError::ReportTemplateNotFound)?;
+
+        if template.creator != caller && !template.recipients.contains(&caller) {
+            return Err(HealthcareDripsError::Unauthorized);
+        }
+
+        let output = ReportOutput {
+            template_id,
+            generated_at: env.ledger().timestamp(),
+            data_ipfs_hash,
+            signature,
+        };
+
+        template.last_generated = output.generated_at;
+        template.next_generation = output.generated_at + template.schedule_interval;
+        env.storage().instance().set(&tmpl_key, &template);
+
+        // Store output
+        let mut rpt_hist: Vec<ReportOutput> = env.storage().instance()
+            .get(&Symbol::new(&env, &format!("rpt_hist_{}", template_id)))
+            .unwrap_or(Vec::new(env));
+        rpt_hist.push_back(output.clone());
+        env.storage().instance().set(&Symbol::new(&env, &format!("rpt_hist_{}", template_id)), &rpt_hist);
+
+        // Emit report generated event
+        env.events().publish(
+            (HEALTHCARE_DRIPS, Symbol::short("report_generated")),
+            (template_id, output.generated_at)
+        );
+
+        Ok(())
+    }
+
+    // Private helpers for reporting
+    fn get_next_report_id(env: &Env) -> u64 {
+        let id: u64 = env.storage().instance().get(&Symbol::short("next_report_id")).unwrap();
+        env.storage().instance().set(&Symbol::short("next_report_id"), &(id + 1));
+        id
+    }
+
+    fn get_next_queue_id(env: &Env) -> u64 {
+        let id: u64 = env.storage().instance().get(&Symbol::short("next_queue_id")).unwrap();
+        env.storage().instance().set(&Symbol::short("next_queue_id"), &(id + 1));
+        id
+    }
+
     /// Check if a given timestamp falls on a holiday (simplified implementation)
     fn is_holiday(env: &Env, timestamp: u64) -> bool {
-        // Simplified holiday detection - in real implementation would use comprehensive holiday calendar
         let day_of_year = ((timestamp / 86400) % 365) + 1;
-        
-        // Sample holidays (day numbers are simplified)
         match day_of_year {
             1   => true,  // New Year's Day
-            365 => true,  // December 31st (simplified)
-            180 => true,  // July 4th (simplified)
-            300 => true,  // October 31st (simplified)
+            365 => true,  // December 31st
+            180 => true,  // July 4th
+            300 => true,  // October 31st
             _   => false,
         }
     }
     
     /// Find the next business day (non-weekend, non-holiday)
     fn find_next_business_day(env: &Env, from_time: u64) -> u64 {
-        let mut next_day = from_time + 86400; // Start from tomorrow
-        
+        let mut next_day = from_time + 86400;
         loop {
             let day_of_week = ((next_day / 86400) + 4) % 7;
             if day_of_week != 0 && day_of_week != 6 && !Self::is_holiday(env, next_day) {
@@ -2019,14 +2293,12 @@ impl HealthcareDrips {
             }
             next_day += 86400;
         }
-        
         next_day
     }
     
     /// Find the previous business day (non-weekend, non-holiday)
     fn find_previous_business_day(env: &Env, from_time: u64) -> u64 {
-        let mut prev_day = from_time - 86400; // Start from yesterday
-        
+        let mut prev_day = from_time - 86400;
         loop {
             let day_of_week = ((prev_day / 86400) + 4) % 7;
             if day_of_week != 0 && day_of_week != 6 && !Self::is_holiday(env, prev_day) {
@@ -2034,7 +2306,6 @@ impl HealthcareDrips {
             }
             prev_day -= 86400;
         }
-        
         prev_day
     }
 }

@@ -1,0 +1,265 @@
+# Kong Declarative Configuration for Healthcare API Gateway
+# Documentation: https://docs.konghq.com/gateway/latest/reference/configuration/
+
+_format_version: "3.0"
+
+_transform: true
+
+# Custom plugins (if any)
+plugins:
+  # Global rate limiting
+  - name: rate-limiting
+    config:
+      minute: 100
+      hour: 1000
+      policy: local
+      fault_tolerant: true
+      hide_client_headers: false
+
+  # Global request size limiting
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 10  # MB
+
+  # Global CORS
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+        - OPTIONS
+      headers:
+        - Accept
+        - Accept-Version
+        - Content-Length
+        - Content-MD5
+        - Content-Type
+        - Date
+        - X-Auth-Token
+        - Authorization
+        - X-API-Key
+      exposed_headers:
+        - X-Auth-Token
+        - X-Request-Id
+        - X-RateLimit-Limit
+        - X-RateLimit-Remaining
+      credentials: true
+      max_age: 3600
+
+# Upstream services
+upstreams:
+  - name: healthcare-backend
+    targets:
+      - target: backend:3000
+        weight: 100
+    healthchecks:
+      active:
+        healthy:
+          interval: 5
+          successes: 2
+        unhealthy:
+          interval: 5
+          tcp_failures: 2
+      passive:
+        healthy:
+          successes: 2
+        unhealthy:
+          tcp_failures: 2
+    algorithm: round-robin
+
+  - name: healthcare-frontend
+    targets:
+      - target: frontend:3001
+        weight: 100
+
+# Services
+services:
+  # Healthcare API Service
+  - name: healthcare-api
+    url: http://healthcare-backend
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    retries: 3
+    routes:
+      - name: api-auth
+        paths:
+          - /api/auth
+        strip_path: false
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 30
+              policy: local
+          - name: request-transformer
+            config:
+              add:
+                headers:
+                  - X-Request-ID:$(uuid)
+
+      - name: api-providers
+        paths:
+          - /api/providers
+        strip_path: false
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+          - name: rate-limiting
+            config:
+              minute: 60
+              policy: local
+
+      - name: api-appointments
+        paths:
+          - /api/appointments
+        strip_path: false
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+          - name: rate-limiting
+            config:
+              minute: 30
+              policy: local
+
+      - name: api-patients
+        paths:
+          - /api/patients
+        strip_path: false
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+
+      - name: api-claims
+        paths:
+          - /api/claims
+        strip_path: false
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+          - name: rate-limiting
+            config:
+              minute: 20
+              policy: local
+
+      - name: api-payments
+        paths:
+          - /api/payments
+        strip_path: false
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+          - name: rate-limiting
+            config:
+              minute: 15
+              policy: local
+
+      - name: api-reports
+        paths:
+          - /api/reports
+        strip_path: false
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+          - name: rate-limiting
+            config:
+              minute: 10
+              policy: local
+
+      - name: api-admin
+        paths:
+          - /api/admin
+        strip_path: false
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+          - name: rate-limiting
+            config:
+              minute: 30
+              policy: local
+          - name: request-transformer
+            config:
+              add:
+                headers:
+                  - X-Admin-Request:true
+
+      - name: api-health
+        paths:
+          - /api/health
+        strip_path: false
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 60
+              policy: local
+
+  # Frontend Service
+  - name: healthcare-frontend
+    url: http://healthcare-frontend
+    routes:
+      - name: frontend-route
+        paths:
+          - /
+        strip_path: false
+
+# Consumers (API Users)
+consumers:
+  - username: admin-api
+    custom_id: admin-api-consumer
+    jwt_secrets:
+      - key: admin-api-key
+        secret: ${KONG_JWT_SECRET:-healthcare_jwt_secret_key}
+
+  - username: patient-app
+    custom_id: patient-app-consumer
+    jwt_secrets:
+      - key: patient-app-key
+        secret: ${KONG_JWT_SECRET:-healthcare_jwt_secret_key}
+
+  - username: provider-app
+    custom_id: provider-app-consumer
+    jwt_secrets:
+      - key: provider-app-key
+        secret: ${KONG_JWT_SECRET:-healthcare_jwt_secret_key}
+
+  - username: external-integration
+    custom_id: external-consumer
+    keyauth_credentials:
+      - key: ext-api-key-${EXTERNAL_API_KEY:-external_secret_key}
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 50
+          policy: local
+
+# Certificate for HTTPS
+certificates:
+  - cert: |
+      -----BEGIN CERTIFICATE-----
+      # Your SSL certificate here
+      -----END CERTIFICATE-----
+    key: |
+      -----BEGIN PRIVATE KEY-----
+      # Your SSL private key here
+      -----END PRIVATE KEY-----
+    snis:
+      - api.healthcare.com
+      - healthcare.local
+
+# Vault configuration for secrets
+vaults:
+  - name: env
+    description: Environment variables vault
+    config:
+      prefix: KONG_VAULT_

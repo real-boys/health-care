@@ -1,258 +1,232 @@
-# Pull Request: Multi-Token Premium Support with Stellar DEX Integration
+# Pull Request: Fix #8 - Missing CORS Configuration
 
-## 🎯 Issue #2: Multi-Token Premium Support
+## Summary
+This PR implements comprehensive CORS (Cross-Origin Resource Sharing) configuration to resolve issue #8, enabling cross-domain deployments and external service integration for the Wata-Board project.
 
-This PR implements comprehensive multi-token premium support for the Healthcare Drips platform, enabling premium payments in multiple tokens simultaneously with automatic conversion through Stellar DEX.
+## Problem Addressed
+- ❌ No CORS configuration causing cross-domain deployment issues
+- ❌ Integration problems with external services
+- ❌ Security vulnerabilities from uncontrolled cross-origin requests
+- ❌ Development difficulties when frontend/backend on different domains
 
-## ✨ Features Implemented
+## Solution Implemented
 
-### 🔄 Multi-Token Premium Payments
-- **Token Allocation Percentages**: Added `TokenAllocation` struct with percentage-based distribution
-- **Enhanced PremiumDrip**: Extended to support multiple tokens with configurable allocations
-- **Validation System**: Automatic validation ensuring allocations sum to 100%
-- **Minimum Balance Requirements**: Per-token minimum balance settings
+### 🚀 **Backend Changes**
+- **New Express.js Server** (`src/server.ts`) replacing standalone script
+- **Dynamic CORS Middleware** with environment-based configuration
+- **Secure Origin Validation** with configurable whitelist
+- **Security Headers** using Helmet.js
+- **Rate Limiting Integration** with CORS headers
+- **API Endpoints**: `/api/payment`, `/api/rate-limit/:userId`, `/api/payment/:meterId`, `/health`
 
-### 🔗 Stellar DEX Integration
-- **Automatic Token Conversion**: Seamless conversion between tokens using Stellar DEX
-- **Swap Request Management**: Complete lifecycle management of swap operations
-- **Real-time Price Queries**: Integration with DEX for accurate pricing (mock implementation)
-- **Transaction Tracking**: Full audit trail of all conversion operations
+### 🎨 **Frontend Changes**
+- **API Service** (`src/services/api.ts`) with CORS-aware requests
+- **Vite Proxy Configuration** for seamless development
+- **Environment Variables** for production API URLs
+- **React Hooks** for API connectivity management
 
-### 🛡️ Slippage Protection Mechanisms
-- **Configurable Tolerance**: Per-drip slippage tolerance settings (basis points)
-- **Pre-execution Validation**: Slippage checks before swap execution
-- **Automatic Cancellation**: Failed swaps due to excessive slippage
-- **Safety Mechanisms**: Protection against unfavorable market conditions
+### ⚙️ **Configuration Updates**
+- **Environment Templates** with CORS-specific variables
+- **Development vs Production** settings
+- **Setup Script** (`setup-cors.sh`) for easy configuration
+- **TypeScript Configuration** updates
 
-### 📊 Token Balance Monitoring
-- **Real-time Tracking**: Continuous monitoring of all token balances
-- **USD Value Estimation**: Automatic valuation of token holdings
-- **Balance History**: Complete audit trail of balance changes
-- **Threshold Alerts**: Configurable alerts for low balances
+### 📚 **Documentation & Testing**
+- **Comprehensive Guide** (`CORS_IMPLEMENTATION.md`)
+- **Solution Summary** (`CORS_SOLUTION_SUMMARY.md`)
+- **CORS Testing Suite** (`src/test-cors.ts`)
+- **Updated README** with CORS instructions
 
-### ⚖️ Auto-Rebalancing System
-- **Automatic Rebalancing**: Periodic rebalancing to maintain target allocations
-- **Deviation Detection**: Automatic detection of allocation deviations
-- **Intelligent Swapping**: Efficient swapping to rebalance portfolios
-- **Configurable Parameters**: Customizable rebalancing thresholds and intervals
+## Key Features
 
-## 🏗️ Technical Implementation
+### 🔒 **Security**
+- Environment-based origin validation
+- Configurable whitelist for production
+- Credential support enabled
+- Security headers with Helmet.js
 
-### New Data Structures
+### 🛠️ **Development Experience**
+- Automatic localhost support in development
+- Clear error messages for CORS issues
+- Comprehensive logging for debugging
+- Flexible configuration options
 
-#### TokenAllocation
-```rust
-pub struct TokenAllocation {
-    pub token: Address,
-    pub percentage: u32,        // Basis points (10000 = 100%)
-    pub min_balance: i128,
-}
+### 🌐 **Production Ready**
+- Explicit origin control for production
+- Scalable Express.js architecture
+- Proper HTTP status codes
+- Rate limiting integration
+
+## Environment Variables
+
+### Backend (.env)
+```bash
+# CORS Configuration
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+FRONTEND_URL=https://your-frontend-domain.com
+NODE_ENV=development
+PORT=3001
 ```
 
-#### Enhanced PremiumDrip
-```rust
-pub struct PremiumDrip {
-    // ... existing fields ...
-    pub primary_token: Address,
-    pub token_allocations: Vec<TokenAllocation>,
-    pub auto_rebalance: bool,
-    pub slippage_tolerance: u32,  // Basis points
-}
+### Frontend (.env)
+```bash
+# API Configuration
+VITE_API_URL=https://your-api-domain.com
+VITE_FRONTEND_URL=https://your-frontend-domain.com
 ```
 
-#### SwapRequest & Supporting Types
-- `SwapRequest`: Complete swap lifecycle management
-- `TokenBalance`: Real-time balance tracking
-- `RebalanceConfig`: Configurable rebalancing parameters
-- `SwapStatus`: Swap state enumeration
+## Usage
 
-### Key Functions Added
+### Development
+```bash
+# Backend
+cd wata-board-dapp
+npm run dev  # http://localhost:3001
 
-#### Premium Drip Management
-- `create_premium_drip()` - Enhanced with multi-token support
-- `process_multi_token_premium_payment()` - Multi-token payment processing
-- `cancel_premium_drip()` - Existing functionality preserved
+# Frontend
+cd wata-board-frontend
+npm run dev  # http://localhost:5173 (with proxy)
+```
 
-#### DEX Integration
-- `create_swap_request()` - Create and execute token swaps
-- `execute_swap()` - Execute swaps with slippage protection
-- `get_swap_amount_out()` - Query expected swap amounts
+### Production
+```bash
+# Backend
+NODE_ENV=production
+ALLOWED_ORIGINS=https://yourdomain.com
+npm start
 
-#### Balance Monitoring & Rebalancing
-- `update_token_balance()` - Real-time balance tracking
-- `check_and_rebalance()` - Automatic rebalancing engine
-- `rebalance_drip_tokens()` - Per-drip rebalancing
-- `perform_rebalancing_swaps()` - Execute rebalancing operations
+# Frontend
+VITE_API_URL=https://api.yourdomain.com
+npm run build
+```
 
-#### Configuration & Utilities
-- `get_rebalance_config()` / `update_rebalance_config()` - Configuration management
-- `get_token_balance()` / `get_all_token_balances()` - Balance queries
-- `get_swap_request()` / `get_pending_swaps()` - Swap monitoring
+## Testing
 
-## 🧪 Testing
+### CORS Validation
+```bash
+# Run comprehensive CORS tests
+cd wata-board-dapp
+npm run test:cors
 
-### Comprehensive Test Suite
-- **Multi-Token Drip Creation**: Validation of token allocations and drip setup
-- **Token Allocation Validation**: Testing percentage sum validation
-- **Swap Request Execution**: Testing DEX integration and slippage protection
-- **Balance Monitoring**: Testing real-time balance tracking
-- **Auto-Rebalancing**: Testing rebalancing logic and execution
-- **Error Handling**: Comprehensive error case testing
-- **Access Control**: Security and permission testing
+# Manual testing
+curl -X OPTIONS http://localhost:3001/api/payment \
+  -H "Origin: http://localhost:3000" \
+  -H "Access-Control-Request-Method: POST" \
+  -v
+```
 
-### Test Coverage
-- ✅ All new functionality thoroughly tested
-- ✅ Edge cases and error conditions covered
-- ✅ Integration tests for multi-token workflows
-- ✅ Performance and gas optimization considerations
+## Migration Guide
 
-## 📋 Files Changed
+### Before
+```bash
+npx ts-node src/index.ts  # Standalone script
+```
 
-### Core Implementation
-- `src/healthcare_drips.rs` - Main contract implementation with multi-token support
-- `src/lib.rs` - Added multi-token test module
-- `Cargo.toml` - Updated version to 2.0.0 and description
+### After
+```bash
+npm run dev  # Development server with CORS
+npm start    # Production server with CORS
+```
 
-### New Files
-- `src/multi_token_tests.rs` - Comprehensive test suite for multi-token functionality
-- `MULTI_TOKEN_PREMIUM_SUPPORT.md` - Detailed technical documentation
-- `README-MULTI-TOKEN.md` - User-facing documentation and quick start guide
-- `PR_DESCRIPTION.md` - This PR description
+### Frontend Updates
+```typescript
+// New CORS-aware API service
+import { apiService } from './services/api';
 
-## 🔄 Backward Compatibility
-
-- ✅ **Fully Backward Compatible**: Existing single-token drips continue to work unchanged
-- ✅ **Gradual Migration**: Users can migrate to multi-token drips at their own pace
-- ✅ **API Consistency**: Existing function signatures preserved where possible
-- ✅ **Data Migration**: Existing data structures compatible with new implementation
-
-## 🛡️ Security Considerations
-
-### Slippage Protection
-- Pre-execution slippage validation
-- Configurable tolerance limits
-- Automatic cancellation of unfavorable swaps
-
-### Access Control
-- Role-based access control maintained
-- Admin-only configuration changes
-- Insurer-only payment processing
-
-### Audit Trail
-- Complete transaction history
-- Swap request tracking
-- Balance change logging
-
-## 📊 Performance Optimizations
-
-### Gas Efficiency
-- Batch operations for multiple tokens
-- Optimized storage patterns
-- Minimal balance update overhead
-
-### Scalability
-- Parallel swap execution capability
-- Efficient balance tracking
-- Lazy loading for balance calculations
-
-## 🚀 Usage Examples
-
-### Creating Multi-Token Premium Drip
-```rust
-let mut allocations = Vec::new(&env);
-allocations.push_back(TokenAllocation {
-    token: usdc_address,
-    percentage: 5000,  // 50%
-    min_balance: 1000,
+const result = await apiService.processPayment({
+  meter_id: 'METER-001',
+  amount: 10,
+  userId: 'user-123'
 });
-allocations.push_back(TokenAllocation {
-    token: usdt_address,
-    percentage: 3000,  // 30%
-    min_balance: 600,
-});
-allocations.push_back(TokenAllocation {
-    token: dai_address,
-    percentage: 2000,  // 20%
-    min_balance: 400,
-});
-
-let drip_id = HealthcareDrips::create_premium_drip(
-    &env,
-    patient_address,
-    insurer_address,
-    usdc_address,  // Primary token
-    1000,         // $1000 premium
-    allocations,
-    86400 * 30,   // 30 days interval
-    true,         // Enable auto-rebalance
-    500,          // 5% slippage tolerance
-)?;
 ```
 
-### Processing Multi-Token Payment
-```rust
-HealthcareDrips::process_multi_token_premium_payment(
-    &env,
-    drip_id,
-    insurer_address,
-)?;
-```
+## Files Changed
 
-## 📈 Metrics
+### Backend (wata-board-dapp)
+- ✅ `src/server.ts` - New Express.js server with CORS
+- ✅ `package.json` - Updated dependencies and scripts
+- ✅ `tsconfig.json` - Updated TypeScript configuration
+- ✅ `.env.example` - Added CORS configuration variables
+- ✅ `src/test-cors.ts` - Comprehensive CORS testing
+- ✅ `setup-cors.sh` - Setup script for easy configuration
 
-### Code Changes
-- **+1,526 lines** of new functionality
-- **-6 lines** of modifications (mainly updates)
-- **6 files** changed/created
-- **100% test coverage** for new features
+### Frontend (wata-board-frontend)
+- ✅ `vite.config.ts` - Added development proxy configuration
+- ✅ `src/services/api.ts` - New API service with CORS support
+- ✅ `.env.example` - Added API URL configuration
 
-### Functionality Added
-- **15+ new functions** for multi-token support
-- **5 new data structures** for enhanced functionality
-- **Comprehensive error handling** with 5 new error types
-- **Full documentation** and usage examples
+### Documentation
+- ✅ `README.md` - Updated with CORS information
+- ✅ `CORS_IMPLEMENTATION.md` - Detailed implementation guide
+- ✅ `CORS_SOLUTION_SUMMARY.md` - Solution overview
 
-## 🔮 Future Enhancements
+## Verification Checklist
 
-### Planned (Not in this PR)
-- Real price oracle integration
-- Advanced rebalancing strategies
-- Liquidity pool support
-- Cross-chain swap capabilities
-- Yield generation for idle tokens
+- [x] CORS middleware implemented with proper security policies
+- [x] Environment-based configuration (development vs production)
+- [x] Origin whitelist functionality
+- [x] Credentials support enabled
+- [x] Proper HTTP methods and headers configured
+- [x] Rate limiting integration with CORS headers
+- [x] Frontend API service with CORS awareness
+- [x] Development proxy configuration
+- [x] Comprehensive testing suite
+- [x] Documentation and migration guide
+- [x] Setup script for easy configuration
+- [x] Security headers with Helmet.js
 
-### Production Considerations
-- Replace mock DEX integration with actual Stellar DEX API calls
-- Configure production slippage tolerances
-- Set up monitoring and alerting systems
-- Implement gas optimization strategies
+## Benefits Achieved
 
-## ✅ Requirements Checklist
+### ✅ **Security Improvements**
+- Prevents unauthorized cross-origin requests
+- Configurable origin whitelist
+- Environment-based security policies
+- Proper credential handling
 
-- [x] **Add token allocation percentages to PremiumDrip** ✅
-- [x] **Integrate Stellar DEX for automatic token conversion** ✅
-- [x] **Implement slippage protection mechanisms** ✅
-- [x] **Add token balance monitoring and auto-rebalancing** ✅
-- [x] **Generate comprehensive tests** ✅
-- [x] **Update documentation** ✅
-- [x] **Maintain backward compatibility** ✅
-- [x] **Push to forked repository** ✅
+### ✅ **Development Experience**
+- Automatic localhost support in development
+- Clear error messages for CORS issues
+- Comprehensive logging for debugging
+- Flexible configuration options
 
-## 🎉 Summary
+### ✅ **Production Readiness**
+- Scalable Express.js architecture
+- Proper HTTP status codes
+- Rate limiting integration
+- Security headers with Helmet.js
 
-This PR successfully implements comprehensive multi-token premium support for the Healthcare Drips platform. The implementation includes all requested features:
+### ✅ **Integration Support**
+- External service integration capability
+- Cross-domain deployment support
+- API gateway compatibility
+- CDN-friendly configuration
 
-1. **Token Allocation Percentages**: Flexible percentage-based token distribution
-2. **Stellar DEX Integration**: Automatic token conversion with swap management
-3. **Slippage Protection**: Comprehensive protection mechanisms with configurable tolerances
-4. **Balance Monitoring**: Real-time tracking with USD valuation
-5. **Auto-Rebalancing**: Intelligent portfolio rebalancing with configurable parameters
+## Breaking Changes
 
-The solution is production-ready with comprehensive testing, documentation, and backward compatibility. The codebase is now positioned to support sophisticated multi-token premium payment scenarios while maintaining security and performance standards.
+1. **Backend Server**: Now runs as Express.js server instead of standalone script
+2. **Frontend API**: Should use new API service instead of direct Stellar SDK calls
+3. **Environment Variables**: New CORS-specific variables required
+
+## Testing Instructions
+
+1. Install dependencies in both directories
+2. Configure environment variables using `.env.example`
+3. Start backend server: `npm run dev`
+4. Start frontend: `npm run dev`
+5. Test CORS functionality using provided test scripts
+6. Verify cross-origin requests work properly
+
+## Conclusion
+
+This implementation fully resolves issue #8 by providing:
+- **Secure, configurable CORS policies**
+- **Environment-aware behavior**
+- **Comprehensive API integration**
+- **Production-ready architecture**
+- **Extensive testing and documentation**
+
+The solution follows security best practices while maintaining developer productivity and deployment flexibility.
 
 ---
 
-**Version**: 2.0.0  
-**Branch**: `Multi-Token-Premium-Support`  
-**Target**: `olaleyeolajide81-sketch/Rishabh42-HealthCare-Insurance-Stellar`  
-**Status**: Ready for Review and Merge
+**Closes #8**
