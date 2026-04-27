@@ -131,8 +131,27 @@ Payment Details:
 - Amount: $${data.amount}
 - Date: ${new Date(data.paymentDate).toLocaleDateString()}
 - Method: ${data.method}
+- Transaction ID: ${data.transactionId}
 
 Thank you for your payment.
+
+Best regards,
+Insurance Provider Portal
+      `.trim();
+      
+    case 'payment-failure':
+      return `
+Dear ${data.payerName},
+
+We were unable to process your scheduled payment of $${data.amount}.
+
+Payment Details:
+- Payment ID: ${data.paymentId}
+- Amount: $${data.amount}
+- Date: ${new Date(data.paymentDate).toLocaleDateString()}
+- Error: ${data.error}
+
+Please check your payment method and try again, or contact our support team for assistance.
 
 Best regards,
 Insurance Provider Portal
@@ -234,10 +253,28 @@ const generateEmailBody = (template, data) => {
             <p><span class="label">Amount:</span> $${data.amount}</p>
             <p><span class="label">Date:</span> ${new Date(data.paymentDate).toLocaleDateString()}</p>
             <p><span class="label">Method:</span> ${data.method}</p>
+            <p><span class="label">Transaction ID:</span> ${data.transactionId}</p>
         </div>
         
         <p>Thank you for your payment.</p>
         <p><a href="#" class="button">View Payment History</a></p>
+      `.trim();
+      
+    case 'payment-failure':
+      return `
+        <h2>Payment Processing Failed</h2>
+        <p>Dear ${data.payerName},</p>
+        <p>We were unable to process your scheduled payment of <strong>$${data.amount}</strong>.</p>
+        
+        <div class="details">
+            <p><span class="label">Payment ID:</span> ${data.paymentId}</p>
+            <p><span class="label">Amount:</span> $${data.amount}</p>
+            <p><span class="label">Date:</span> ${new Date(data.paymentDate).toLocaleDateString()}</p>
+            <p><span class="label">Error:</span> ${data.error}</p>
+        </div>
+        
+        <p>Please check your payment method and try again, or contact our support team for assistance.</p>
+        <p><a href="#" class="button">Update Payment Method</a></p>
       `.trim();
       
     case 'policy-reminder':
@@ -318,7 +355,13 @@ const getNotificationTemplates = () => {
       id: 'payment-confirmation',
       name: 'Payment Confirmation',
       description: 'Confirms successful payment processing',
-      variables: ['payerName', 'paymentId', 'amount', 'paymentDate', 'method']
+      variables: ['payerName', 'paymentId', 'amount', 'paymentDate', 'method', 'transactionId']
+    },
+    {
+      id: 'payment-failure',
+      name: 'Payment Failure Notification',
+      description: 'Notifies users about failed scheduled payment processing',
+      variables: ['payerName', 'paymentId', 'amount', 'paymentDate', 'error']
     },
     {
       id: 'policy-reminder',

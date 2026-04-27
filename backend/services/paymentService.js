@@ -96,10 +96,10 @@ class PaymentService {
    * @param {object} paymentData - Payment data
    */
   async processPayment(paymentData) {
-    const { paymentId, amount, recipient, payer, type } = paymentData;
+    const { paymentId, amount, recipient, payer, type, memo = '' } = paymentData;
     
     try {
-      console.log(`Processing payment ${paymentId} for $${amount}`);
+      console.log(`Processing payment ${paymentId} for $${amount} with memo: "${memo}"`);
       
       // Get payment details from database
       const payment = await this.getPaymentDetails(paymentId);
@@ -112,25 +112,32 @@ class PaymentService {
       // Process based on payment method
       switch (payment.method) {
         case 'stripe':
-          result = await this.processStripePayment(payment);
+          result = await this.processStripePayment(payment, memo);
           break;
         case 'paypal':
-          result = await this.processPayPalPayment(payment);
+          result = await this.processPayPalPayment(payment, memo);
           break;
         case 'crypto':
-          result = await this.processCryptoPayment(payment);
+          result = await this.processCryptoPayment(payment, memo);
+          break;
+        case 'stellar':
+          result = await this.processStellarPayment(payment, memo);
           break;
         default:
           throw new Error(`Unsupported payment method: ${payment.method}`);
       }
 
-      // Update payment status
-      await this.updatePaymentStatus(paymentId, result.success ? 'completed' : 'failed', result);
+      // Update payment status with memo
+      await this.updatePaymentStatus(paymentId, result.success ? 'completed' : 'failed', {
+        ...result,
+        memo
+      });
       
       return {
         success: result.success,
         transactionId: result.transactionId,
-        error: result.error
+        error: result.error,
+        memo
       };
     } catch (error) {
       console.error(`Error processing payment ${paymentId}:`, error);
@@ -179,18 +186,20 @@ class PaymentService {
   /**
    * Process Stripe payment
    * @param {object} payment - Payment details
+   * @param {string} memo - Payment memo
    */
-  async processStripePayment(payment) {
+  async processStripePayment(payment, memo = '') {
     try {
       const charge = await stripe.charges.create({
         amount: Math.round(payment.amount * 100), // Convert to cents
         currency: 'usd',
-        description: `Healthcare payment to ${payment.recipientName}`,
+        description: memo || `Healthcare payment to ${payment.recipientName}`,
         customer: payment.stripeCustomerId,
         metadata: {
           paymentId: payment.id,
           type: payment.type,
-          recipient: payment.recipient
+          recipient: payment.recipient,
+          memo: memo
         }
       });
 
@@ -198,7 +207,8 @@ class PaymentService {
         success: true,
         transactionId: charge.id,
         gateway: 'stripe',
-        amount: charge.amount / 100
+        amount: charge.amount / 100,
+        memo
       };
     } catch (error) {
       return {
@@ -212,8 +222,9 @@ class PaymentService {
   /**
    * Process PayPal payment
    * @param {object} payment - Payment details
+   * @param {string} memo - Payment memo
    */
-  async processPayPalPayment(payment) {
+  async processPayPalPayment(payment, memo = '') {
     return new Promise((resolve, reject) => {
       const payment_json = {
         "intent": "sale",
@@ -225,7 +236,9 @@ class PaymentService {
             "total": payment.amount.toFixed(2),
             "currency": "USD"
           },
-          "description": `Healthcare payment to ${payment.recipientName}`
+          "description": memo || `Healthcare payment to ${payment.recipientName}`,
+          "custom": memo || `Payment ID: ${payment.id}`,
+          "note_to_payer": memo || "Healthcare payment transaction"
         }]
       };
 
@@ -243,7 +256,8 @@ class PaymentService {
             success: true,
             transactionId: payment.id,
             gateway: 'paypal',
-            amount: payment.amount
+            amount: payment.amount,
+            memo
           });
         }
       });
@@ -253,8 +267,9 @@ class PaymentService {
   /**
    * Process cryptocurrency payment
    * @param {object} payment - Payment details
+   * @param {string} memo - Payment memo
    */
-  async processCryptoPayment(payment) {
+  async processCryptoPayment(payment, memo = '') {
     try {
       // This would integrate with blockchain contracts
       // For now, simulate crypto payment
@@ -262,11 +277,12 @@ class PaymentService {
       const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
       const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
       
-      // Simulate transaction
+      // Simulate transaction with memo in data field
       const tx = {
         to: payment.recipientAddress,
         value: ethers.utils.parseEther(payment.amount.toString()),
-        gasLimit: 21000
+        gasLimit: 21000,
+        data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes(memo || `Payment ID: ${payment.id}`))
       };
       
       const transaction = await wallet.sendTransaction(tx);
@@ -276,13 +292,51 @@ class PaymentService {
         success: true,
         transactionId: transaction.hash,
         gateway: 'crypto',
-        amount: payment.amount
+        amount: payment.amount,
+        memo
       };
     } catch (error) {
       return {
         success: false,
         error: error.message,
         gateway: 'crypto'
+      };
+    }
+  }
+
+  /**
+   * Process Stellar payment
+   * @param {object} payment - Payment details
+   * @param {string} memo - Payment memo
+   */
+  async processStellarPayment(payment, memo = '') {
+    try {
+      const { stellarService } = require('./stellarService');
+      
+      // Convert amount to Stellar format (7 decimal places)
+      const stellarAmount = (payment.amount * 10000000).toString();
+      
+      const result = await stellarService.transfer(
+        payment.stellarFromAccount,
+        payment.stellarToAccount,
+        stellarAmount,
+        'XLM',
+        memo || `Payment ID: ${payment.id}`
+      );
+      
+      return {
+        success: true,
+        transactionId: result.transactionHash,
+        gateway: 'stellar',
+        amount: payment.amount,
+        memo,
+        ledger: result.ledger
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        gateway: 'stellar'
       };
     }
   }
