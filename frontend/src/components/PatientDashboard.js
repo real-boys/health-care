@@ -36,6 +36,7 @@ import ReviewForm from './ReviewForm';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const PatientDashboard = ({ user, token }) => {
+  const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState(null);
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [claims, setClaims] = useState([]);
@@ -178,7 +179,7 @@ const PatientDashboard = ({ user, token }) => {
       setPayments(paymentsRes.data.payments || []);
       setReputationData(reputationRes.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load dashboard data');
+      setError(t('error.server'));
     } finally {
       setLoading(false);
     }
@@ -286,7 +287,7 @@ const PatientDashboard = ({ user, token }) => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <RefreshCw className="animate-spin h-8 w-8 text-blue-600" />
-        <span className="ml-2 text-lg">Loading dashboard...</span>
+        <span className="ml-2 text-lg">{t('common.loading')}</span>
       </div>
     );
   }
@@ -307,9 +308,25 @@ const PatientDashboard = ({ user, token }) => {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
               <Heart className="h-8 w-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Patient Dashboard</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t('dashboard.title')}</h1>
             </div>
             <div className="flex items-center space-x-4">
+              {/* Wallet Balance Display */}
+              {balance && (
+                <div className="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+                  <DollarSign className="h-5 w-5 text-green-600" />
+                  <span className="text-sm font-medium text-gray-900">
+                    {balance.formatted}
+                  </span>
+                  <button 
+                    onClick={refreshBalance}
+                    className="p-1 text-gray-400 hover:text-gray-600 transition"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+              
               <div className="relative">
                 <Bell className="h-6 w-6 text-gray-600 cursor-pointer" />
                 {notifications.length > 0 && (
@@ -339,9 +356,7 @@ const PatientDashboard = ({ user, token }) => {
                   {dashboardData?.total_medical_records || 0}
                 </p>
               </div>
-              <FileText className="h-8 w-8 text-blue-600" />
             </div>
-          </div>
 
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -354,9 +369,7 @@ const PatientDashboard = ({ user, token }) => {
                   {dashboardData?.approved_claims || 0} approved
                 </p>
               </div>
-              <Shield className="h-8 w-8 text-green-600" />
             </div>
-          </div>
 
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -369,9 +382,7 @@ const PatientDashboard = ({ user, token }) => {
                   {formatCurrency(dashboardData?.total_premiums_paid || 0)} total
                 </p>
               </div>
-              <CreditCard className="h-8 w-8 text-purple-600" />
             </div>
-          </div>
 
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -382,10 +393,8 @@ const PatientDashboard = ({ user, token }) => {
                 </p>
                 <p className="text-xs text-blue-600">appointments</p>
               </div>
-              <Calendar className="h-8 w-8 text-orange-600" />
             </div>
           </div>
-        </div>
 
         <div className="bg-white rounded-lg shadow">
           <div className="border-b border-gray-200">

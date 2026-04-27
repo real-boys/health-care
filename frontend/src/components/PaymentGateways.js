@@ -19,10 +19,20 @@ import {
   Zap,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePaymentConflictDetection } from '../utils/paymentConflictDetection';
+import { useDynamicFeeCalculation } from '../utils/dynamicFeeCalculation';
+import { useTranslation } from '../i18n';
+import { useWalletBalance } from '../utils/walletBalanceRefresh';
 
 const PaymentGateways = ({ account, contract }) => {
+  const { t } = useTranslation();
+  const { addPayment, conflicts, notifications, resolveConflict } = usePaymentConflictDetection();
+  const { calculateFee, currentFee, loading: feeLoading, error: feeError } = useDynamicFeeCalculation();
+  const { balance, refreshBalance, refreshAfterTransaction, loading: balanceLoading } = useWalletBalance(account, contract?.provider);
+  
   const [selectedMethod, setSelectedMethod] = useState('card');
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [amount, setAmount] = useState('500.00');
   const [transactions, setTransactions] = useState([
     {
       id: 'TX-9021',
@@ -53,6 +63,11 @@ const PaymentGateways = ({ account, contract }) => {
     },
   ]);
   const [processing, setProcessing] = useState(false);
+  const [showConflictDialog, setShowConflictDialog] = useState(false);
+  const [currentConflict, setCurrentConflict] = useState(null);
+  const [feePriority, setFeePriority] = useState('standard');
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [meterId, setMeterId] = useState('');
 
   const methods = [
     { id: 'card', name: 'Stripe / Cards', icon: CreditCard, color: 'blue' },
@@ -63,21 +78,72 @@ const PaymentGateways = ({ account, contract }) => {
 
   const currencies = ['USD', 'EUR', 'GBP', 'XLM', 'USDC'];
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
+    if (!account || !contract) {
+      alert(t('error.wallet_not_connected'));
+      return;
+    }
+
+    // Check for payment conflicts first
+    const paymentData = {
+      id: Date.now().toString(),
+      meterId: meterId || 'default',
+      amount: parseFloat(amount),
+      currency: selectedCurrency,
+      method: selectedMethod,
+      startDate: scheduledDate || new Date().toISOString().split('T')[0],
+      account
+    };
+
+    const conflictResult = addPayment(paymentData);
+    
+    if (conflictResult.hasConflict) {
+      setCurrentConflict(conflictResult);
+      setShowConflictDialog(true);
+      return;
+    }
+
+    // Calculate dynamic fee for crypto payments
+    if (selectedMethod === 'crypto') {
+      try {
+        await calculateFee({
+          from: account,
+          value: ethers.utils.parseEther(amount),
+          currency: selectedCurrency
+        }, feePriority);
+      } catch (error) {
+        console.error('Fee calculation error:', error);
+      }
+    }
+
     setProcessing(true);
-    setTimeout(() => {
+    
+    try {
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
       const newTx = {
         id: `TX-${Math.floor(Math.random() * 10000)}`,
-        amount: 500,
+        amount: parseFloat(amount),
         currency: selectedCurrency,
         method: selectedMethod,
         status: Math.random() > 0.1 ? 'Success' : 'Failed',
         date: 'Just now',
         ref: `${selectedMethod.slice(0, 2)}_${Math.random().toString(36).slice(2, 10)}`,
       };
+      
       setTransactions([newTx, ...transactions]);
+      
+      // Refresh wallet balance after successful transaction
+      if (newTx.status === 'Success') {
+        await refreshAfterTransaction(newTx.ref);
+      }
+      
+    } catch (error) {
+      console.error('Payment error:', error);
+    } finally {
       setProcessing(false);
-    }, 2000);
+    }
   };
 
   const retryPayment = id => {
@@ -162,6 +228,27 @@ const PaymentGateways = ({ account, contract }) => {
           </button>
         </div>
       </header>
+
+      {/* Notifications */}
+      {notifications.length > 0 && (
+        <div className="space-y-2">
+          {notifications.map((notification) => (
+            <div key={notification.id} className={`p-4 rounded-lg border ${
+              notification.type === 'conflict' ? 'bg-red-50 border-red-200 text-red-700' :
+              notification.type === 'resolved' ? 'bg-green-50 border-green-200 text-green-700' :
+              'bg-blue-50 border-blue-200 text-blue-700'
+            }`}>
+              <div className="flex items-center space-x-2">
+                <AlertCircle className="w-5 h-5" />
+                <span className="font-medium">{notification.message}</span>
+                <span className="text-xs opacity-75">
+                  {new Date(notification.timestamp).toLocaleTimeString()}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Payment Setup Section */}
@@ -314,6 +401,54 @@ const PaymentGateways = ({ account, contract }) => {
           </div>
         </div>
       </div>
+
+      {/* Conflict Resolution Dialog */}
+      {showConflictDialog && currentConflict && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4">
+            <div className="flex items-center space-x-3 mb-6">
+              <AlertCircle className="w-8 h-8 text-red-500" />
+              <h3 className="text-2xl font-bold text-gray-900">{t('payment.conflict_detected')}</h3>
+            </div>
+            
+            <div className="space-y-4 mb-6">
+              {currentConflict.conflicts.map((conflict, index) => (
+                <div key={index} className="p-4 bg-red-50 rounded-lg border border-red-200">
+                  <p className="text-red-800 font-medium">{conflict.message}</p>
+                  <p className="text-red-600 text-sm mt-1">Severity: {conflict.severity}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-semibold text-gray-900">Suggested Resolutions:</h4>
+              {currentConflict.resolution.map((resolution, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleConflictResolution(resolution)}
+                  className="w-full text-left p-4 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition"
+                >
+                  <div className="font-medium text-blue-900">{resolution.type.replace('_', ' ').toUpperCase()}</div>
+                  <div className="text-blue-700 text-sm mt-1">{resolution.action}</div>
+                  {resolution.suggestedDate && (
+                    <div className="text-blue-600 text-xs mt-1">Suggested date: {resolution.suggestedDate}</div>
+                  )}
+                  {resolution.suggestedAmount && (
+                    <div className="text-blue-600 text-xs mt-1">Suggested amount: ${resolution.suggestedAmount}</div>
+                  )}
+                </button>
+              ))}
+              
+              <button
+                onClick={() => setShowConflictDialog(false)}
+                className="w-full p-4 bg-gray-100 rounded-lg border border-gray-200 hover:bg-gray-200 transition text-gray-700 font-medium"
+              >
+                {t('common.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
