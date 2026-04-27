@@ -36,6 +36,7 @@ import ReviewForm from './ReviewForm';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const PatientDashboard = ({ user, token }) => {
+  const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState(null);
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [claims, setClaims] = useState([]);
@@ -178,7 +179,7 @@ const PatientDashboard = ({ user, token }) => {
       setPayments(paymentsRes.data.payments || []);
       setReputationData(reputationRes.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load dashboard data');
+      setError(t('error.server'));
     } finally {
       setLoading(false);
     }
@@ -286,7 +287,7 @@ const PatientDashboard = ({ user, token }) => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <RefreshCw className="animate-spin h-8 w-8 text-blue-600" />
-        <span className="ml-2 text-lg">Loading dashboard...</span>
+        <span className="ml-2 text-lg">{t('common.loading')}</span>
       </div>
     );
   }
@@ -341,7 +342,6 @@ const PatientDashboard = ({ user, token }) => {
               </div>
               <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 flex-shrink-0" />
             </div>
-          </div>
 
           <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between">
@@ -356,7 +356,6 @@ const PatientDashboard = ({ user, token }) => {
               </div>
               <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 flex-shrink-0" />
             </div>
-          </div>
 
           <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between">
@@ -371,7 +370,6 @@ const PatientDashboard = ({ user, token }) => {
               </div>
               <CreditCard className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 flex-shrink-0" />
             </div>
-          </div>
 
           <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between">
@@ -385,7 +383,6 @@ const PatientDashboard = ({ user, token }) => {
               <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 flex-shrink-0" />
             </div>
           </div>
-        </div>
 
         <div className="bg-white rounded-lg shadow">
           <div className="border-b border-gray-200">
