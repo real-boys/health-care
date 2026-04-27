@@ -20,7 +20,8 @@ import {
   Lock,
   Cpu,
   CreditCard as CreditIcon,
-  Search
+  Search,
+  Globe
 } from 'lucide-react';
 import './App.css';
 import MedicalRecordManager from './components/MedicalRecordManager';
@@ -29,6 +30,9 @@ import ClaimEngine from './components/ClaimEngine';
 import PaymentGateways from './components/PaymentGateways';
 import PatientDashboard from './components/PatientDashboard';
 import ProviderDirectory from './components/ProviderDirectory';
+import { useTranslation } from './i18n';
+import { useWalletBalance } from './utils/walletBalanceRefresh';
+import i18n from './i18n';
 
 // Contract ABIs (simplified for demo)
 const HEALTHCARE_DRIPS_ABI = [
@@ -48,6 +52,7 @@ const HEALTHCARE_DRIPS_ABI = [
 ];
 
 function App() {
+  const { t, changeLanguage, currentLanguage, availableLanguages } = useTranslation();
   const [account, setAccount] = useState(null);
   const [provider, setProvider] = useState(null);
   const [contract, setContract] = useState(null);
@@ -58,13 +63,28 @@ function App() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  const { balance, refreshBalance } = useWalletBalance(account, provider);
 
   // Contract addresses (would come from deployment.json)
   const CONTRACT_ADDRESS = "0x..."; // Replace with actual address
 
   useEffect(() => {
+    // Initialize i18n
+    i18n.initialize();
     connectWallet();
   }, []);
+
+  useEffect(() => {
+    if (account && provider) {
+      // Auto-refresh balance every 30 seconds
+      const interval = setInterval(() => {
+        refreshBalance();
+      }, 30000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [account, provider, refreshBalance]);
 
   const connectWallet = async () => {
     try {
@@ -116,9 +136,13 @@ function App() {
       
       await tx.wait();
       await loadUserData(contract, account);
+      
+      // Refresh balance after transaction
+      await refreshBalance();
+      
       setLoading(false);
     } catch (error) {
-      console.error('Error creating premium drip:', error);
+      console.error(t('error.transaction_failed'), error);
       setLoading(false);
     }
   };
@@ -135,9 +159,13 @@ function App() {
       
       await tx.wait();
       await loadUserData(contract, account);
+      
+      // Refresh balance after transaction
+      await refreshBalance();
+      
       setLoading(false);
     } catch (error) {
-      console.error('Error contributing:', error);
+      console.error(t('error.transaction_failed'), error);
       setLoading(false);
     }
   };
@@ -155,7 +183,7 @@ function App() {
               <TrendingUp className="w-6 h-6" />
             </div>
             <div className="stat-content">
-              <h3>Active Premium Drips</h3>
+              <h3>{t('dashboard.stats.records')}</h3>
               <p className="stat-number">{premiumDrips.length}</p>
             </div>
           </div>
@@ -165,7 +193,7 @@ function App() {
               <DollarSign className="w-6 h-6" />
             </div>
             <div className="stat-content">
-              <h3>Monthly Premium</h3>
+              <h3>{t('dashboard.stats.payments')}</h3>
               <p className="stat-number">$500</p>
             </div>
           </div>
@@ -175,7 +203,7 @@ function App() {
               <Calendar className="w-6 h-6" />
             </div>
             <div className="stat-content">
-              <h3>Next Payment</h3>
+              <h3>{t('dashboard.stats.appointments')}</h3>
               <p className="stat-number">Dec 15, 2024</p>
             </div>
           </div>
@@ -194,7 +222,7 @@ function App() {
         <div className="action-section">
           <button onClick={createPremiumDrip} disabled={loading} className="btn-primary">
             <CreditCard className="w-4 h-4 mr-2" />
-            {loading ? 'Creating...' : 'Create Premium Drip'}
+            {loading ? t('common.loading') : 'Create Premium Drip'}
           </button>
         </div>
       </div>
@@ -203,7 +231,7 @@ function App() {
 
   const FundingRequests = () => (
     <div className="funding-requests">
-      <h2>Community Funding Requests</h2>
+      <h2>{t('nav.funding')}</h2>
       <div className="requests-grid">
         {fundingRequests.map((requestId, index) => (
           <div key={index} className="request-card">
@@ -236,7 +264,7 @@ function App() {
 
   const Contributors = () => (
     <div className="contributors">
-      <h2>Contributor Community</h2>
+      <h2>{t('nav.contributors')}</h2>
       <div className="contributors-grid">
         <div className="contributor-card">
           <div className="contributor-avatar">
@@ -278,62 +306,77 @@ function App() {
             <h1>Healthcare Drips</h1>
           </div>
           
+          {/* Language Selector */}
+          <div className="language-selector">
+            <select 
+              value={currentLanguage} 
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="px-3 py-1 bg-white border border-gray-300 rounded-lg text-sm font-medium"
+            >
+              {availableLanguages.map(lang => (
+                <option key={lang} value={lang}>
+                  {lang.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+          
           <nav className="header-nav">
             <button 
               onClick={() => setActiveTab('dashboard')}
               className={activeTab === 'dashboard' ? 'active' : ''}
             >
               <Activity className="w-4 h-4" />
-              Dashboard
+              {t('nav.dashboard')}
             </button>
             <button 
               onClick={() => setActiveTab('funding')}
               className={activeTab === 'funding' ? 'active' : ''}
             >
               <Users className="w-4 h-4" />
-              Funding
+              {t('nav.funding')}
             </button>
             <button 
               onClick={() => setActiveTab('contributors')}
               className={activeTab === 'contributors' ? 'active' : ''}
             >
               <Award className="w-4 h-4" />
-              Contributors
+              {t('nav.contributors')}
             </button>
             <button 
               onClick={() => setActiveTab('providers')}
               className={activeTab === 'providers' ? 'active' : ''}
             >
               <Search className="w-4 h-4" />
-              Providers
+              {t('nav.providers')}
             </button>
             <button 
               onClick={() => setActiveTab('records')}
               className={activeTab === 'records' ? 'active' : ''}
             >
               <Database className="w-4 h-4" />
-              Records
+              {t('nav.records')}
             </button>
             <button 
               onClick={() => setActiveTab('security')}
               className={activeTab === 'security' ? 'active' : ''}
             >
               <Lock className="w-4 h-4" />
-              Security
+              {t('nav.security')}
             </button>
             <button 
               onClick={() => setActiveTab('engine')}
               className={activeTab === 'engine' ? 'active' : ''}
             >
               <Cpu className="w-4 h-4" />
-              Engine
+              {t('nav.engine')}
             </button>
             <button 
               onClick={() => setActiveTab('payments')}
               className={activeTab === 'payments' ? 'active' : ''}
             >
               <CreditIcon className="w-4 h-4" />
-              Payments
+              {t('nav.payments')}
             </button>
           </nav>
           
@@ -342,11 +385,16 @@ function App() {
               <div className="wallet-connected">
                 <CheckCircle className="w-4 h-4" />
                 <span>{account.slice(0, 6)}...{account.slice(-4)}</span>
+                {balance && (
+                  <span className="ml-2 text-sm">
+                    ({balance.formatted})
+                  </span>
+                )}
               </div>
             ) : (
               <button onClick={connectWallet} className="btn-connect">
                 <Shield className="w-4 h-4 mr-2" />
-                Connect Wallet
+                {t('wallet.connect')}
               </button>
             )}
           </div>
@@ -357,8 +405,8 @@ function App() {
         {!account ? (
           <div className="connect-prompt">
             <AlertCircle className="w-12 h-12" />
-            <h2>Connect Your Wallet</h2>
-            <p>Please connect your MetaMask wallet to access the Healthcare Drips platform</p>
+            <h2>{t('wallet.connect')}</h2>
+            <p>{t('error.wallet_not_connected')}</p>
           </div>
         ) : (
           <>

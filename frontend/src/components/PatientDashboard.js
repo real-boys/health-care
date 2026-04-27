@@ -27,10 +27,13 @@ import {
   Edit,
   Plus
 } from 'lucide-react';
+import { useTranslation } from '../i18n';
+import { useWalletBalance } from '../utils/walletBalanceRefresh';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const PatientDashboard = ({ user, token }) => {
+  const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState(null);
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [claims, setClaims] = useState([]);
@@ -41,6 +44,10 @@ const PatientDashboard = ({ user, token }) => {
   const [socket, setSocket] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [notifications, setNotifications] = useState([]);
+  
+  // Get wallet balance if user has an Ethereum address
+  const userAddress = user?.ethereumAddress || user?.walletAddress;
+  const { balance, refreshBalance } = useWalletBalance(userAddress);
 
   useEffect(() => {
     const newSocket = io(API_BASE_URL.replace('/api', ''));
@@ -149,7 +156,7 @@ const PatientDashboard = ({ user, token }) => {
       setAppointments(appointmentsRes.data || []);
       setPayments(paymentsRes.data.payments || []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load dashboard data');
+      setError(t('error.server'));
     } finally {
       setLoading(false);
     }
@@ -214,6 +221,10 @@ const PatientDashboard = ({ user, token }) => {
     return colors[status] || 'text-gray-600 bg-gray-100';
   };
 
+  const getStatusText = (status) => {
+    return t(`claims.${status}`) || status;
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -243,7 +254,7 @@ const PatientDashboard = ({ user, token }) => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <RefreshCw className="animate-spin h-8 w-8 text-blue-600" />
-        <span className="ml-2 text-lg">Loading dashboard...</span>
+        <span className="ml-2 text-lg">{t('common.loading')}</span>
       </div>
     );
   }
@@ -264,9 +275,25 @@ const PatientDashboard = ({ user, token }) => {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
               <Heart className="h-8 w-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Patient Dashboard</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t('dashboard.title')}</h1>
             </div>
             <div className="flex items-center space-x-4">
+              {/* Wallet Balance Display */}
+              {balance && (
+                <div className="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+                  <DollarSign className="h-5 w-5 text-green-600" />
+                  <span className="text-sm font-medium text-gray-900">
+                    {balance.formatted}
+                  </span>
+                  <button 
+                    onClick={refreshBalance}
+                    className="p-1 text-gray-400 hover:text-gray-600 transition"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+              
               <div className="relative">
                 <Bell className="h-6 w-6 text-gray-600 cursor-pointer" />
                 {notifications.length > 0 && (
@@ -287,54 +314,54 @@ const PatientDashboard = ({ user, token }) => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Medical Records</p>
-                <p className="text-2xl font-bold text-gray-900">{dashboardData?.total_medical_records || 0}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.records')}</p>
+                  <p className="text-2xl font-bold text-gray-900">{dashboardData?.total_medical_records || 0}</p>
+                </div>
+                <FileText className="h-8 w-8 text-blue-600" />
               </div>
-              <FileText className="h-8 w-8 text-blue-600" />
             </div>
-          </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Insurance Claims</p>
-                <p className="text-2xl font-bold text-gray-900">{dashboardData?.total_claims || 0}</p>
-                <p className="text-xs text-green-600">
-                  {dashboardData?.approved_claims || 0} approved
-                </p>
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.claims')}</p>
+                  <p className="text-2xl font-bold text-gray-900">{dashboardData?.total_claims || 0}</p>
+                  <p className="text-xs text-green-600">
+                    {dashboardData?.approved_claims || 0} {t('claims.approved')}
+                  </p>
+                </div>
+                <Shield className="h-8 w-8 text-green-600" />
               </div>
-              <Shield className="h-8 w-8 text-green-600" />
             </div>
-          </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Premium Payments</p>
-                <p className="text-2xl font-bold text-gray-900">{dashboardData?.total_payments || 0}</p>
-                <p className="text-xs text-gray-500">
-                  {formatCurrency(dashboardData?.total_premiums_paid || 0)} total
-                </p>
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.payments')}</p>
+                  <p className="text-2xl font-bold text-gray-900">{dashboardData?.total_payments || 0}</p>
+                  <p className="text-xs text-gray-500">
+                    {formatCurrency(dashboardData?.total_premiums_paid || 0)} total
+                  </p>
+                </div>
+                <CreditCard className="h-8 w-8 text-purple-600" />
               </div>
-              <CreditCard className="h-8 w-8 text-purple-600" />
             </div>
-          </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Upcoming</p>
-                <p className="text-2xl font-bold text-gray-900">{dashboardData?.upcoming_appointments || 0}</p>
-                <p className="text-xs text-blue-600">appointments</p>
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.appointments')}</p>
+                  <p className="text-2xl font-bold text-gray-900">{dashboardData?.upcoming_appointments || 0}</p>
+                  <p className="text-xs text-blue-600">{t('dashboard.stats.appointments_suffix')}</p>
+                </div>
+                <Calendar className="h-8 w-8 text-orange-600" />
               </div>
-              <Calendar className="h-8 w-8 text-orange-600" />
             </div>
           </div>
-        </div>
 
         <div className="bg-white rounded-lg shadow">
           <div className="border-b border-gray-200">
