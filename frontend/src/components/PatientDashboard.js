@@ -304,31 +304,15 @@ const PatientDashboard = ({ user, token }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center py-3 sm:py-4 gap-3">
             <div className="flex items-center space-x-3">
-              <Heart className="h-8 w-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">{t('dashboard.title')}</h1>
+              <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Patient Dashboard</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              {/* Wallet Balance Display */}
-              {balance && (
-                <div className="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
-                  <DollarSign className="h-5 w-5 text-green-600" />
-                  <span className="text-sm font-medium text-gray-900">
-                    {balance.formatted}
-                  </span>
-                  <button 
-                    onClick={refreshBalance}
-                    className="p-1 text-gray-400 hover:text-gray-600 transition"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </button>
-                </div>
-              )}
-              
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <div className="relative">
-                <Bell className="h-6 w-6 text-gray-600 cursor-pointer" />
+                <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600 cursor-pointer" />
                 {notifications.length > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                     {notifications.length}
@@ -336,8 +320,8 @@ const PatientDashboard = ({ user, token }) => {
                 )}
               </div>
               <div className="flex items-center space-x-2">
-                <User className="h-6 w-6 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">
+                <User className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
+                <span className="text-xs sm:text-sm font-medium text-gray-700 hidden sm:block">
                   {dashboardData?.first_name} {dashboardData?.last_name}
                 </span>
               </div>
@@ -346,65 +330,69 @@ const PatientDashboard = ({ user, token }) => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Medical Records</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className="flex-1">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">Medical Records</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">
                   {dashboardData?.total_medical_records || 0}
                 </p>
               </div>
+              <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 flex-shrink-0" />
             </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Insurance Claims</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className="flex-1">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">Insurance Claims</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">
                   {dashboardData?.total_claims || 0}
                 </p>
                 <p className="text-xs text-green-600">
                   {dashboardData?.approved_claims || 0} approved
                 </p>
               </div>
+              <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 flex-shrink-0" />
             </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Premium Payments</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className="flex-1">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">Premium Payments</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">
                   {dashboardData?.total_payments || 0}
                 </p>
                 <p className="text-xs text-gray-500">
                   {formatCurrency(dashboardData?.total_premiums_paid || 0)} total
                 </p>
               </div>
+              <CreditCard className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 flex-shrink-0" />
             </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Upcoming</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className="flex-1">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">Upcoming</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">
                   {dashboardData?.upcoming_appointments || 0}
                 </p>
                 <p className="text-xs text-blue-600">appointments</p>
               </div>
+              <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 flex-shrink-0" />
             </div>
           </div>
 
         <div className="bg-white rounded-lg shadow">
           <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6" aria-label="Tabs">
+            <nav className="flex flex-nowrap overflow-x-auto px-2 sm:px-6" aria-label="Tabs">
               {['overview', 'records', 'claims', 'appointments', 'payments', 'reputation'].map(
                 tab => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm capitalize ${
+                    className={`py-4 px-1 sm:px-4 border-b-2 font-medium text-sm capitalize whitespace-nowrap ${
                       activeTab === tab
                         ? 'border-blue-500 text-blue-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -422,7 +410,7 @@ const PatientDashboard = ({ user, token }) => {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Patient Information</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex items-center space-x-2">
                       <User className="h-5 w-5 text-gray-400" />
                       <span className="text-sm text-gray-600">Name:</span>
@@ -530,82 +518,88 @@ const PatientDashboard = ({ user, token }) => {
               <div>
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium text-gray-900">Medical Records</h3>
-                  <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                  <button className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm sm:text-base">
                     <Plus className="h-4 w-4" />
-                    <span>Add Record</span>
+                    <span className="hidden sm:inline">Add Record</span>
+                    <span className="sm:hidden">Add</span>
                   </button>
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Date
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Type
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Title
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Provider
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {medicalRecords.map(record => (
-                        <tr key={record.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {formatDate(record.date_of_service)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(record.record_type)}`}
-                            >
-                              {record.record_type}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-900">{record.title}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {record.provider_name}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex space-x-2">
-                              <button className="text-blue-600 hover:text-blue-900">
-                                <Eye className="h-4 w-4" />
-                              </button>
-                              <button className="text-green-600 hover:text-green-900">
-                                <Download className="h-4 w-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <div className="inline-block min-w-full align-middle">
+                    <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Date
+                            </th>
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Type
+                            </th>
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Title
+                            </th>
+                            <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Provider
+                            </th>
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {medicalRecords.map(record => (
+                            <tr key={record.id}>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {formatDate(record.date_of_service)}
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                <span
+                                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(record.record_type)}`}
+                                >
+                                  {record.record_type}
+                                </span>
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 text-sm text-gray-900 max-w-xs truncate">{record.title}</td>
+                              <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {record.provider_name}
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div className="flex space-x-2">
+                                  <button className="text-blue-600 hover:text-blue-900">
+                                    <Eye className="h-4 w-4" />
+                                  </button>
+                                  <button className="text-green-600 hover:text-green-900">
+                                    <Download className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
             {activeTab === 'claims' && (
               <div>
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                   <h3 className="text-lg font-medium text-gray-900">Insurance Claims</h3>
-                  <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                  <button className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm sm:text-base">
                     <Plus className="h-4 w-4" />
-                    <span>New Claim</span>
+                    <span className="hidden sm:inline">New Claim</span>
+                    <span className="sm:hidden">New</span>
                   </button>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {claims.map(claim => (
-                    <div key={claim.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="flex items-center space-x-2">
+                    <div key={claim.id} className="border rounded-lg p-3 sm:p-4">
+                      <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                        <div className="flex-1">
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                             <h4 className="text-sm font-medium text-gray-900">
                               Claim #{claim.claim_number}
                             </h4>
@@ -637,19 +631,20 @@ const PatientDashboard = ({ user, token }) => {
 
             {activeTab === 'appointments' && (
               <div>
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                   <h3 className="text-lg font-medium text-gray-900">Upcoming Appointments</h3>
-                  <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                  <button className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm sm:text-base">
                     <Plus className="h-4 w-4" />
-                    <span>Schedule</span>
+                    <span className="hidden sm:inline">Schedule</span>
+                    <span className="sm:hidden">Schedule</span>
                   </button>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {appointments.map(appointment => (
-                    <div key={appointment.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="flex items-center space-x-2">
+                    <div key={appointment.id} className="border rounded-lg p-3 sm:p-4">
+                      <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                        <div className="flex-1">
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                             <h4 className="text-sm font-medium text-gray-900">
                               {appointment.appointment_type}
                             </h4>
@@ -691,60 +686,65 @@ const PatientDashboard = ({ user, token }) => {
 
             {activeTab === 'payments' && (
               <div>
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                   <h3 className="text-lg font-medium text-gray-900">Premium Payments</h3>
-                  <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                  <button className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm sm:text-base">
                     <Plus className="h-4 w-4" />
-                    <span>Make Payment</span>
+                    <span className="hidden sm:inline">Make Payment</span>
+                    <span className="sm:hidden">Pay</span>
                   </button>
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Date
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Amount
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Method
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Provider
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {payments.map(payment => (
-                        <tr key={payment.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {formatDate(payment.payment_date)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {formatCurrency(payment.payment_amount)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {payment.payment_method}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(payment.payment_status)}`}
-                            >
-                              {payment.payment_status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {payment.insurance_provider}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <div className="inline-block min-w-full align-middle">
+                    <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Date
+                            </th>
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Amount
+                            </th>
+                            <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Method
+                            </th>
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Status
+                            </th>
+                            <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Provider
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {payments.map(payment => (
+                            <tr key={payment.id}>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {formatDate(payment.payment_date)}
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {formatCurrency(payment.payment_amount)}
+                              </td>
+                              <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {payment.payment_method}
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                <span
+                                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(payment.payment_status)}`}
+                                >
+                                  {payment.payment_status}
+                                </span>
+                              </td>
+                              <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {payment.insurance_provider}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
