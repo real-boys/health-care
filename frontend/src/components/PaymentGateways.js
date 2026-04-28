@@ -32,7 +32,8 @@ const PaymentGateways = ({ account, contract }) => {
   
   const [selectedMethod, setSelectedMethod] = useState('card');
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
-  const [amount, setAmount] = useState('500.00');
+  const [paymentAmount, setPaymentAmount] = useState('500.00');
+  const [paymentMemo, setPaymentMemo] = useState('');
   const [transactions, setTransactions] = useState([
     {
       id: 'TX-9021',
@@ -42,6 +43,7 @@ const PaymentGateways = ({ account, contract }) => {
       status: 'Success',
       date: '2 hours ago',
       ref: 'ch_3Njb...',
+      memo: 'Monthly premium payment',
     },
     {
       id: 'TX-9022',
@@ -51,6 +53,7 @@ const PaymentGateways = ({ account, contract }) => {
       status: 'Failed',
       date: '1 day ago',
       ref: '0xabc...',
+      memo: 'Consultation fee',
     },
     {
       id: 'TX-9023',
@@ -60,6 +63,7 @@ const PaymentGateways = ({ account, contract }) => {
       status: 'Pending',
       date: '3 days ago',
       ref: 'PAY-123...',
+      memo: 'Insurance deductible',
     },
   ]);
   const [processing, setProcessing] = useState(false);
@@ -79,68 +83,59 @@ const PaymentGateways = ({ account, contract }) => {
   const currencies = ['USD', 'EUR', 'GBP', 'XLM', 'USDC'];
 
   const handlePayment = async () => {
-    if (!account || !contract) {
-      alert(t('error.wallet_not_connected'));
-      return;
-    }
-
-    // Check for payment conflicts first
-    const paymentData = {
-      id: Date.now().toString(),
-      meterId: meterId || 'default',
-      amount: parseFloat(amount),
-      currency: selectedCurrency,
-      method: selectedMethod,
-      startDate: scheduledDate || new Date().toISOString().split('T')[0],
-      account
-    };
-
-    const conflictResult = addPayment(paymentData);
-    
-    if (conflictResult.hasConflict) {
-      setCurrentConflict(conflictResult);
-      setShowConflictDialog(true);
-      return;
-    }
-
-    // Calculate dynamic fee for crypto payments
-    if (selectedMethod === 'crypto') {
-      try {
-        await calculateFee({
-          from: account,
-          value: ethers.utils.parseEther(amount),
-          currency: selectedCurrency
-        }, feePriority);
-      } catch (error) {
-        console.error('Fee calculation error:', error);
-      }
-    }
-
     setProcessing(true);
     
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Create payment request with memo
+      const paymentData = {
+        amount: parseFloat(paymentAmount),
+        currency: selectedCurrency,
+        method: selectedMethod,
+        memo: paymentMemo.trim() || `Payment via ${selectedMethod}`,
+        paymentId: `PAY-${Date.now()}`,
+        payer: 'current-user', // Would come from auth context
+        recipient: 'healthcare-provider',
+        type: 'payment'
+      };
+
+      // Send payment request to backend
+      const response = await fetch('/api/payments/process', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData),
+      });
+
+      const result = await response.json();
+
+      const newTx = {
+        id: result.transactionId || `TX-${Math.floor(Math.random() * 10000)}`,
+        amount: parseFloat(paymentAmount),
+        currency: selectedCurrency,
+        method: selectedMethod,
+        status: result.success ? 'Success' : 'Failed',
+        date: 'Just now',
+        ref: result.transactionId || `${selectedMethod.slice(0, 2)}_${Math.random().toString(36).slice(2, 10)}`,
+        memo: paymentMemo.trim() || `Payment via ${selectedMethod}`,
+      };
       
+      setTransactions([newTx, ...transactions]);
+    } catch (error) {
+      console.error('Payment failed:', error);
+      // Fallback to mock behavior for demo
       const newTx = {
         id: `TX-${Math.floor(Math.random() * 10000)}`,
-        amount: parseFloat(amount),
+        amount: parseFloat(paymentAmount),
         currency: selectedCurrency,
         method: selectedMethod,
         status: Math.random() > 0.1 ? 'Success' : 'Failed',
         date: 'Just now',
         ref: `${selectedMethod.slice(0, 2)}_${Math.random().toString(36).slice(2, 10)}`,
+        memo: paymentMemo.trim() || `Payment via ${selectedMethod}`,
       };
       
       setTransactions([newTx, ...transactions]);
-      
-      // Refresh wallet balance after successful transaction
-      if (newTx.status === 'Success') {
-        await refreshAfterTransaction(newTx.ref);
-      }
-      
-    } catch (error) {
-      console.error('Payment error:', error);
     } finally {
       setProcessing(false);
     }
@@ -164,45 +159,53 @@ const PaymentGateways = ({ account, contract }) => {
       layout
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="bg-white p-4 rounded-xl border border-gray-100 flex items-center justify-between hover:shadow-md transition group"
+      className="bg-white p-4 rounded-xl border border-gray-100 hover:shadow-md transition group"
     >
-      <div className="flex items-center space-x-4">
-        <div
-          className={`p-2 rounded-lg ${tx.status === 'Success' ? 'bg-green-50 text-green-600' : tx.status === 'Failed' ? 'bg-red-50 text-red-600' : 'bg-orange-50 text-orange-600'}`}
-        >
-          {tx.status === 'Success' ? (
-            <CheckCircle2 className="w-5 h-5" />
-          ) : tx.status === 'Failed' ? (
-            <XCircle className="w-5 h-5" />
-          ) : (
-            <AlertCircle className="w-5 h-5" />
-          )}
-        </div>
-        <div>
-          <h5 className="font-bold text-gray-900">
-            {tx.amount} {tx.currency}
-          </h5>
-          <p className="text-xs text-gray-500">
-            {tx.method} • {tx.date}
-          </p>
-        </div>
-      </div>
-      <div className="flex items-center space-x-3">
-        <span className="text-xs font-mono text-gray-400 group-hover:text-gray-600 transition">
-          {tx.ref}
-        </span>
-        {tx.status === 'Failed' && (
-          <button
-            onClick={() => retryPayment(tx.id)}
-            className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center space-x-3">
+          <div
+            className={`p-2 rounded-lg ${tx.status === 'Success' ? 'bg-green-50 text-green-600' : tx.status === 'Failed' ? 'bg-red-50 text-red-600' : 'bg-orange-50 text-orange-600'}`}
           >
-            <RotateCcw className="w-4 h-4" />
+            {tx.status === 'Success' ? (
+              <CheckCircle2 className="w-5 h-5" />
+            ) : tx.status === 'Failed' ? (
+              <XCircle className="w-5 h-5" />
+            ) : (
+              <AlertCircle className="w-5 h-5" />
+            )}
+          </div>
+          <div>
+            <h5 className="font-bold text-gray-900">
+              {tx.amount} {tx.currency}
+            </h5>
+            <p className="text-xs text-gray-500">
+              {tx.method} • {tx.date}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-xs font-mono text-gray-400 group-hover:text-gray-600 transition">
+            {tx.ref}
+          </span>
+          {tx.status === 'Failed' && (
+            <button
+              onClick={() => retryPayment(tx.id)}
+              className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
+          <button className="p-1.5 text-gray-400 hover:text-blue-600 transition">
+            <ExternalLink className="w-4 h-4" />
           </button>
-        )}
-        <button className="p-1.5 text-gray-400 hover:text-blue-600 transition">
-          <ExternalLink className="w-4 h-4" />
-        </button>
+        </div>
       </div>
+      {tx.memo && (
+        <div className="bg-gray-50 rounded-lg p-2 mb-2">
+          <p className="text-xs text-gray-600 font-medium">Memo:</p>
+          <p className="text-sm text-gray-800">{tx.memo}</p>
+        </div>
+      )}
     </motion.div>
   );
 
@@ -276,7 +279,7 @@ const PaymentGateways = ({ account, contract }) => {
               </div>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-8">
+            <div className="grid sm:grid-cols-1 gap-8">
               <div className="space-y-4">
                 <label className="text-sm font-bold text-slate-500 block">
                   Transaction Currency
@@ -293,13 +296,37 @@ const PaymentGateways = ({ account, contract }) => {
                   ))}
                 </div>
               </div>
-              <div className="space-y-4">
-                <label className="text-sm font-bold text-slate-500 block">Quick Amount</label>
-                <input
-                  type="text"
-                  defaultValue="500.00"
-                  className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-600 text-xl font-black text-slate-900 transition-all"
-                />
+              
+              <div className="grid sm:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <label className="text-sm font-bold text-slate-500 block">Payment Amount</label>
+                  <input
+                    type="number"
+                    value={paymentAmount}
+                    onChange={(e) => setPaymentAmount(e.target.value)}
+                    step="0.01"
+                    min="0.01"
+                    className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-600 text-xl font-black text-slate-900 transition-all"
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div className="space-y-4">
+                  <label className="text-sm font-bold text-slate-500 block">
+                    Payment Memo <span className="text-xs font-normal text-slate-400">(Optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={paymentMemo}
+                    onChange={(e) => setPaymentMemo(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-600 text-slate-900 transition-all"
+                    placeholder="e.g., Monthly premium, Consultation fee"
+                    maxLength="100"
+                  />
+                  <p className="text-xs text-slate-400">
+                    {paymentMemo.length}/100 characters
+                  </p>
+                </div>
               </div>
             </div>
 

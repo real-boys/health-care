@@ -297,16 +297,71 @@ class JobProcessor {
     
     // Send confirmation notification
     if (result.success) {
-      await this.queues.notifications.add('send_email', {
-        to: paymentData.payerEmail,
-        subject: 'Payment Processed Successfully',
-        template: 'payment-confirmation',
-        data: {
-          amount: paymentData.amount,
-          transactionId: result.transactionId,
-          date: new Date().toISOString()
+      // Get user email if not provided
+      let userEmail = paymentData.payerEmail;
+      if (!userEmail) {
+        const payment = await paymentService.getPaymentDetails(paymentData.paymentId);
+        if (payment) {
+          userEmail = payment.payerEmail;
         }
-      });
+      }
+      
+      if (userEmail) {
+        await this.queues.notifications.add('send_email', {
+          to: userEmail,
+          subject: 'Payment Processed Successfully - Healthcare Drips',
+          template: 'payment-confirmation',
+          data: {
+            payerName: paymentData.payerName || 'Valued Customer',
+            amount: paymentData.amount,
+            paymentId: paymentData.paymentId,
+            transactionId: result.transactionId,
+            paymentDate: new Date().toISOString(),
+            method: paymentData.method || 'scheduled'
+          }
+        });
+        
+        // Also send in-app notification
+        if (paymentData.payerId) {
+          await this.queues.notifications.add('send_in_app_notification', {
+            userId: paymentData.payerId,
+            title: 'Payment Processed',
+            message: `Your payment of $${paymentData.amount} has been processed successfully.`,
+            type: 'payment_confirmation',
+            data: {
+              paymentId: paymentData.paymentId,
+              transactionId: result.transactionId,
+              amount: paymentData.amount
+            }
+          });
+        }
+      } else {
+        console.warn(`No email found for payment ${paymentData.paymentId}, skipping notification`);
+      }
+    } else {
+      // Send failure notification
+      let userEmail = paymentData.payerEmail;
+      if (!userEmail) {
+        const payment = await paymentService.getPaymentDetails(paymentData.paymentId);
+        if (payment) {
+          userEmail = payment.payerEmail;
+        }
+      }
+      
+      if (userEmail) {
+        await this.queues.notifications.add('send_email', {
+          to: userEmail,
+          subject: 'Payment Processing Failed - Healthcare Drips',
+          template: 'payment-failure',
+          data: {
+            payerName: paymentData.payerName || 'Valued Customer',
+            amount: paymentData.amount,
+            paymentId: paymentData.paymentId,
+            error: result.error || 'Payment processing failed',
+            paymentDate: new Date().toISOString()
+          }
+        });
+      }
     }
     
     return result;
