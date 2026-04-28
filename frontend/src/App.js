@@ -17,6 +17,8 @@ import RecommendationsPage from './pages/RecommendationsPage';
 import RealtimeDashboard from './components/RealtimeDashboard';
 import AdvancedSearch from './components/AdvancedSearch';
 import DocumentUpload from './components/DocumentUpload';
+import PaymentHistoryAnalytics from './components/PaymentHistoryAnalytics';
+import NotificationManagementDashboard from './components/NotificationManagementDashboard';
 import useAppStore from './store/useAppStore';
 import StateDebugger from './components/StateDebugger';
 
@@ -86,6 +88,7 @@ const SidebarContent = ({ user }) => (
                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.15em] mb-4 ml-4">Management</p>
                <SidebarItem to="/patients" icon={<Users size={20} />} label="Patient Forensics" />
                <SidebarItem to="/providers" icon={<Database size={20} />} label="Provider Entities" />
+               <SidebarItem to="/payments" icon={<Activity size={20} />} label="Payment Analytics" />
                <SidebarItem to="/cms" icon={<FileText size={20} />} label="Content Nexus" />
             </div>
 
@@ -275,6 +278,7 @@ function App() {
           <Route path="/" element={<Placeholder name="Main Dashboard" />} />
           <Route path="/patients" element={<Placeholder name="Patient Records" />} />
           <Route path="/providers" element={<Placeholder name="Provider Registry" />} />
+          <Route path="/payments" element={<PaymentHistoryAnalytics />} />
           <Route path="/fraud" element={<FraudDetectionPage />} />
           <Route path="/gamification" element={<GamificationPage />} />
           <Route path="/cms" element={<CMSPage />} />
