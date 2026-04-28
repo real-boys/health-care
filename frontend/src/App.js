@@ -235,6 +235,37 @@ const Placeholder = ({ name }) => (
   </div>
 );
 
+const PaymentsPage = () => {
+  const [lastCommand, setLastCommand] = useState(null);
+
+  const handleExecutePayment = ({ amount, method, rawCommand }) => {
+    // Scoped frontend behavior: accessibility command capture and confirmation.
+    setLastCommand({
+      id: Date.now(),
+      amount,
+      method,
+      rawCommand
+    });
+  };
+
+  return (
+    <div className="p-8">
+      <VoicePaymentCommands onExecutePayment={handleExecutePayment} />
+
+      {lastCommand && (
+        <div className="mb-6 p-4 rounded-2xl border border-emerald-600/30 bg-emerald-500/10 text-emerald-300">
+          <p className="font-semibold">Last voice payment command queued</p>
+          <p className="text-sm mt-1">
+            ${lastCommand.amount.toFixed(2)} via {lastCommand.method} - "{lastCommand.rawCommand}"
+          </p>
+        </div>
+      )}
+
+      <PaymentHistoryAnalytics />
+    </div>
+  );
+};
+
 const AppWithSEO = () => {
    const location = useLocation();
 
