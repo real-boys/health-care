@@ -16,16 +16,29 @@ const createEmailTransporter = () => {
 };
 
 // Send email notification
-const sendEmail = async (to, subject, message) => {
+const sendEmail = async (toOrOptions, subject, message) => {
   try {
+    // Support both sendEmail(obj) and sendEmail(to, subject, message)
+    let to, subj, msg;
+    if (typeof toOrOptions === 'object' && toOrOptions !== null && !Array.isArray(toOrOptions)) {
+      to = toOrOptions.to;
+      subj = toOrOptions.subject;
+      msg = toOrOptions.html || toOrOptions.text || toOrOptions.message ||
+            generateEmailHTML(toOrOptions) || generateEmailText(toOrOptions);
+    } else {
+      to = toOrOptions;
+      subj = subject;
+      msg = message;
+    }
+
     const transporter = createEmailTransporter();
     
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to,
-      subject,
-      text: message,
-      html: message
+      subject: subj,
+      text: typeof msg === 'string' ? msg : JSON.stringify(msg),
+      html: typeof msg === 'string' ? msg : JSON.stringify(msg)
     };
 
     const result = await transporter.sendMail(mailOptions);

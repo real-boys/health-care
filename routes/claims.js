@@ -128,7 +128,7 @@ router.get('/', protect, permit('claim:read'), async (req, res) => {
 // @route   GET /api/claims/:id
 // @desc    Get single claim
 // @access  Private
-router.get('/:id', protect, permit('claim:read'), canAccess('claim', req.params.id), async (req, res) => {
+router.get('/:id', protect, permit('claim:read'), (req, res, next) => canAccess('claim', req.params.id)(req, res, next), async (req, res) => {
   try {
     const claim = await Claim.findById(req.params.id)
       .populate('policy', 'policyNumber policyType premium provider')
@@ -162,7 +162,7 @@ router.get('/:id', protect, permit('claim:read'), canAccess('claim', req.params.
 // @route   PUT /api/claims/:id
 // @desc    Update claim
 // @access  Private
-router.put('/:id', protect, permit('claim:update'), canAccess('claim', req.params.id), [
+router.put('/:id', protect, permit('claim:update'), (req, res, next) => canAccess('claim', req.params.id)(req, res, next), [
   body('status').optional().isIn(['submitted', 'under_review', 'investigation', 'approved', 'rejected', 'paid', 'closed']),
   body('priority').optional().isIn(['low', 'medium', 'high', 'urgent']),
   body('estimatedAmount').optional().isNumeric().withMessage('Estimated amount must be numeric')
@@ -218,7 +218,7 @@ router.put('/:id', protect, permit('claim:update'), canAccess('claim', req.param
 // @route   POST /api/claims/:id/validate
 // @desc    Validate claim
 // @access  Private
-router.post('/:id/validate', protect, permit('claim:process'), canAccess('claim', req.params.id), async (req, res) => {
+router.post('/:id/validate', protect, permit('claim:process'), (req, res, next) => canAccess('claim', req.params.id)(req, res, next), async (req, res) => {
   try {
     const claim = await Claim.findById(req.params.id);
 
@@ -249,7 +249,7 @@ router.post('/:id/validate', protect, permit('claim:process'), canAccess('claim'
 // @route   POST /api/claims/:id/approve
 // @desc    Approve claim
 // @access  Private
-router.post('/:id/approve', protect, permit('claim:approve'), canAccess('claim', req.params.id), [
+router.post('/:id/approve', protect, permit('claim:approve'), (req, res, next) => canAccess('claim', req.params.id)(req, res, next), [
   body('approvedAmount').isNumeric().withMessage('Approved amount must be numeric'),
   body('approvalNotes').optional().isString()
 ], async (req, res) => {
@@ -308,7 +308,7 @@ router.post('/:id/approve', protect, permit('claim:approve'), canAccess('claim',
 // @route   POST /api/claims/:id/reject
 // @desc    Reject claim
 // @access  Private
-router.post('/:id/reject', protect, permit('claim:approve'), canAccess('claim', req.params.id), [
+router.post('/:id/reject', protect, permit('claim:approve'), (req, res, next) => canAccess('claim', req.params.id)(req, res, next), [
   body('rejectionReason').notEmpty().withMessage('Rejection reason is required')
 ], async (req, res) => {
   try {
@@ -358,7 +358,7 @@ router.post('/:id/reject', protect, permit('claim:approve'), canAccess('claim', 
 // @route   POST /api/claims/:id/notes
 // @desc    Add note to claim
 // @access  Private
-router.post('/:id/notes', protect, permit('claim:read'), canAccess('claim', req.params.id), [
+router.post('/:id/notes', protect, permit('claim:read'), (req, res, next) => canAccess('claim', req.params.id)(req, res, next), [
   body('content').notEmpty().withMessage('Note content is required'),
   body('isInternal').optional().isBoolean()
 ], async (req, res) => {
@@ -406,7 +406,7 @@ router.post('/:id/notes', protect, permit('claim:read'), canAccess('claim', req.
 // @route   POST /api/claims/:id/documents
 // @desc    Upload document for claim
 // @access  Private
-router.post('/:id/documents', protect, permit('claim:update'), canAccess('claim', req.params.id), [
+router.post('/:id/documents', protect, permit('claim:update'), (req, res, next) => canAccess('claim', req.params.id)(req, res, next), [
   body('type').isIn(['medical_report', 'invoice', 'receipt', 'photo', 'police_report', 'other']).withMessage('Invalid document type'),
   body('name').notEmpty().withMessage('Document name is required'),
   body('url').notEmpty().withMessage('Document URL is required')

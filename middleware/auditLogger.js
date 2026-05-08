@@ -1,4 +1,5 @@
 const AuditLog = require('../models/AuditLog');
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
 // Helper function to extract user information

@@ -7,7 +7,7 @@ const auth = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
 
 // Get compliance dashboard
-router.get('/dashboard', auth, async (req, res) => {
+router.get('/dashboard', auth.protect, async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     
@@ -38,7 +38,7 @@ router.get('/dashboard', auth, async (req, res) => {
 });
 
 // Get compliance rules
-router.get('/rules', auth, async (req, res) => {
+router.get('/rules', auth.protect, async (req, res) => {
   try {
     const { category, ruleType, severity, isActive } = req.query;
     
@@ -60,7 +60,7 @@ router.get('/rules', auth, async (req, res) => {
 });
 
 // Create compliance rule
-router.post('/rules', auth, [
+router.post('/rules', auth.protect, [
   body('ruleId').notEmpty().withMessage('Rule ID is required'),
   body('name').notEmpty().withMessage('Rule name is required'),
   body('description').notEmpty().withMessage('Description is required'),
@@ -96,7 +96,7 @@ router.post('/rules', auth, [
 });
 
 // Update compliance rule
-router.put('/rules/:ruleId', auth, async (req, res) => {
+router.put('/rules/:ruleId', auth.protect, async (req, res) => {
   try {
     const rule = await ComplianceRule.findOne({ ruleId: req.params.ruleId });
     if (!rule) {
@@ -128,7 +128,7 @@ router.put('/rules/:ruleId', auth, async (req, res) => {
 });
 
 // Deactivate compliance rule
-router.delete('/rules/:ruleId', auth, async (req, res) => {
+router.delete('/rules/:ruleId', auth.protect, async (req, res) => {
   try {
     const rule = await ComplianceRule.findOne({ ruleId: req.params.ruleId });
     if (!rule) {
@@ -147,7 +147,7 @@ router.delete('/rules/:ruleId', auth, async (req, res) => {
 });
 
 // Get violations
-router.get('/violations', auth, async (req, res) => {
+router.get('/violations', auth.protect, async (req, res) => {
   try {
     const { status, severity, category, userId, startDate, endDate, page = 1, limit = 20 } = req.query;
     
@@ -181,7 +181,7 @@ router.get('/violations', auth, async (req, res) => {
 });
 
 // Get violation details
-router.get('/violations/:violationId', auth, async (req, res) => {
+router.get('/violations/:violationId', auth.protect, async (req, res) => {
   try {
     const violation = await ComplianceViolation.findOne({ violationId: req.params.violationId })
       .populate('context.userId', 'username email role')
@@ -203,7 +203,7 @@ router.get('/violations/:violationId', auth, async (req, res) => {
 });
 
 // Resolve violation
-router.post('/violations/:violationId/resolve', auth, [
+router.post('/violations/:violationId/resolve', auth.protect, [
   body('resolutionNotes').notEmpty().withMessage('Resolution notes are required'),
   body('correctiveActions').isArray().withMessage('Corrective actions must be an array'),
   body('preventiveActions').isArray().withMessage('Preventive actions must be an array')
@@ -240,7 +240,7 @@ router.post('/violations/:violationId/resolve', auth, [
 });
 
 // Escalate violation
-router.post('/violations/:violationId/escalate', auth, [
+router.post('/violations/:violationId/escalate', auth.protect, [
   body('level').isInt({ min: 1 }).withMessage('Escalation level must be a positive integer'),
   body('escalatedTo').isArray().withMessage('Escalated to must be an array'),
   body('escalationReason').notEmpty().withMessage('Escalation reason is required')
@@ -272,7 +272,7 @@ router.post('/violations/:violationId/escalate', auth, [
 });
 
 // Mark violation as false positive
-router.post('/violations/:violationId/false-positive', auth, [
+router.post('/violations/:violationId/false-positive', auth.protect, [
   body('reason').notEmpty().withMessage('Reason is required')
 ], async (req, res) => {
   try {
@@ -298,7 +298,7 @@ router.post('/violations/:violationId/false-positive', auth, [
 });
 
 // Acknowledge alert
-router.post('/violations/:violationId/acknowledge', auth, async (req, res) => {
+router.post('/violations/:violationId/acknowledge', auth.protect, async (req, res) => {
   try {
     const violation = await ComplianceViolation.findOne({ violationId: req.params.violationId });
     if (!violation) {
@@ -317,7 +317,7 @@ router.post('/violations/:violationId/acknowledge', auth, async (req, res) => {
 });
 
 // Get compliance statistics
-router.get('/stats', auth, async (req, res) => {
+router.get('/stats', auth.protect, async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     
@@ -357,7 +357,7 @@ router.get('/stats', auth, async (req, res) => {
 });
 
 // Generate compliance report
-router.get('/report', auth, async (req, res) => {
+router.get('/report', auth.protect, async (req, res) => {
   try {
     const { startDate, endDate, format = 'json' } = req.query;
     
@@ -384,7 +384,7 @@ router.get('/report', auth, async (req, res) => {
 });
 
 // Manual compliance check
-router.post('/check', auth, [
+router.post('/check', auth.protect, [
   body('action').notEmpty().withMessage('Action is required'),
   body('resourceType').notEmpty().withMessage('Resource type is required'),
   body('resourceId').notEmpty().withMessage('Resource ID is required')

@@ -1,4 +1,5 @@
 const AuditLog = require('../models/AuditLog');
+const mongoose = require('mongoose');
 
 const errorHandler = (err, req, res, next) => {
   let error = { ...err };

@@ -105,7 +105,7 @@ router.get('/', protect, permit('policy:read'), async (req, res) => {
 // @route   GET /api/policies/:id
 // @desc    Get single policy
 // @access  Private
-router.get('/:id', protect, permit('policy:read'), canAccess('policy', req.params.id), async (req, res) => {
+router.get('/:id', protect, permit('policy:read'), (req, res, next) => canAccess('policy', req.params.id)(req, res, next), async (req, res) => {
   try {
     const policy = await Policy.findById(req.params.id)
       .populate('provider', 'username email profile');
@@ -133,7 +133,7 @@ router.get('/:id', protect, permit('policy:read'), canAccess('policy', req.param
 // @route   PUT /api/policies/:id
 // @desc    Update policy
 // @access  Private
-router.put('/:id', protect, permit('policy:update'), canAccess('policy', req.params.id), [
+router.put('/:id', protect, permit('policy:update'), (req, res, next) => canAccess('policy', req.params.id)(req, res, next), [
   body('policyHolder.firstName').optional().notEmpty().withMessage('First name cannot be empty'),
   body('policyHolder.lastName').optional().notEmpty().withMessage('Last name cannot be empty'),
   body('premium.amount').optional().isNumeric().withMessage('Premium amount must be numeric'),
@@ -209,7 +209,7 @@ router.delete('/:id', protect, authorize('admin'), async (req, res) => {
 // @route   POST /api/policies/:id/payments
 // @desc    Add payment to policy
 // @access  Private
-router.post('/:id/payments', protect, permit('payment:process'), canAccess('policy', req.params.id), [
+router.post('/:id/payments', protect, permit('payment:process'), (req, res, next) => canAccess('policy', req.params.id)(req, res, next), [
   body('amount').isNumeric().withMessage('Amount must be numeric'),
   body('method').isIn(['card', 'bank', 'check']).withMessage('Invalid payment method'),
   body('transactionId').notEmpty().withMessage('Transaction ID is required')
@@ -258,7 +258,7 @@ router.post('/:id/payments', protect, permit('payment:process'), canAccess('poli
 // @route   GET /api/policies/:id/payments
 // @desc    Get policy payment history
 // @access  Private
-router.get('/:id/payments', protect, permit('payment:read'), canAccess('policy', req.params.id), async (req, res) => {
+router.get('/:id/payments', protect, permit('payment:read'), (req, res, next) => canAccess('policy', req.params.id)(req, res, next), async (req, res) => {
   try {
     const policy = await Policy.findById(req.params.id).select('payments premium');
 

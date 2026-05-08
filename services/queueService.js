@@ -1,5 +1,6 @@
 const Queue = require('bull');
 const redis = require('redis');
+const mongoose = require('mongoose');
 const Claim = require('../models/Claim');
 const Payment = require('../models/Payment');
 const AuditLog = require('../models/AuditLog');

@@ -8,13 +8,14 @@ const auditLogSchema = new mongoose.Schema({
       'login', 'logout', 'create', 'read', 'update', 'delete',
       'approve', 'reject', 'process', 'submit', 'cancel',
       'upload', 'download', 'export', 'import', 'payment',
-      'refund', 'assign', 'transfer', 'activate', 'deactivate'
+      'refund', 'assign', 'transfer', 'activate', 'deactivate',
+      'notification', 'security_violation', 'unknown'
     ]
   },
   resourceType: {
     type: String,
     required: true,
-    enum: ['user', 'policy', 'claim', 'payment', 'report', 'document', 'system']
+    enum: ['user', 'policy', 'claim', 'payment', 'report', 'document', 'system', 'audit']
   },
   resourceId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -28,7 +29,7 @@ const auditLogSchema = new mongoose.Schema({
   userRole: {
     type: String,
     required: true,
-    enum: ['admin', 'provider', 'agent', 'processor']
+    enum: ['admin', 'provider', 'agent', 'processor', 'anonymous', 'system']
   },
   details: {
     description: { type: String, required: true },

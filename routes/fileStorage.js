@@ -30,7 +30,7 @@ const upload = multer({
 });
 
 // Upload file
-router.post('/upload', auth, upload.single('file'), [
+router.post('/upload', auth.protect, upload.single('file'), [
   body('documentType').optional().isIn([
     'invoice', 'receipt', 'medical-report', 'prescription', 'claim-form', 
     'id-proof', 'insurance-card', 'bank-statement', 'tax-document', 
@@ -78,7 +78,7 @@ router.post('/upload', auth, upload.single('file'), [
 });
 
 // Get file
-router.get('/:documentId', auth, async (req, res) => {
+router.get('/:documentId', auth.protect, async (req, res) => {
   try {
     const result = await fileStorageService.getFile(req.params.documentId, req.user.id);
     
@@ -98,7 +98,7 @@ router.get('/:documentId', auth, async (req, res) => {
 });
 
 // Get file download URL
-router.get('/:documentId/download', auth, async (req, res) => {
+router.get('/:documentId/download', auth.protect, async (req, res) => {
   try {
     const { expiresIn = 3600 } = req.query;
     
@@ -137,7 +137,7 @@ router.get('/:documentId/download', auth, async (req, res) => {
 });
 
 // Delete file
-router.delete('/:documentId', auth, async (req, res) => {
+router.delete('/:documentId', auth.protect, async (req, res) => {
   try {
     const result = await fileStorageService.deleteFile(req.params.documentId, req.user.id);
     
@@ -157,7 +157,7 @@ router.delete('/:documentId', auth, async (req, res) => {
 });
 
 // Create file version
-router.post('/:documentId/version', auth, upload.single('file'), [
+router.post('/:documentId/version', auth.protect, upload.single('file'), [
   body('documentType').optional().isIn([
     'invoice', 'receipt', 'medical-report', 'prescription', 'claim-form', 
     'id-proof', 'insurance-card', 'bank-statement', 'tax-document', 
@@ -202,7 +202,7 @@ router.post('/:documentId/version', auth, upload.single('file'), [
 });
 
 // Get file analytics
-router.get('/analytics/:userId', auth, async (req, res) => {
+router.get('/analytics/:userId', auth.protect, async (req, res) => {
   try {
     // Only allow users to access their own analytics or admins to access any
     if (req.params.userId !== req.user.id && req.user.role !== 'admin') {
@@ -227,7 +227,7 @@ router.get('/analytics/:userId', auth, async (req, res) => {
 });
 
 // Search documents
-router.get('/search/:userId', auth, async (req, res) => {
+router.get('/search/:userId', auth.protect, async (req, res) => {
   try {
     // Only allow users to search their own documents or admins to search any
     if (req.params.userId !== req.user.id && req.user.role !== 'admin') {
@@ -258,7 +258,7 @@ router.get('/search/:userId', auth, async (req, res) => {
 });
 
 // Get user's documents
-router.get('/user/:userId', auth, async (req, res) => {
+router.get('/user/:userId', auth.protect, async (req, res) => {
   try {
     // Only allow users to access their own documents or admins to access any
     if (req.params.userId !== req.user.id && req.user.role !== 'admin') {
@@ -309,7 +309,7 @@ router.get('/user/:userId', auth, async (req, res) => {
 });
 
 // Share file with other users
-router.post('/:documentId/share', auth, [
+router.post('/:documentId/share', auth.protect, [
   body('userId').notEmpty().withMessage('User ID is required'),
   body('permission').isIn(['view', 'edit', 'delete']).withMessage('Invalid permission')
 ], async (req, res) => {
@@ -341,7 +341,7 @@ router.post('/:documentId/share', auth, [
 });
 
 // Remove file sharing
-router.delete('/:documentId/share/:userId', auth, async (req, res) => {
+router.delete('/:documentId/share/:userId', auth.protect, async (req, res) => {
   try {
     const document = await Document.findById(req.params.documentId);
     if (!document) {
@@ -365,7 +365,7 @@ router.delete('/:documentId/share/:userId', auth, async (req, res) => {
 });
 
 // Update file permissions
-router.put('/:documentId/share/:userId', auth, [
+router.put('/:documentId/share/:userId', auth.protect, [
   body('permission').isIn(['view', 'edit', 'delete']).withMessage('Invalid permission')
 ], async (req, res) => {
   try {
@@ -396,7 +396,7 @@ router.put('/:documentId/share/:userId', auth, [
 });
 
 // Get shared files
-router.get('/shared/with-me', auth, async (req, res) => {
+router.get('/shared/with-me', auth.protect, async (req, res) => {
   try {
     const documents = await Document.getSharedWithMe(req.user.id);
     
@@ -410,7 +410,7 @@ router.get('/shared/with-me', auth, async (req, res) => {
 });
 
 // Archive file
-router.post('/:documentId/archive', auth, async (req, res) => {
+router.post('/:documentId/archive', auth.protect, async (req, res) => {
   try {
     const document = await Document.findById(req.params.documentId);
     if (!document) {
@@ -434,7 +434,7 @@ router.post('/:documentId/archive', auth, async (req, res) => {
 });
 
 // Restore file
-router.post('/:documentId/restore', auth, async (req, res) => {
+router.post('/:documentId/restore', auth.protect, async (req, res) => {
   try {
     const document = await Document.findById(req.params.documentId);
     if (!document) {
@@ -458,7 +458,7 @@ router.post('/:documentId/restore', auth, async (req, res) => {
 });
 
 // Get storage statistics
-router.get('/storage/stats/:userId', auth, async (req, res) => {
+router.get('/storage/stats/:userId', auth.protect, async (req, res) => {
   try {
     // Only allow users to access their own stats or admins to access any
     if (req.params.userId !== req.user.id && req.user.role !== 'admin') {

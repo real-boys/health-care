@@ -343,7 +343,7 @@ router.get('/', protect, permit('payment:read'), async (req, res) => {
 // @route   GET /api/payments/:id
 // @desc    Get single payment
 // @access  Private
-router.get('/:id', protect, permit('payment:read'), canAccess('payment', req.params.id), async (req, res) => {
+router.get('/:id', protect, permit('payment:read'), (req, res, next) => canAccess('payment', req.params.id)(req, res, next), async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id)
       .populate('processedBy', 'username email')
@@ -372,7 +372,7 @@ router.get('/:id', protect, permit('payment:read'), canAccess('payment', req.par
 // @route   POST /api/payments/:id/refund
 // @desc    Refund payment
 // @access  Private
-router.post('/:id/refund', protect, permit('payment:refund'), canAccess('payment', req.params.id), [
+router.post('/:id/refund', protect, permit('payment:refund'), (req, res, next) => canAccess('payment', req.params.id)(req, res, next), [
   body('refundAmount').isNumeric().withMessage('Refund amount must be numeric'),
   body('refundReason').notEmpty().withMessage('Refund reason is required')
 ], async (req, res) => {
