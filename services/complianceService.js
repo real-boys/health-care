@@ -151,17 +151,17 @@ class ComplianceService {
       let result;
       
       switch (rule.logic) {
-        case 'simple':
-          result = this.evaluateSimpleRule(rule, context);
-          break;
-        case 'complex':
-          result = this.evaluateComplexRule(rule, context);
-          break;
-        case 'script':
-          result = await this.evaluateScriptRule(rule, context);
-          break;
-        default:
-          throw new Error(`Unknown rule logic type: ${rule.logic}`);
+      case 'simple':
+        result = this.evaluateSimpleRule(rule, context);
+        break;
+      case 'complex':
+        result = this.evaluateComplexRule(rule, context);
+        break;
+      case 'script':
+        result = await this.evaluateScriptRule(rule, context);
+        break;
+      default:
+        throw new Error(`Unknown rule logic type: ${rule.logic}`);
       }
 
       result.detectionTime = Date.now() - startTime;
@@ -326,16 +326,16 @@ class ComplianceService {
 
   determineAlertMethods(severity) {
     switch (severity) {
-      case 'critical':
-        return ['email', 'sms', 'slack', 'dashboard', 'webhook'];
-      case 'high':
-        return ['email', 'slack', 'dashboard'];
-      case 'medium':
-        return ['email', 'dashboard'];
-      case 'low':
-        return ['dashboard'];
-      default:
-        return ['dashboard'];
+    case 'critical':
+      return ['email', 'sms', 'slack', 'dashboard', 'webhook'];
+    case 'high':
+      return ['email', 'slack', 'dashboard'];
+    case 'medium':
+      return ['email', 'dashboard'];
+    case 'low':
+      return ['dashboard'];
+    default:
+      return ['dashboard'];
     }
   }
 
@@ -375,21 +375,21 @@ class ComplianceService {
       // Send notifications through different channels
       for (const method of violation.alert.alertMethod) {
         switch (method) {
-          case 'email':
-            await this.sendEmailAlert(violation, recipients);
-            break;
-          case 'sms':
-            await this.sendSMSAlert(violation, recipients);
-            break;
-          case 'slack':
-            await this.sendSlackAlert(violation);
-            break;
-          case 'dashboard':
-            await this.updateDashboardAlert(violation);
-            break;
-          case 'webhook':
-            await this.sendWebhookAlert(violation);
-            break;
+        case 'email':
+          await this.sendEmailAlert(violation, recipients);
+          break;
+        case 'sms':
+          await this.sendSMSAlert(violation, recipients);
+          break;
+        case 'slack':
+          await this.sendSlackAlert(violation);
+          break;
+        case 'dashboard':
+          await this.updateDashboardAlert(violation);
+          break;
+        case 'webhook':
+          await this.sendWebhookAlert(violation);
+          break;
         }
       }
 
@@ -429,7 +429,7 @@ class ComplianceService {
 
   async sendSlackAlert(violation) {
     const message = {
-      text: `Compliance Violation Alert`,
+      text: 'Compliance Violation Alert',
       attachments: [{
         color: this.getSeverityColor(violation.severity),
         fields: [
@@ -494,11 +494,11 @@ Please review this violation and take appropriate action.
 
   getSeverityColor(severity) {
     switch (severity) {
-      case 'critical': return 'danger';
-      case 'high': return 'warning';
-      case 'medium': return 'good';
-      case 'low': return '#36a64f';
-      default: return 'good';
+    case 'critical': return 'danger';
+    case 'high': return 'warning';
+    case 'medium': return 'good';
+    case 'low': return '#36a64f';
+    default: return 'good';
     }
   }
 

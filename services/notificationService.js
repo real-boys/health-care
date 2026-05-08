@@ -115,8 +115,8 @@ const generateEmailText = (emailData) => {
   const { template, data } = emailData;
   
   switch (template) {
-    case 'claim-update':
-      return `
+  case 'claim-update':
+    return `
 Dear ${data.claimantName},
 
 Your claim ${data.claimNumber} has been ${data.status}.
@@ -133,8 +133,8 @@ Best regards,
 Insurance Provider Portal
       `.trim();
       
-    case 'payment-confirmation':
-      return `
+  case 'payment-confirmation':
+    return `
 Dear ${data.payerName},
 
 Your payment of $${data.amount} has been processed.
@@ -152,8 +152,8 @@ Best regards,
 Insurance Provider Portal
       `.trim();
       
-    case 'payment-failure':
-      return `
+  case 'payment-failure':
+    return `
 Dear ${data.payerName},
 
 We were unable to process your scheduled payment of $${data.amount}.
@@ -170,8 +170,8 @@ Best regards,
 Insurance Provider Portal
       `.trim();
       
-    case 'policy-reminder':
-      return `
+  case 'policy-reminder':
+    return `
 Dear ${data.policyHolderName},
 
 This is a reminder that your premium payment is due.
@@ -188,8 +188,8 @@ Best regards,
 Insurance Provider Portal
       `.trim();
       
-    default:
-      return 'This is an automated notification from the Insurance Provider Portal.';
+  default:
+    return 'This is an automated notification from the Insurance Provider Portal.';
   }
 };
 
@@ -238,8 +238,8 @@ const generateEmailHTML = (emailData) => {
 // Generate email body based on template
 const generateEmailBody = (template, data) => {
   switch (template) {
-    case 'claim-update':
-      return `
+  case 'claim-update':
+    return `
         <h2>Claim Update</h2>
         <p>Dear ${data.claimantName},</p>
         <p>Your claim <strong>${data.claimNumber}</strong> has been <strong>${data.status}</strong>.</p>
@@ -255,8 +255,8 @@ const generateEmailBody = (template, data) => {
         <p><a href="#" class="button">View Claim Details</a></p>
       `.trim();
       
-    case 'payment-confirmation':
-      return `
+  case 'payment-confirmation':
+    return `
         <h2>Payment Confirmation</h2>
         <p>Dear ${data.payerName},</p>
         <p>Your payment of <strong>$${data.amount}</strong> has been processed.</p>
@@ -273,8 +273,8 @@ const generateEmailBody = (template, data) => {
         <p><a href="#" class="button">View Payment History</a></p>
       `.trim();
       
-    case 'payment-failure':
-      return `
+  case 'payment-failure':
+    return `
         <h2>Payment Processing Failed</h2>
         <p>Dear ${data.payerName},</p>
         <p>We were unable to process your scheduled payment of <strong>$${data.amount}</strong>.</p>
@@ -290,8 +290,8 @@ const generateEmailBody = (template, data) => {
         <p><a href="#" class="button">Update Payment Method</a></p>
       `.trim();
       
-    case 'policy-reminder':
-      return `
+  case 'policy-reminder':
+    return `
         <h2>Premium Payment Reminder</h2>
         <p>Dear ${data.policyHolderName},</p>
         <p>This is a reminder that your premium payment is due.</p>
@@ -307,8 +307,8 @@ const generateEmailBody = (template, data) => {
         <p><a href="#" class="button">Make Payment</a></p>
       `.trim();
       
-    default:
-      return '<p>This is an automated notification from the Insurance Provider Portal.</p>';
+  default:
+    return '<p>This is an automated notification from the Insurance Provider Portal.</p>';
   }
 };
 

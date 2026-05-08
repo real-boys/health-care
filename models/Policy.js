@@ -142,15 +142,15 @@ policySchema.methods.calculateNextDueDate = function() {
   const nextDueDate = new Date(lastDueDate);
   
   switch (this.premium.frequency) {
-    case 'monthly':
-      nextDueDate.setMonth(nextDueDate.getMonth() + 1);
-      break;
-    case 'quarterly':
-      nextDueDate.setMonth(nextDueDate.getMonth() + 3);
-      break;
-    case 'annually':
-      nextDueDate.setFullYear(nextDueDate.getFullYear() + 1);
-      break;
+  case 'monthly':
+    nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+    break;
+  case 'quarterly':
+    nextDueDate.setMonth(nextDueDate.getMonth() + 3);
+    break;
+  case 'annually':
+    nextDueDate.setFullYear(nextDueDate.getFullYear() + 1);
+    break;
   }
   
   return nextDueDate;

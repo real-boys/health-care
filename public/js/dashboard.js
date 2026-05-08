@@ -506,9 +506,11 @@ class InsurancePortal {
     }
 
     showAlert(message, type = 'info') {
+        // Map 'error' to Bootstrap's 'danger' class
+        const bsType = type === 'error' ? 'danger' : type;
         // Create alert element
         const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.className = `alert alert-${bsType} alert-dismissible fade show position-fixed`;
         alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
         alertDiv.innerHTML = `
             ${message}

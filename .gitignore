@@ -2,3 +2,13 @@
 node_modules/
 build/
 target/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Log files (keep directory via .gitkeep)
+logs/*.log
+backend/logs/*.log
+

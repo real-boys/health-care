@@ -17,30 +17,31 @@ const getDateRange = (period) => {
   let startDate, endDate;
 
   switch (period) {
-    case 'today':
-      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-      break;
-    case 'week':
-      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
-      endDate = now;
-      break;
-    case 'month':
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      break;
-    case 'quarter':
-      const quarter = Math.floor(now.getMonth() / 3);
-      startDate = new Date(now.getFullYear(), quarter * 3, 1);
-      endDate = new Date(now.getFullYear(), quarter * 3 + 3, 0);
-      break;
-    case 'year':
-      startDate = new Date(now.getFullYear(), 0, 1);
-      endDate = new Date(now.getFullYear(), 11, 31);
-      break;
-    default:
-      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
-      endDate = now;
+  case 'today':
+    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    break;
+  case 'week':
+    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+    endDate = now;
+    break;
+  case 'month':
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    break;
+  case 'quarter': {
+    const quarter = Math.floor(now.getMonth() / 3);
+    startDate = new Date(now.getFullYear(), quarter * 3, 1);
+    endDate = new Date(now.getFullYear(), quarter * 3 + 3, 0);
+    break;
+  }
+  case 'year':
+    startDate = new Date(now.getFullYear(), 0, 1);
+    endDate = new Date(now.getFullYear(), 11, 31);
+    break;
+  default:
+    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+    endDate = now;
   }
 
   return { startDate, endDate };

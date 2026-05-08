@@ -1,21 +1,17 @@
 const Queue = require('bull');
-const redis = require('redis');
 const mongoose = require('mongoose');
 const Claim = require('../models/Claim');
 const Payment = require('../models/Payment');
 const AuditLog = require('../models/AuditLog');
 const { sendEmail, sendSMS } = require('./notificationService');
 
-// Redis configuration
+// Redis configuration (ioredis-compatible format used by Bull)
 const redisConfig = {
   host: process.env.REDIS_HOST || 'localhost',
-  port: process.env.REDIS_PORT || 6379,
+  port: parseInt(process.env.REDIS_PORT) || 6379,
   password: process.env.REDIS_PASSWORD || undefined,
   maxRetriesPerRequest: 3
 };
-
-// Create Redis client
-const redisClient = redis.createClient(redisConfig);
 
 // Create queues
 const claimProcessingQueue = new Queue('claim processing', {
@@ -452,33 +448,33 @@ const getQueueStats = async () => {
 
 const pauseQueue = async (queueName) => {
   switch (queueName) {
-    case 'claims':
-      await claimProcessingQueue.pause();
-      break;
-    case 'payments':
-      await paymentProcessingQueue.pause();
-      break;
-    case 'notifications':
-      await notificationQueue.pause();
-      break;
-    default:
-      throw new Error('Invalid queue name');
+  case 'claims':
+    await claimProcessingQueue.pause();
+    break;
+  case 'payments':
+    await paymentProcessingQueue.pause();
+    break;
+  case 'notifications':
+    await notificationQueue.pause();
+    break;
+  default:
+    throw new Error('Invalid queue name');
   }
 };
 
 const resumeQueue = async (queueName) => {
   switch (queueName) {
-    case 'claims':
-      await claimProcessingQueue.resume();
-      break;
-    case 'payments':
-      await paymentProcessingQueue.resume();
-      break;
-    case 'notifications':
-      await notificationQueue.resume();
-      break;
-    default:
-      throw new Error('Invalid queue name');
+  case 'claims':
+    await claimProcessingQueue.resume();
+    break;
+  case 'payments':
+    await paymentProcessingQueue.resume();
+    break;
+  case 'notifications':
+    await notificationQueue.resume();
+    break;
+  default:
+    throw new Error('Invalid queue name');
   }
 };
 

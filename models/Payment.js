@@ -80,7 +80,7 @@ const paymentSchema = new mongoose.Schema({
     // Check specific
     checkNumber: String,
     checkDate: Date,
-    bankName: String
+    checkBankName: String
   },
   billing: {
     invoiceNumber: String,

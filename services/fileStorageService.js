@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs').promises;
+const mongoose = require('mongoose');
 const Document = require('../models/Document');
 const AuditLog = require('../models/AuditLog');
 const winston = require('winston');

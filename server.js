@@ -3,7 +3,13 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const fs = require('fs');
 require('dotenv').config();
+
+// Ensure logs directory exists for winston transports
+if (!fs.existsSync('logs')) {
+  fs.mkdirSync('logs');
+}
 
 const authRoutes = require('./routes/auth');
 const policyRoutes = require('./routes/policies');
@@ -60,12 +66,9 @@ app.get('/health', (req, res) => {
 app.use(errorHandler);
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/insurance_portal', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/insurance_portal')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

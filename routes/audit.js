@@ -220,30 +220,31 @@ router.get('/statistics', protect, permit('audit:read'), [
       dateEnd = new Date(endDate);
     } else {
       switch (period) {
-        case 'today':
-          dateStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          dateEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-          break;
-        case 'week':
-          dateStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
-          dateEnd = now;
-          break;
-        case 'month':
-          dateStart = new Date(now.getFullYear(), now.getMonth(), 1);
-          dateEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-          break;
-        case 'quarter':
-          const quarter = Math.floor(now.getMonth() / 3);
-          dateStart = new Date(now.getFullYear(), quarter * 3, 1);
-          dateEnd = new Date(now.getFullYear(), quarter * 3 + 3, 0);
-          break;
-        case 'year':
-          dateStart = new Date(now.getFullYear(), 0, 1);
-          dateEnd = new Date(now.getFullYear(), 11, 31);
-          break;
-        default:
-          dateStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
-          dateEnd = now;
+      case 'today':
+        dateStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        dateEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        break;
+      case 'week':
+        dateStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+        dateEnd = now;
+        break;
+      case 'month':
+        dateStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        dateEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        break;
+      case 'quarter': {
+        const quarter = Math.floor(now.getMonth() / 3);
+        dateStart = new Date(now.getFullYear(), quarter * 3, 1);
+        dateEnd = new Date(now.getFullYear(), quarter * 3 + 3, 0);
+        break;
+      }
+      case 'year':
+        dateStart = new Date(now.getFullYear(), 0, 1);
+        dateEnd = new Date(now.getFullYear(), 11, 31);
+        break;
+      default:
+        dateStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+        dateEnd = now;
       }
     }
 
@@ -471,8 +472,8 @@ router.get('/export', protect, authorize('admin'), [
     const logs = await AuditLog.find({
       'details.timestamp': { $gte: new Date(startDate), $lte: new Date(endDate) }
     })
-    .populate('userId', 'username email role')
-    .sort({ 'details.timestamp': -1 });
+      .populate('userId', 'username email role')
+      .sort({ 'details.timestamp': -1 });
 
     if (format === 'json') {
       res.json({
